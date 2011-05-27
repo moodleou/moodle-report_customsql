@@ -56,7 +56,6 @@ class report_customsql_edit_form extends moodleform {
             $mform->addElement('static', 'params', get_string('queryparams', 'report_customsql'));
             foreach ($this->_customdata as $queryparam => $formparam) {
                 $mform->addElement('text', $formparam, $queryparam);
-//                $mform->addRule($formparam, null, 'required', null, 'client');
             }
             $mform->addElement('static', 'spacer', '', '');
         }
@@ -111,7 +110,7 @@ class report_customsql_edit_form extends moodleform {
                 $queryparam = substr($queryparam, 1);
                 $formparam = 'queryparam'.$queryparam;
                 if (!isset($data[$formparam]) || empty($data[$formparam])) {
-                    $errors['params'] = get_string('queryparamsrequired', 'report_customsql');
+                    $errors['params'] = get_string('queryparamsnew', 'report_customsql');
                     break;
                 }
                 $queryparams[$queryparam] = $data[$formparam];
