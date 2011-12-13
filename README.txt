@@ -1,12 +1,17 @@
-This admin report plugin allows Administrators to set up arbitrary 
-database queries to act as ad-hoc reports. Reports can be of two types: 
-either run on demand, or scheduled to run automatically. Other users 
-with the right capability can go in and see a list of queries that they 
-have access to. Results can be viewed on-screen or downloaded as CSV. 
+Ad-hoc database queries
 
-See http://docs.moodle.org/20/en/Custom_SQL_queries_report for more 
-information.
+This report plugin allows Administrators to set up arbitrary database queries
+to act as ad-hoc reports. Reports can be of two types, either run on demand,
+or scheduled to run automatically. Other users with the right capability can
+go in and see a list of queries that they have access to. Results can be viewed
+on-screen or downloaded as CSV.
 
-Written by Tim Hunt and converted to Moodle 2.0 by Derek Woolhead, both 
-from The Open University (http://www.open.ac.uk/).
+See http://docs.moodle.org/22/en/Custom_SQL_queries_report for more information.
 
+Written by Tim Hunt and converted to Moodle 2.0 by Derek Woolhead, both from
+The Open University (http://www.open.ac.uk/).
+
+To install using git, type this command in the root of your Moodle install
+    git clone -b MOODLE_21_STABLE git://github.com/timhunt/moodle-report_customsql.git report/customsql
+
+This version of the report is compatible with Moodle 2.0.x or 2.1.x.
