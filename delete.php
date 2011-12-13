@@ -22,7 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -48,7 +48,7 @@ if (optional_param('confirm', false, PARAM_BOOL)) {
 $runnableoptions = report_customsql_runable_options();
 
 // Start the page.
-admin_externalpage_setup('reportcustomsql');
+admin_externalpage_setup('report_customsql');
 
 echo $OUTPUT->header().
      $OUTPUT->heading(get_string('deleteareyousure', 'report_customsql')).

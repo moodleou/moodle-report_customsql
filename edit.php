@@ -22,14 +22,14 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/edit_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 $context = get_context_instance(CONTEXT_SYSTEM);
-$PAGE->set_url(new moodle_url('/'.$CFG->admin.'/report/customsql/edit.php'));
+$PAGE->set_url(new moodle_url('/report/customsql/edit.php'));
 $PAGE->set_context($context);
 require_capability('report/customsql:definequeries', $context);
 
@@ -103,7 +103,7 @@ if ($newreport = $mform->get_data()) {
     }
 }
 
-admin_externalpage_setup('reportcustomsql');
+admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header().
      $OUTPUT->heading(get_string('editingareport', 'report_customsql'));
 

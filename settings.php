@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$ADMIN->add('reports', new admin_externalpage('reportcustomsql',
-        get_string('customsql', 'report_customsql'),
-        $CFG->wwwroot.'/'.$CFG->admin.'/report/customsql/index.php',
+$settings=null;
+
+$ADMIN->add('reports', new admin_externalpage('report_customsql',
+        get_string('pluginname', 'report_customsql'),
+        new moodle_url('/report/customsql/index.php'),
         'report/customsql:view'));

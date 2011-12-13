@@ -25,7 +25,8 @@
 define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
-function report_customsql_execute_query($sql, $params = null, $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+function report_customsql_execute_query($sql, $params = null,
+                                        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
@@ -151,7 +152,7 @@ function report_customsql_substitute_user_token($sql, $userid) {
 
 function report_customsql_url($relativeurl) {
     global $CFG;
-    return $CFG->wwwroot.'/'.$CFG->admin.'/report/customsql/'.$relativeurl;
+    return $CFG->wwwroot.'/report/customsql/'.$relativeurl;
 }
 
 function report_customsql_capability_options() {
@@ -181,7 +182,7 @@ function report_customsql_contains_bad_word($string) {
 function report_customsql_log_action($action, $relativeurl, $id) {
     global $CFG;
     add_to_log(0, 'admin', $action.' query',
-               '../'.$CFG->admin.'/report/customsql/'.$relativeurl, $id);
+               '../report/customsql/'.$relativeurl, $id);
 }
 
 function report_customsql_log_delete($id) {

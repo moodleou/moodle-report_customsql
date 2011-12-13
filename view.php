@@ -22,8 +22,9 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/view_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
@@ -42,6 +43,54 @@ if (!empty($report->capability)) {
 report_customsql_log_view($id);
 
 if ($report->runable == 'manual') {
+
+    // Allow query parameters to be entered
+    if (!empty($report->queryparams)) {
+
+        $queryparamscount = preg_match_all('/(?<!:):[a-z][a-z0-9_]*/', $report->querysql, $matches);
+        $queryparams = array();
+        foreach ($matches[0] as $queryparam) {
+            $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
+        }
+
+        $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
+        $PAGE->set_context($context);
+        $relativeurl = 'view.php?id=' . $id;
+        $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
+
+        if ($mform->is_cancelled()) {
+            redirect(report_customsql_url('index.php'));
+        }
+
+        if ($newreport = $mform->get_data()) {
+
+            // Pick up named parameters into serialised array
+            if ($queryparamscount) {
+                foreach ($queryparams as $queryparam => $formparam) {
+                    $queryparams[$queryparam] = $newreport->{$formparam};
+                    unset($newreport->{$formparam});
+                }
+                $report->queryparams = serialize($queryparams);
+            }
+        } else {
+
+            admin_externalpage_setup('report_customsql');
+            echo $OUTPUT->header().
+                 $OUTPUT->heading(get_string('enterparameters', 'report_customsql'));
+
+            $report->description = strip_tags($report->description);
+            $queryparams = unserialize($report->queryparams);
+            foreach ($queryparams as $param => $value) {
+                $report->{'queryparam'.$param} = $value;
+            }
+            $mform->set_data($report);
+            $mform->display();
+
+            echo $OUTPUT->footer();
+            die;
+        }
+    }
+
     try {
         $cvstimestamp = report_customsql_generate_csv($report, time());
         // Get the updated execution times.
@@ -55,7 +104,7 @@ if ($report->runable == 'manual') {
 }
 
 // Start the page.
-admin_externalpage_setup('reportcustomsql');
+admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header().
      $OUTPUT->heading(format_string($report->displayname));
 

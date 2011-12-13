@@ -31,11 +31,13 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
+$context = get_context_instance(CONTEXT_SYSTEM);
+require_capability('report/customsql:view', $context);
 
 $manualreports = $DB->get_records('report_customsql_queries', array('runable' => 'manual'),
                                   'displayname');
@@ -43,7 +45,7 @@ $scheduledreports = $DB->get_records_list('report_customsql_queries', 'runable',
                                           array('weekly', 'monthly'), 'displayname');
 
 // Start the page.
-admin_externalpage_setup('reportcustomsql');
+admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header();
 
 if (empty($manualreports) && empty($scheduledreports)) {
@@ -64,7 +66,7 @@ if (empty($manualreports) && empty($scheduledreports)) {
     }
 }
 
-if (has_capability('report/customsql:definequeries', get_context_instance(CONTEXT_SYSTEM))) {
+if (has_capability('report/customsql:definequeries', $context)) {
     echo $OUTPUT->single_button(report_customsql_url('edit.php'),
                                 get_string('addreport', 'report_customsql'));
 }
