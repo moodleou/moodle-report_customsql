@@ -29,4 +29,4 @@ $plugin->requires = 2010112400;
 
 $plugin->component = 'report_customsql';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.0.0';
+$plugin->release = '2.0.1';

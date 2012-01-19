@@ -30,7 +30,6 @@ $capabilities = array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'legacy' => array(
-            'user' => CAP_ALLOW
             )
         ),
 

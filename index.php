@@ -36,6 +36,8 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
+$context = get_context_instance(CONTEXT_SYSTEM);
+require_capability('report/customsql:view', $context);
 
 $manualreports = $DB->get_records('report_customsql_queries', array('runable' => 'manual'),
                                   'displayname');
@@ -64,7 +66,7 @@ if (empty($manualreports) && empty($scheduledreports)) {
     }
 }
 
-if (has_capability('report/customsql:definequeries', get_context_instance(CONTEXT_SYSTEM))) {
+if (has_capability('report/customsql:definequeries', $context)) {
     echo $OUTPUT->single_button(report_customsql_url('edit.php'),
                                 get_string('addreport', 'report_customsql'));
 }

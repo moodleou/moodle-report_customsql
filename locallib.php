@@ -25,7 +25,8 @@
 define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
-function report_customsql_execute_query($sql, $params = null, $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+function report_customsql_execute_query($sql, $params = null,
+                                        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
@@ -44,6 +45,16 @@ function report_customsql_prepare_sql($report, $timenow) {
     return $sql;
 }
 
+/**
+ * Extract all the placeholder names from the SQL.
+ * @param string $sql The sql.
+ * @return array placeholder names
+ */
+function report_customsql_get_query_placeholders($sql) {
+    preg_match_all('/(?<!:):[a-z][a-z0-9_]*/', $sql, $matches);
+    return $matches[0];
+}
+
 function report_customsql_generate_csv($report, $timenow) {
     global $DB;
     $starttime = microtime(true);
@@ -53,10 +64,10 @@ function report_customsql_generate_csv($report, $timenow) {
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
     $rs = report_customsql_execute_query($sql, $queryparams);
 
-    $cvstimestamp = null;
+    $csvtimestamp = null;
     foreach ($rs as $row) {
-        if (!$cvstimestamp) {
-            list($csvfilename, $cvstimestamp) = report_customsql_csv_filename($report, $timenow);
+        if (!$csvtimestamp) {
+            list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
 
             if (!file_exists($csvfilename)) {
                 $handle = fopen($csvfilename, 'w');
@@ -85,7 +96,7 @@ function report_customsql_generate_csv($report, $timenow) {
     $updaterecord->lastexecutiontime = round((microtime(true) - $starttime) * 1000);
     $DB->update_record('report_customsql_queries', $updaterecord);
 
-    return $cvstimestamp;
+    return $csvtimestamp;
 }
 
 function report_customsql_csv_filename($report, $timenow) {
