@@ -37,26 +37,12 @@ class report_customsql_view_form extends moodleform {
 
         $mform =& $this->_form;
 
-        $mform->addElement('static', 'displayname', get_string('displayname', 'report_customsql'));
-        $mform->addElement('static', 'description', get_string('description', 'report_customsql'));
-        $mform->addElement('static', 'querysql', get_string('querysql', 'report_customsql'));
+        $mform->addElement('header', 'heading', get_string('queryparameters', 'report_customsql'));
 
-        if (count($this->_customdata)) {
-            $mform->addElement('static', 'params', get_string('queryparams', 'report_customsql'));
-            foreach ($this->_customdata as $queryparam => $formparam) {
-                $mform->addElement('text', $formparam, $queryparam);
-            }
-            $mform->addElement('static', 'spacer', '', '');
+        foreach ($this->_customdata as $queryparam => $formparam) {
+            $mform->addElement('text', $formparam, str_replace('_', ' ', $queryparam));
         }
 
         $this->add_action_buttons(true, 'Run report');
-    }
-
-    public function validation($data, $files) {
-        global $CFG, $DB, $USER;
-
-        $errors = parent::validation($data, $files);
-
-        return $errors;
     }
 }

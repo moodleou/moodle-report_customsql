@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for admin/report/customsql
+ * Lang strings for report/customsql
  *
  * @package report_customsql
- * @copyright &copy; 2009 The Open University
+ * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,6 +30,7 @@ $string['automaticallyweekly'] = 'Scheduled, on the first day of each week';
 $string['availablereports'] = 'On-demand queries';
 $string['availableto'] = 'Available to {$a}.';
 $string['backtoreportlist'] = 'Back to the list of queries';
+$string['changetheparameters'] = 'Change the parameters';
 $string['customsql:definequeries'] = 'Define custom queries';
 $string['customsql:view'] = 'View custom queries report';
 $string['deleteareyousure'] = 'Are you sure you want to delete this query?';
@@ -59,6 +60,7 @@ $string['notallowedwords'] = 'You are not allowed to use the words {$a} in the S
 $string['note'] = 'Notes';
 $string['notrunyet'] = 'This query has not yet been run.';
 $string['onerow'] = 'The query returns one row, accumulate the results one row at a time';
+$string['parametervalue'] = '{$a->name}: {$a->value}';
 $string['pluginname'] = 'Ad-hoc database queries';
 $string['queryfailed'] = 'Error when executing the query: {$a}';
 $string['querynote'] = '<ul>
@@ -66,9 +68,11 @@ $string['querynote'] = '<ul>
 <li>Any field in the output that looks like a URL will automatically be made into a link.</li>
 <li>The token <tt>%%%%USERID%%%%</tt> in the query will be replaced with the user id of the user viewing the report, before the report is executed.</li>
 <li>For scheduled reports, the tokens <tt>%%%%STARTTIME%%%%</tt> and <tt>%%%%ENDTIME%%%%</tt> are replaced by the Unix timestamp at the start and end of the reporting week/month in the query before it is executed.</li>
+<li>You can put parameters into the SQL using named placeholders, for example <tt>:parameter_name</tt>. Then, when the report is run, the user can enter values for the parameters to use when running the query.</li>
 </ul>';
-$string['queryparams'] = 'Query parameters';
-$string['queryparamsnew'] = 'Please complete new query parameters';
+$string['queryparameters'] = 'Query parameters';
+$string['queryparams'] = 'Please enter default values for the query parameters.';
+$string['queryparamschanged'] = 'The placeholders in the query have changed.';
 $string['queryrundate'] = 'query run date';
 $string['querysql'] = 'Query SQL';
 $string['querysqlrequried'] = 'You must enter some SQL.';

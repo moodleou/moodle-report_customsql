@@ -2,9 +2,14 @@ Ad-hoc database queries
 
 This report plugin allows Administrators to set up arbitrary database queries
 to act as ad-hoc reports. Reports can be of two types, either run on demand,
-or scheduled to run automatically. Other users with the right capability can
-go in and see a list of queries that they have access to. Results can be viewed
-on-screen or downloaded as CSV.
+or scheduled to run automatically.
+
+Other users with the right capability can go in and see a list of queries that
+they have access to. Results can be viewed on-screen or downloaded as CSV.
+
+Reports can contain placeholders, in which case, the user running the report is
+presented with a form where they can enter the values to substitute for the
+placeholders before running the report.
 
 See http://docs.moodle.org/22/en/Custom_SQL_queries_report for more information.
 

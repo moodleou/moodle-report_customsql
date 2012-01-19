@@ -26,7 +26,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
 $id = required_param('id', PARAM_INT);
-$cvstimestamp = required_param('timestamp', PARAM_INT);
+$csvtimestamp = required_param('timestamp', PARAM_INT);
 
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
@@ -39,7 +39,7 @@ if (!empty($report->capability)) {
     require_capability($report->capability, $context);
 }
 
-list($csvfilename) = report_customsql_csv_filename($report, $cvstimestamp);
+list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);
 if (!is_readable($csvfilename)) {
     print_error('unknowndownloadfile', 'report_customsql',
                 report_customsql_url('view.php?id=' . $id));

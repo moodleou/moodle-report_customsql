@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings for admin/report/customsql
+ * Lang strings for report/customsql
  *
  * @package report_customsql
  * @copyright 2012 Paweł Suwiński <dracono@wp.pl>
@@ -30,18 +30,19 @@ $string['automaticallyweekly'] = 'Automatycznie pierwszego dnia tygodnia';
 $string['availablereports'] = 'Raporty na żądanie';
 $string['availableto'] = 'Dostęp: $a.';
 $string['backtoreportlist'] = 'Wróć do listy raportów';
-$string['customsql'] = 'Raporty ad-hoc';
+//$string['changetheparameters'] = '';
 $string['customsql:definequeries'] = 'Tworzenie raportów ad-hoc';
 $string['customsql:view'] = 'Podgląd wyniku/ uruchamianie raportów ad-hoc';
 $string['deleteareyousure'] = 'Czy na pewno chcesz usunąć raport?';
 $string['deletethisreport'] = 'Usuń raport';
 $string['description'] = 'Opis';
 $string['displayname'] = 'Nazwa raportu';
-$string['displaynamex'] = 'Nazwa raportu: $a';
 $string['displaynamerequired'] = 'Musisz wpisać nazwę raportu';
+$string['displaynamex'] = 'Nazwa raportu: $a';
 $string['downloadthisreportascsv'] = 'Pobierz wyniki jako CSV';
 $string['editingareport'] = 'Edytowanie raportu ad-hoc';
 $string['editthisreport'] = 'Edytuj raport';
+//$string['enterparameters'] = '';
 $string['errordeletingreport'] = 'Błąd podczas usuwania raportu.';
 $string['errorinsertingreport'] = 'Błąd podczas dodawania raportu.';
 $string['errorupdatingreport'] = 'Błąd podczas aktualizacji raportu.';
@@ -59,6 +60,7 @@ $string['notallowedwords'] = 'Użycie słowa "$a" w zapytaniu SQL jest niedozwol
 $string['note'] = 'Uwagi';
 $string['notrunyet'] = 'Raport nie był jeszcze uruchamiany.';
 $string['onerow'] = 'Raport zwraca jeden wiersz agregując dane';
+//$string['parametervalue'] = '';
 $string['pluginname'] = 'Raporty ad-hoc';
 $string['queryfailed'] = 'Błąd podczas wykonywania zapytania: $a';
 $string['querynote'] = '<ul>
@@ -66,9 +68,10 @@ $string['querynote'] = '<ul>
 <li>Każde pole wynikowe wyglądające jak URL będzie automatycznie przetworzone na aktywny link.</li>
 <li>Tag <tt>%%%%USERID%%%%</tt> w zapytaniu SQL przed wykonaniem będzie zastąpiony identyfikatorem id użytkownika przeglądającego raport.</li>
 <li>W przypadku automatycznych raportów tagi <tt>%%%%STARTTIME%%%%</tt> i <tt>%%%%ENDTIME%%%%</tt> w zapytaniach SQL przed wykonaniem będą zastępowane Uniksowymi znacznikami czasu oznaczającymi początek i koniec raportowanego okresu (tygodnia/ miesiąca).</li>
-</ul>';
+</ul>';// Note, new last li point needs to be translated.
+//$string['queryparameters'] = '';
 //$string['queryparams'] = '';
-//$string['queryparamsnew'] = '';
+//$string['queryparamschanged'] = '';
 $string['queryrundate'] = 'data wykonania raportu';
 $string['querysql'] = 'Zapytanie SQL';
 $string['querysqlrequried'] = 'Musisz podać zapytanie SQL.';
@@ -80,6 +83,6 @@ $string['schedulednote'] = 'Poniższe raporty są automatyczne uruchamiane pierw
 $string['scheduledqueries'] = 'Zaplanowane raporty';
 $string['typeofresult'] = 'Wynik raportu';
 $string['unknowndownloadfile'] = 'Unknown download file.';
-$string['userswhocanviewsitereports'] = 'Użytkownicy z dostępem do wszystkich raportów (moodle/site:viewreports)';
 $string['userswhocanconfig'] = 'Tylko administratorzy (moodle/site:config)';
+$string['userswhocanviewsitereports'] = 'Użytkownicy z dostępem do wszystkich raportów (moodle/site:viewreports)';
 $string['whocanaccess'] = 'Dostęp do raportu';

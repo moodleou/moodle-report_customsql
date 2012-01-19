@@ -53,10 +53,9 @@ if ($id) {
 }
 
 $querysql = optional_param('querysql', $reportquerysql, PARAM_RAW);
-$queryparamscount = preg_match_all('/(?<!:):[a-z][a-z0-9_]*/', $querysql, $matches);
 $queryparams = array();
-foreach ($matches[0] as $queryparam) {
-    $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
+foreach (report_customsql_get_query_placeholders($querysql) as $queryparam) {
+    $queryparams[substr($queryparam, 1)] = 'queryparam' . substr($queryparam, 1);
 }
 
 $mform = new report_customsql_edit_form(report_customsql_url($relativeurl), $queryparams);
@@ -71,7 +70,7 @@ if ($newreport = $mform->get_data()) {
     }
 
     // Pick up named parameters into serialised array
-    if ($queryparamscount) {
+    if ($queryparams) {
         foreach ($queryparams as $queryparam => $formparam) {
             $queryparams[$queryparam] = $newreport->{$formparam};
             unset($newreport->{$formparam});

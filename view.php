@@ -47,9 +47,8 @@ if ($report->runable == 'manual') {
     // Allow query parameters to be entered
     if (!empty($report->queryparams)) {
 
-        $queryparamscount = preg_match_all('/(?<!:):[a-z][a-z0-9_]*/', $report->querysql, $matches);
         $queryparams = array();
-        foreach ($matches[0] as $queryparam) {
+        foreach (report_customsql_get_query_placeholders($report->querysql) as $queryparam) {
             $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
         }
 
@@ -65,7 +64,7 @@ if ($report->runable == 'manual') {
         if ($newreport = $mform->get_data()) {
 
             // Pick up named parameters into serialised array
-            if ($queryparamscount) {
+            if ($queryparams) {
                 foreach ($queryparams as $queryparam => $formparam) {
                     $queryparams[$queryparam] = $newreport->{$formparam};
                     unset($newreport->{$formparam});
@@ -75,8 +74,11 @@ if ($report->runable == 'manual') {
         } else {
 
             admin_externalpage_setup('report_customsql');
-            echo $OUTPUT->header().
-                 $OUTPUT->heading(get_string('enterparameters', 'report_customsql'));
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(format_string($report->displayname));
+            if (!html_is_blank($report->description)) {
+                echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
+            }
 
             $report->description = strip_tags($report->description);
             $queryparams = unserialize($report->queryparams);
@@ -92,7 +94,7 @@ if ($report->runable == 'manual') {
     }
 
     try {
-        $cvstimestamp = report_customsql_generate_csv($report, time());
+        $csvtimestamp = report_customsql_generate_csv($report, time());
         // Get the updated execution times.
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
     } catch (Exception $e) {
@@ -100,23 +102,31 @@ if ($report->runable == 'manual') {
                     $e->getMessage());
     }
 } else {
-    $cvstimestamp = optional_param('timestamp', time(), PARAM_INT);
+    $csvtimestamp = optional_param('timestamp', time(), PARAM_INT);
 }
 
 // Start the page.
 admin_externalpage_setup('report_customsql');
-echo $OUTPUT->header().
-     $OUTPUT->heading(format_string($report->displayname));
+echo $OUTPUT->header();
+echo $OUTPUT->heading(format_string($report->displayname));
 
 if (!html_is_blank($report->description)) {
     echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
 }
 
+if (!empty($queryparams)) {
+    foreach ($queryparams as $name => $value) {
+        echo html_writer::tag('p', get_string('parametervalue', 'report_customsql',
+                array('name' => html_writer::tag('b', str_replace('_', ' ', $name)),
+                'value' => s($value))));
+    }
+}
+
 $count = 0;
-if (is_null($cvstimestamp)) {
+if (is_null($csvtimestamp)) {
     echo html_writer::tag('p', get_string('nodatareturned', 'report_customsql'));
 } else {
-    list($csvfilename, $cvstimestamp) = report_customsql_csv_filename($report, $cvstimestamp);
+    list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $csvtimestamp);
     if (!is_readable($csvfilename)) {
         echo html_writer::tag('p', get_string('notrunyet', 'report_customsql'));
     } else {
@@ -124,7 +134,7 @@ if (is_null($cvstimestamp)) {
 
         if ($report->runable != 'manual' && !$report->singlerow) {
             echo $OUTPUT->heading(get_string('reportfor', 'report_customsql',
-                                         userdate($cvstimestamp, get_string('strftimedate'))), 3);
+                                         userdate($csvtimestamp, get_string('strftimedate'))), 3);
         }
 
         $table = new html_table();
@@ -155,7 +165,7 @@ if (is_null($cvstimestamp)) {
              html_writer::start_tag('p').
              html_writer::tag('a', get_string('downloadthisreportascsv', 'report_customsql'),
                               array('href' => new moodle_url(report_customsql_url('download.php'),
-                              array('id' => $id, 'timestamp' => $cvstimestamp)))).
+                              array('id' => $id, 'timestamp' => $csvtimestamp)))).
              html_writer::end_tag('p');
 
         $archivetimes = report_customsql_get_archive_times($report);
@@ -165,7 +175,7 @@ if (is_null($cvstimestamp)) {
             foreach ($archivetimes as $time) {
                 $formattedtime = userdate($time, get_string('strftimedate'));
                 echo html_writer::start_tag('li');
-                if ($time == $cvstimestamp) {
+                if ($time == $csvtimestamp) {
                     echo html_writer::tag('b', $formattedtime);
                 } else {
                     echo html_writer::tag('a', $formattedtime,
@@ -177,6 +187,12 @@ if (is_null($cvstimestamp)) {
             echo html_writer::end_tag('ul');
         }
     }
+}
+
+if (!empty($queryparams)) {
+    echo html_writer::tag('p', html_writer::link(
+            new moodle_url(report_customsql_url('view.php'), array('id' => $id)),
+            get_string('changetheparameters', 'report_customsql')));
 }
 
 if (has_capability('report/customsql:definequeries', $context)) {
