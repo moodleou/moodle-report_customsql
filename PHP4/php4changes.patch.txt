@@ -1,0 +1,122 @@
+diff -rup ./cron.php /opt/www/ahlerstoday.com/elearning/admin/report/customsql/cron.php
+--- ./cron.php	2009-10-30 17:46:43.000000000 +0100
++++ /opt/www/ahlerstoday.com/elearning/admin/report/customsql/cron.php	2010-05-10 17:29:38.000000000 +0200
+@@ -1,4 +1,6 @@
+-<?php
++<?php // PHP4 clone & exceptions emulation (must be hidden behind PHP5 parser)
++if (PHP_VERSION < 5) require_once('php4compat.php');
++?><?php
+ 
+ // This file is part of Moodle - http://moodle.org/
+ //
+@@ -59,11 +61,10 @@ function report_customsql_cron() {
+     while (!empty($reportstorun) && time() < $timestop) {
+         $report = array_shift($reportstorun);
+         mtrace("... Running report " . strip_tags($report->displayname));
+-        try {
++        /* try */ {
+             report_customsql_generate_csv($report, $timenow);
+-        } catch (Exception $e) {
++        } if (catch('Exception', $e)) {
+             mtrace("... REPORT FAILED " . $e->getMessage());
+         }
+     }
+-}
+-
++}      
+\ No newline at end of file
+diff -rup ./locallib.php /opt/www/ahlerstoday.com/elearning/admin/report/customsql/locallib.php
+--- ./locallib.php	2010-03-02 01:10:49.000000000 +0100
++++ /opt/www/ahlerstoday.com/elearning/admin/report/customsql/locallib.php	2010-05-21 19:33:00.000000000 +0200
+@@ -1,4 +1,6 @@
+-<?php
++<?php // PHP4 clone & exceptions emulation (must be hidden behind PHP5 parser)
++if (PHP_VERSION < 5) require_once('php4compat.php');
++?><?php
+ 
+ // This file is part of Moodle - http://moodle.org/
+ //
+@@ -25,9 +27,11 @@
+  */
+ 
+ 
+-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
++define('REPORT_CUSTOMSQL_MAX_RECORDS', 60000);
+ define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
+ 
++define('REPORT_CUSTOMSQL_MAX_CSV_LINE_LENGTH', 4096);
++
+ 
+ function report_customsql_execute_query($sql, $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+     global $CFG;
+@@ -56,7 +60,7 @@ function report_customsql_generate_csv($
+ 
+     $rs = report_customsql_execute_query($sql);
+     if (!$rs) {
+-        throw new Exception($db->ErrorMsg());
++        throw (new Exception($db->ErrorMsg()));
+     }
+ 
+     $cvstimestamp = null;
+@@ -293,7 +297,7 @@ function report_customsql_get_starts($re
+         case 'monthly':
+             return report_customsql_get_month_starts($timenow);
+         default:
+-            throw new Exception('unexpected $report->runable.');
++            throw (new Exception('unexpected $report->runable.'));
+     }
+ }
+ 
+@@ -315,4 +319,4 @@ function report_customsql_delete_old_tem
+     }
+ 
+     return $count;
+-}
++}      
+Only in .: php4-patch
+Only in /opt/www/ahlerstoday.com/elearning/admin/report/customsql/: php4compat.php
+diff -rup ./view.php /opt/www/ahlerstoday.com/elearning/admin/report/customsql/view.php
+--- ./view.php	2009-10-31 01:07:21.000000000 +0100
++++ /opt/www/ahlerstoday.com/elearning/admin/report/customsql/view.php	2010-05-21 19:34:59.000000000 +0200
+@@ -1,4 +1,6 @@
+-<?php
++<?php // PHP4 clone & exceptions emulation (must be hidden behind PHP5 parser)
++if (PHP_VERSION < 5) require_once('php4compat.php');
++?><?php
+ 
+ // This file is part of Moodle - http://moodle.org/
+ //
+@@ -45,11 +47,11 @@ if (!empty($report->capability)) {
+ report_customsql_log_view($id);
+ 
+ if ($report->runable == 'manual') {
+-    try {
++    /* try */ {
+         $cvstimestamp = report_customsql_generate_csv($report, time());
+         // Get the updated execution times.
+         $report = get_record('report_customsql_queries', 'id', $id);
+-    } catch (Exception $e) {
++    } if (catch('Exception', $e)) {
+         print_error('queryfailed', 'report_customsql', report_customsql_url('index.php'), $e);
+     }
+ } else {
+@@ -83,9 +85,9 @@ if (is_null($cvstimestamp)) {
+         }
+ 
+         $table = new stdClass;
+-        $table->head = fgetcsv($handle);
++        $table->head = fgetcsv($handle, REPORT_CUSTOMSQL_MAX_CSV_LINE_LENGTH);
+ 
+-        while ($row = fgetcsv($handle)) {
++        while ($row = fgetcsv($handle, REPORT_CUSTOMSQL_MAX_CSV_LINE_LENGTH)) {
+             $rowdata = array();
+             foreach ($row as $value) {
+                 if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
+@@ -140,4 +142,4 @@ if (has_capability('report/customsql:def
+ echo '<p>' . $THEME->larrow . ' ' . '<a href="' . report_customsql_url('index.php') .
+         '">' . get_string('backtoreportlist', 'report_customsql') . '</a></p>';
+ 
+-admin_externalpage_print_footer();
+\ No newline at end of file
++admin_externalpage_print_footer();  
+\ No newline at end of file
