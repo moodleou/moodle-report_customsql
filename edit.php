@@ -76,6 +76,8 @@ if ($newreport = $mform->get_data()) {
             unset($newreport->{$formparam});
         }
         $newreport->queryparams = serialize($queryparams);
+    } else {
+        $newreport->queryparams = '';
     }
 
     if ($id) {
