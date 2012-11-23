@@ -10,8 +10,9 @@
         <FIELD NAME="displayname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="The name of the report as displayed in the UI" PREVIOUS="id" NEXT="description"/>
         <FIELD NAME="description" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="A human-readable description of the query." PREVIOUS="displayname" NEXT="querysql"/>
         <FIELD NAME="querysql" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="The SQL to run to generate this report." PREVIOUS="description" NEXT="queryparams"/>
-        <FIELD NAME="queryparams" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="The SQL parameters to generate this report." PREVIOUS="querysql" NEXT="capability"/>
-        <FIELD NAME="capability" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="The capability that a user needs to have to run this report." PREVIOUS="queryparams" NEXT="lastrun"/>
+        <FIELD NAME="queryparams" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="The SQL parameters to generate this report." PREVIOUS="querysql" NEXT="querylimit"/>
+        <FIELD NAME="querylimit" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" COMMENT="Limit the number of results returned." PREVIOUS="queryparams" NEXT="capability"/>
+        <FIELD NAME="capability" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" ENUM="false" COMMENT="The capability that a user needs to have to run this report." PREVIOUS="querylimit" NEXT="lastrun"/>
         <FIELD NAME="lastrun" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" COMMENT="Timestamp of when this report was last run." PREVIOUS="capability" NEXT="lastexecutiontime"/>
         <FIELD NAME="lastexecutiontime" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" ENUM="false" COMMENT="Time this report took to run last time it was executed, in milliseconds." PREVIOUS="lastrun" NEXT="runable"/>
         <FIELD NAME="runable" TYPE="char" LENGTH="32" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" ENUM="false" COMMENT="'manual', 'weekly' or 'monthly'" PREVIOUS="lastexecutiontime" NEXT="singlerow"/>

@@ -30,13 +30,6 @@ function report_customsql_execute_query($sql, $params = null,
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
-    preg_match('/\bLIMIT\s+(\d+)/i', $sql, $matches); // LIMIT in sql
-    if ($matches) {
-        $sql = preg_replace('/'.$matches[0].'/i', '', $sql); // get error inside if statement...weird
-        if ($matches[1] < $limitnum) {
-            $limitnum = $matches[1];
-        }
-    }
     // Note: throws Exception if there is an error
     return $DB->get_recordset_sql($sql, $params, 0, $limitnum);
 }
@@ -69,7 +62,8 @@ function report_customsql_generate_csv($report, $timenow) {
     $sql = report_customsql_prepare_sql($report, $timenow);
 
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
-    $rs = report_customsql_execute_query($sql, $queryparams);
+    $querylimit  = !empty($report->querylimit) ? $report->querylimit : REPORT_CUSTOMSQL_MAX_RECORDS;
+    $rs = report_customsql_execute_query($sql, $queryparams, $querylimit);
 
     $csvtimestamp = null;
     foreach ($rs as $row) {

@@ -63,6 +63,8 @@ $string['onerow'] = 'The query returns one row, accumulate the results one row a
 $string['parametervalue'] = '{$a->name}: {$a->value}';
 $string['pluginname'] = 'Ad-hoc database queries';
 $string['queryfailed'] = 'Error when executing the query: {$a}';
+$string['querylimit'] = 'Limit results returned';
+$string['querylimitovermax'] = 'Number is greater than MAX_RECORDS';
 $string['querynote'] = '<ul>
 <li>The token <tt>%%%%WWWROOT%%%%</tt> in the results will be replaced with <tt>{$a}</tt>.</li>
 <li>Any field in the output that looks like a URL will automatically be made into a link.</li>
@@ -78,6 +80,7 @@ $string['querysql'] = 'Query SQL';
 $string['querysqlrequried'] = 'You must enter some SQL.';
 $string['recordlimitreached'] = 'This query reached the limit of {$a} rows. Some rows may have been omitted from the end.';
 $string['reportfor'] = 'Query run on {$a}';
+$string['requireint'] = 'Integer required';
 $string['runable'] = 'Run';
 $string['runablex'] = 'Run: {$a}';
 $string['schedulednote'] = 'These queries are automatically run on the first day of each week or month, to report on the previous week or month. These links let you view the results that has already been accumulated.';
