@@ -14,21 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * version.php file for the Custom SQL admin report.
- *
- * @package report_customsql
- * @copyright 2009 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2012011901;
+/**
+ * @param string $oldversion the version we are upgrading from.
+ */
+function xmldb_report_customsql_upgrade($oldversion) {
+    global $CFG, $DB;
 
-$plugin->requires = 2011120500;
-$plugin->cron = 300;
+    $dbman = $DB->get_manager();
 
-$plugin->component = 'report_customsql';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.2.1';
+    if ($oldversion < 2012011901) {
+        require_once($CFG->dirroot . '/report/customsql/lib.php');
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+    }
+
+    return true;
+}
