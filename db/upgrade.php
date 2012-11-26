@@ -25,15 +25,13 @@ function xmldb_report_customsql_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2012011901) {
-
+        require_once($CFG->dirroot . '/report/customsql/lib.php');
         $table = new xmldb_table('report_customsql_queries');
-        $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'queryparams');
+        $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
 
-        if (!$dbman->field_exists($table,$field)) {
+        if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        upgrade_plugin_savepoint(true, 2012011901, 'customsql', 'report');
     }
 
     return true;

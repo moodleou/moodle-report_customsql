@@ -64,7 +64,7 @@ $string['parametervalue'] = '{$a->name}: {$a->value}';
 $string['pluginname'] = 'Ad-hoc database queries';
 $string['queryfailed'] = 'Error when executing the query: {$a}';
 $string['querylimit'] = 'Limit results returned';
-$string['querylimitovermax'] = 'Number is greater than MAX_RECORDS';
+$string['querylimitrange'] = 'Number must be between 1 and {$a}';
 $string['querynote'] = '<ul>
 <li>The token <tt>%%%%WWWROOT%%%%</tt> in the results will be replaced with <tt>{$a}</tt>.</li>
 <li>Any field in the output that looks like a URL will automatically be made into a link.</li>
