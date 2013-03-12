@@ -15,20 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php file for the Custom SQL admin report.
+ * Defines message providers (types of message sent) for the customsql report.
  *
  * @package report_customsql
- * @copyright 2009 The Open University
+ * @copyright 2012 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2012111300;
-
-$plugin->requires = 2011120500;
-$plugin->cron = 300;
-
-$plugin->component = 'report_customsql';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.2.1';
+$messageproviders = array(
+    // Notify users on the list who can view repot custimsql.
+    'notification' => array(
+        'capability' => 'report/customsql:view'
+    ),
+);

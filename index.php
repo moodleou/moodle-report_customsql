@@ -43,6 +43,7 @@ $manualreports = $DB->get_records('report_customsql_queries', array('runable' =>
                                   'displayname');
 $scheduledreports = $DB->get_records_list('report_customsql_queries', 'runable',
                                           array('weekly', 'monthly'), 'displayname');
+$dailyreports = $DB->get_records('report_customsql_queries', array('runable' => 'daily'), 'displayname');
 
 // Start the page.
 admin_externalpage_setup('report_customsql');
@@ -58,7 +59,11 @@ if (empty($manualreports) && empty($scheduledreports)) {
              html_writer::tag('p', get_string('manualnote', 'report_customsql'));
         report_customsql_print_reports($manualreports);
     }
-
+    if (!empty($dailyreports)) {
+        echo $OUTPUT->heading(get_string('dailyqueries', 'report_customsql')).
+        html_writer::tag('p', get_string('dailynote', 'report_customsql'));
+        report_customsql_print_reports($dailyreports);
+    }
     if (!empty($scheduledreports)) {
         echo $OUTPUT->heading(get_string('scheduledqueries', 'report_customsql')).
              html_writer::tag('p', get_string('schedulednote', 'report_customsql'));

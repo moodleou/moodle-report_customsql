@@ -52,10 +52,15 @@ class report_customsql_edit_form extends moodleform {
                         'required', null, 'client');
         $mform->setType('querysql', PARAM_RAW);
 
+        $mform->addElement('submit', 'verify', get_string('verifyqueryandupdate', 'report_customsql'));
+        $mform->registerNoSubmitButton('verify');
+
+        $hasparameters = 0;
         if (count($this->_customdata)) {
             $mform->addElement('static', 'params', '', get_string('queryparams', 'report_customsql'));
             foreach ($this->_customdata as $queryparam => $formparam) {
                 $mform->addElement('text', $formparam, $queryparam);
+                $hasparameters++;
             }
             $mform->addElement('static', 'spacer', '', '');
         }
@@ -63,15 +68,31 @@ class report_customsql_edit_form extends moodleform {
         $mform->addElement('static', 'note', get_string('note', 'report_customsql'),
                            get_string('querynote', 'report_customsql', $CFG->wwwroot));
 
+        $capabilityoptions = report_customsql_capability_options();
         $mform->addElement('select', 'capability', get_string('whocanaccess', 'report_customsql'),
-                           report_customsql_capability_options());
+                           $capabilityoptions);
+        end($capabilityoptions);
+        $mform->setDefault('capability', key($capabilityoptions));
 
-        $mform->addElement('select', 'runable', get_string('runable', 'report_customsql'),
-                           report_customsql_runable_options());
+        $runat = array();
+        if ($hasparameters) {
+            $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options('manual'));
+        } else {
+            $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options());
+        }
+        $runat[] = $mform->createElement('select', 'at', null, report_customsql_daily_at_options());
+        $mform->addGroup($runat, null, get_string('runable', 'report_customsql'), ' at ', true);
 
         $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
                            get_string('onerow', 'report_customsql'));
+
+        $mform->addElement('text', 'emailto', get_string('emailto', 'report_customsql'), 'size = 70');
+        $mform->addElement('select', 'emailwhat', get_string('emailwhat', 'report_customsql'),
+                report_customsql_email_options());
         $mform->disabledIf('singlerow', 'runable', 'eq', 'manual');
+        $mform->disabledIf('at', 'runable', 'ne', 'daily');
+        $mform->disabledIf('emailto', 'runable', 'eq', 'manual');
+        $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
 
         $this->add_action_buttons();
     }
@@ -101,9 +122,12 @@ class report_customsql_edit_form extends moodleform {
             $report = new stdClass;
             $report->querysql = $sql;
             $report->runable = $data['runable'];
+            if ($report->runable === 'daily') {
+                $report->at = $data['at'];
+            }
             $sql = report_customsql_prepare_sql($report, time());
 
-            // Check for required query parameters if there are any
+            // Check for required query parameters if there are any.
             $queryparams = array();
             foreach (report_customsql_get_query_placeholders($sql) as $queryparam) {
                 $queryparam = substr($queryparam, 1);
@@ -121,7 +145,7 @@ class report_customsql_edit_form extends moodleform {
 
                     if (!empty($data['singlerow'])) {
                         // Count rows for Moodle 2 as all Moodle 1.9 useful and more performant
-                        // recordset methods removed
+                        // recordset methods removed.
                         $rows = 0;
                         foreach ($rs as $value) {
                             $rows++;
@@ -131,6 +155,12 @@ class report_customsql_edit_form extends moodleform {
                         } else if ($rows >= 2) {
                             $errors['querysql'] = get_string('morethanonerowreturned',
                                                              'report_customsql');
+                        }
+                    }
+                    // Ckeck the list of users in emailto field.
+                    if ($data['runable'] !== 'manual') {
+                        if ($invaliduser = report_customsql_validate_users($data['emailto'], $data['capability'])) {
+                            $errors['emailto'] = $invaliduser;
                         }
                     }
                     $rs->close();

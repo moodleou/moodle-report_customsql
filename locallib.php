@@ -30,7 +30,8 @@ function report_customsql_execute_query($sql, $params = null,
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
-    // Note: throws Exception if there is an error
+
+    // Note: throws Exception if there is an error.
     return $DB->get_recordset_sql($sql, $params, 0, $limitnum);
 }
 
@@ -64,10 +65,12 @@ function report_customsql_generate_csv($report, $timenow) {
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
     $rs = report_customsql_execute_query($sql, $queryparams);
 
+    $csvfilenames = array();
     $csvtimestamp = null;
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
             list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
+            $csvfilenames[] = $csvfilename;
 
             if (!file_exists($csvfilename)) {
                 $handle = fopen($csvfilename, 'w');
@@ -96,6 +99,16 @@ function report_customsql_generate_csv($report, $timenow) {
     $updaterecord->lastexecutiontime = round((microtime(true) - $starttime) * 1000);
     $DB->update_record('report_customsql_queries', $updaterecord);
 
+    // Report is runable daily, weekly or monthly.
+    if (($report->runable != 'manual') && !empty($report->emailto)) {
+        if ($csvfilenames) {
+            foreach ($csvfilenames as $csvfilename) {
+                report_customsql_email_report($report, $csvfilename);
+            }
+        } else { // If there is no data.
+            report_customsql_email_report($report);
+        }
+    }
     return $csvtimestamp;
 }
 
@@ -173,10 +186,29 @@ function report_customsql_capability_options() {
     );
 }
 
-function report_customsql_runable_options() {
+function report_customsql_runable_options($type = null) {
+    if ($type === 'manual') {
+        return array('manual' => get_string('manually', 'report_customsql'));
+    }
     return array('manual' => get_string('manually', 'report_customsql'),
+                 'daily' => get_string('daily', 'report_customsql'),
                  'weekly' => get_string('automaticallyweekly', 'report_customsql'),
                  'monthly' => get_string('automaticallymonthly', 'report_customsql')
+    );
+}
+
+function report_customsql_daily_at_options() {
+    $time = array();
+    for ($h = 0; $h < 24; $h++) {
+        $hour = ($h < 10) ? "0$h" : $h;
+        $time[$h] = "$hour:00";
+    }
+    return $time;
+}
+
+function report_customsql_email_options() {
+    return array('emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
+            'emailresults' => get_string('emailresults', 'report_customsql'),
     );
 }
 
@@ -284,9 +316,26 @@ function report_customsql_start_csv($handle, $firstrow, $datecol) {
     report_customsql_write_csv_row($handle, $colnames);
 }
 
+/**
+ * @param int $timenow a timestamp.
+ * @param int $at an hour, 0 to 23.
+ * @return array with two elements: the timestamp for hour $at today (where today
+ *      is defined by $timenow) and the timestamp for hour $at yesterday.
+ */
+function report_customsql_get_daily_time_starts($timenow, $at) {
+    $hours =  $at;
+    $minutes = 0;
+    $dateparts = getdate($timenow);
+    return array(
+        mktime((int)$hours, (int)$minutes, 0,
+                $dateparts['mon'], $dateparts['mday'], $dateparts['year']),
+        mktime((int)$hours, (int)$minutes, 0,
+                $dateparts['mon'], $dateparts['mday'] - 1, $dateparts['year']),
+        );
+}
+
 function report_customsql_get_week_starts($timenow) {
     $dateparts = getdate($timenow);
-
     $daysafterweekstart = ($dateparts['wday'] - REPORT_CUSTOMSQL_START_OF_WEEK + 7) % 7;
 
     return array(
@@ -308,6 +357,8 @@ function report_customsql_get_month_starts($timenow) {
 
 function report_customsql_get_starts($report, $timenow) {
     switch ($report->runable) {
+        case 'daily':
+            return report_customsql_get_daily_time_starts($timenow, $report->at);
         case 'weekly':
             return report_customsql_get_week_starts($timenow);
         case 'monthly':
@@ -335,4 +386,202 @@ function report_customsql_delete_old_temp_files($upto) {
     }
 
     return $count;
+}
+
+function report_customsql_validate_users($userstring, $capability) {
+    global $DB;
+    if (empty($userstring)) {
+        return null;
+    }
+
+    $a = new stdClass();
+    $a->capability = $capability;
+    $a->whocanaccess = get_string('whocanaccess', 'report_customsql');
+
+    $usernames = preg_split("/[\s,;]+/", $userstring);
+    if ($usernames) {
+        foreach ($usernames as $username) {
+            // Cannot find the user in the database.
+            if (!$user = $DB->get_record('user', array('username' => $username))) {
+                return get_string('usernotfound', 'report_customsql', $username);
+            }
+            // User does not have the chosen access level.
+            $context = get_context_instance(CONTEXT_USER, $user->id);
+            $a->username = $username;
+            if (!has_capability($capability, $context, $user)) {
+                return get_string('userhasnothiscapability', 'report_customsql', $a);
+            }
+        }
+    }
+    return null;
+}
+
+function report_customsql_get_message_no_data($report) {
+    // Construct subject.
+    $subject = get_string('emailsubject', 'report_customsql', $report->displayname);
+    $url = new moodle_url('/report/customsql/view.php', array('id' => $report->id));
+    $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, array('href' => $url)));
+    $fullmessage = html_writer::tag('p', get_string('nodatareturned', 'report_customsql') . ' ' . $link);
+    $fullmessagehtml = $fullmessage;
+
+    // Create the message object.
+    $message = new stdClass();
+    $message->subject           = $subject;
+    $message->fullmessage       = $fullmessage;
+    $message->fullmessageformat = FORMAT_HTML;
+    $message->fullmessagehtml   = $fullmessagehtml;
+    $message->smallmessage      = null;
+    return $message;
+}
+
+function report_customsql_get_message($report, $csvfilename) {
+    $handle = fopen($csvfilename, 'r');
+    $table = new html_table();
+    $table->head = fgetcsv($handle);
+    $countrows = 0;
+    while ($row = fgetcsv($handle)) {
+        $rowdata = array();
+        foreach ($row as $value) {
+            $rowdata[] = $value;
+        }
+        $table->data[] = $rowdata;
+        $countrows++;
+    }
+    fclose($handle);
+
+    // Construct subject.
+    $subject = get_string('emailsubject', 'report_customsql', $report->displayname);
+
+    // Construct message without the table.
+    $fullmessage = '';
+    if (!html_is_blank($report->description)) {
+        $fullmessage .=  html_writer::tag('p', format_text($report->description, FORMAT_HTML));
+    }
+
+    if ($countrows === 1) {
+        $returnrows =  html_writer::tag('span', get_string('emailrow', 'report_customsql', $countrows));
+    } else {
+        $returnrows =  html_writer::tag('span', get_string('emailrows', 'report_customsql', $countrows));
+    }
+    $url = new moodle_url('/report/customsql/view.php', array('id' => $report->id));
+    $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, array('href' => $url)));
+    $fullmessage .= html_writer::tag('p', $returnrows . ' ' . $link);
+
+    // Construct message in html.
+    $fullmessagehtml = null;
+    if ($report->emailwhat === 'emailresults') {
+        $fullmessagehtml = html_writer::table($table);
+    }
+    $fullmessagehtml .= $fullmessage;
+
+    // Create the message object.
+    $message = new stdClass();
+    $message->subject           = $subject;
+    $message->fullmessage       = $fullmessage;
+    $message->fullmessageformat = FORMAT_HTML;
+    $message->fullmessagehtml   = $fullmessagehtml;
+    $message->smallmessage      = null;
+
+    return $message;
+}
+
+function report_customsql_email_report($report, $csvfilename = null) {
+    global $CFG, $DB, $OUTPUT;
+
+    // If there are no recipients return.
+    if (!$report->emailto) {
+        return;
+    }
+    // Get the message.
+    if ($csvfilename) {
+        $message = report_customsql_get_message($report, $csvfilename);
+    } else {
+        $message = report_customsql_get_message_no_data($report);
+    }
+
+    // Email all recipients.
+    $usernames = preg_split("/[\s,;]+/", $report->emailto);
+    foreach ($usernames as $username) {
+        $recipient = $DB->get_record('user', array('username' => $username), '*', MUST_EXIST);
+        $messageid = report_customsql_send_email_notification($recipient, $message);
+        if ($messageid) {
+            mtrace(get_string('emailsent', 'report_customsql', fullname($recipient)));
+        } else {
+            mtrace(get_string('emailsentfailed', 'report_customsql', fullname($recipient)));
+        }
+    }
+}
+
+function report_customsql_get_list_of_users($str, $inputfield = 'username', $outputfield = 'id') {
+    global $DB;
+    if (!$userarray = preg_split("/[\s,;]+/", $str)) {
+        return null;
+    }
+    $users = array();
+    foreach ($userarray as $user) {
+        $users[$user] = $DB->get_field('user', $outputfield, array($inputfield => $user));
+    }
+    if (!$users) {
+        return null;
+    }
+    return implode(',', $users);
+}
+
+function report_customsql_get_ready_to_run_daily_reports($timenow) {
+    global $DB;
+    $reports = $DB->get_records_select('report_customsql_queries', "runable = ?", array('daily'), 'id');
+
+    $reportstorun = array();
+    foreach ($reports as $id => $r) {
+        // Check whether the report is ready to run.
+        if (!report_customsql_is_daily_report_ready($r, $timenow)) {
+            continue;
+        }
+        $reportstorun[$id] = $r;
+    }
+    return $reportstorun;
+}
+
+/**
+ * Sends a notification message to the reciepients.
+ *
+ * @param object $recepient, the message recipient.
+ * @param object $message, the message objectr.
+ */
+function report_customsql_send_email_notification($recipient, $message) {
+
+    // Prepare the message.
+    $eventdata = new stdClass();
+    $eventdata->component         = 'report_customsql';
+    $eventdata->name              = 'notification';
+    $eventdata->notification      = 1;
+
+    $eventdata->userfrom          = get_admin();
+    $eventdata->userto            = $recipient;
+    $eventdata->subject           = $message->subject;
+    $eventdata->fullmessage       = $message->fullmessage;
+    $eventdata->fullmessageformat = $message->fullmessageformat;
+    $eventdata->fullmessagehtml   = $message->fullmessagehtml;
+    $eventdata->smallmessage      = $message->smallmessage;
+
+    return message_send($eventdata);
+}
+
+/**
+ * Check if the report is ready to run.
+ * @param object $report
+ * @return boolean
+ */
+function report_customsql_is_daily_report_ready($report, $timenow) {
+    // Time when the report should run today.
+    list($runtimetoday) = report_customsql_get_daily_time_starts($timenow, $report->at);
+
+    // Values used to check whether the report has already run today.
+    list($today) = report_customsql_get_daily_time_starts($timenow, 0);
+    list($lastrunday) = report_customsql_get_daily_time_starts($report->lastrun, 0);
+
+    if (($runtimetoday <= $timenow) && ($today > $lastrunday)) {
+        return true;
+    }
+    return false;
 }

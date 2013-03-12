@@ -44,7 +44,7 @@ report_customsql_log_view($id);
 
 if ($report->runable == 'manual') {
 
-    // Allow query parameters to be entered
+    // Allow query parameters to be entered.
     if (!empty($report->queryparams)) {
 
         $queryparams = array();
@@ -63,7 +63,7 @@ if ($report->runable == 'manual') {
 
         if ($newreport = $mform->get_data()) {
 
-            // Pick up named parameters into serialised array
+            // Pick up named parameters into serialised array.
             if ($queryparams) {
                 foreach ($queryparams as $queryparam => $formparam) {
                     $queryparams[$queryparam] = $newreport->{$formparam};

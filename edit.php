@@ -65,11 +65,17 @@ if ($mform->is_cancelled()) {
 }
 
 if ($newreport = $mform->get_data()) {
+    // Set the following fields to empty strings if the report is running manually.
+    if ($newreport->runable === 'manual') {
+        $newreport->at = '';
+        $newreport->emailto = '';
+        $newreport->emailwhat = '';
+    }
     if ($newreport->runable == 'manual' || empty($newreport->singlerow)) {
         $newreport->singlerow = 0;
     }
 
-    // Pick up named parameters into serialised array
+    // Pick up named parameters into serialised array.
     if ($queryparams) {
         foreach ($queryparams as $queryparam => $formparam) {
             $queryparams[$queryparam] = $newreport->{$formparam};

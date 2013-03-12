@@ -43,14 +43,21 @@ function report_customsql_cron() {
     mtrace("... Looking for old temp CSV files to delete.");
     $numdeleted = report_customsql_delete_old_temp_files($startoflastweek);
     if ($numdeleted) {
-        mtrace("... $numdeleted files deleted.");
+        mtrace("... $numdeleted old temporary files deleted.");
     }
 
-    $reportstorun = $DB->get_records_select('report_customsql_queries',
+    // Get daily scheduled reports.
+    $dailyreportstorun = report_customsql_get_ready_to_run_daily_reports($timenow);
+
+    // Get weekly and monthly scheduled reports.
+    $scheduledreportstorun = $DB->get_records_select('report_customsql_queries',
                                         "(runable = 'weekly' AND lastrun < :startofthisweek) OR
                                          (runable = 'monthly' AND lastrun < :startofthismonth)",
                                         array('startofthisweek' => $startofthisweek,
                                               'startofthismonth' => $startofthismonth), 'lastrun');
+    // All reports ready to run.
+    $reportstorun = array_merge($dailyreportstorun, $scheduledreportstorun);
+
     if (empty($reportstorun)) {
         return;
     }
