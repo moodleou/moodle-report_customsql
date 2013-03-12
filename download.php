@@ -24,6 +24,7 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 $id = required_param('id', PARAM_INT);
 $csvtimestamp = required_param('timestamp', PARAM_INT);
@@ -45,6 +46,4 @@ if (!is_readable($csvfilename)) {
                 report_customsql_url('view.php?id=' . $id));
 }
 
-header('Content-Disposition: attachment; filename="report.csv"');
-header('Content-Type: text/csv; charset=UTF-8');
-readfile($csvfilename);
+send_file($csvfilename, 'report.csv', 'default' , 0, false, true, 'text/csv; charset=UTF-8');
