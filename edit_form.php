@@ -164,6 +164,9 @@ class report_customsql_edit_form extends moodleform {
                         }
                     }
                     $rs->close();
+                } catch (dml_exception $e) {
+                    $errors['querysql'] = get_string('queryfailed', 'report_customsql',
+                    $e->getMessage() . ' ' . $e->debuginfo);
                 } catch (Exception $e) {
                     $errors['querysql'] = get_string('queryfailed', 'report_customsql',
                                                      $e->getMessage());
