@@ -35,7 +35,7 @@ class report_customsql_edit_form extends moodleform {
     public function definition() {
         global $CFG;
 
-        $mform =& $this->_form;
+        $mform = $this->_form;
 
         $mform->addElement('text', 'displayname', get_string('displayname', 'report_customsql'));
         $mform->addRule('displayname', get_string('displaynamerequired', 'report_customsql'),
@@ -59,7 +59,8 @@ class report_customsql_edit_form extends moodleform {
         if (count($this->_customdata)) {
             $mform->addElement('static', 'params', '', get_string('queryparams', 'report_customsql'));
             foreach ($this->_customdata as $queryparam => $formparam) {
-                $mform->addElement('text', $formparam, $queryparam);
+                $type = report_customsql_get_element_type($queryparam);
+                $mform->addElement($type, $formparam, $queryparam);
                 $hasparameters++;
             }
             $mform->addElement('static', 'spacer', '', '');
@@ -81,7 +82,7 @@ class report_customsql_edit_form extends moodleform {
             $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options());
         }
         $runat[] = $mform->createElement('select', 'at', null, report_customsql_daily_at_options());
-        $mform->addGroup($runat, null, get_string('runable', 'report_customsql'), ' at ', true);
+        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'), get_string('at', 'report_customsql'), false);
 
         $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
                            get_string('onerow', 'report_customsql'));
@@ -102,23 +103,27 @@ class report_customsql_edit_form extends moodleform {
 
         $errors = parent::validation($data, $files);
 
-        $sql = stripslashes($data['querysql']);
-
-        // Simple test to avoid evil stuff in the SQL.
+        $sql = $data['querysql'];
         if (report_customsql_contains_bad_word($sql)) {
+            // Obviously evil stuff in the SQL.
             $errors['querysql'] = get_string('notallowedwords', 'report_customsql',
                     implode(', ', report_customsql_bad_words_list()));
 
-            // Do not allow any semicolons.
         } else if (strpos($sql, ';') !== false) {
+            // Do not allow any semicolons.
             $errors['querysql'] = get_string('nosemicolon', 'report_customsql');
 
+        } else if ($CFG->prefix != '' && preg_match('/\b' . $CFG->prefix . '\w+/i', $sql)) {
             // Make sure prefix is prefix_, not explicit.
-        } else if ($CFG->prefix != '' && preg_match('/\b'.$CFG->prefix . '\w+/i', $sql)) {
             $errors['querysql'] = get_string('noexplicitprefix', 'report_customsql', $CFG->prefix);
 
-            // Now try running the SQL, and ensure it runs without errors.
+        } else if (!array_key_exists('runable', $data)) {
+            // This happens when the user enters a query including placehoders, and
+            // selectes Run: Scheduled, and then tries to save the form.
+            $errors['runablegroup'] = get_string('noscheduleifplaceholders', 'report_customsql');
+
         } else {
+            // Now try running the SQL, and ensure it runs without errors.
             $report = new stdClass;
             $report->querysql = $sql;
             $report->runable = $data['runable'];
@@ -175,4 +180,5 @@ class report_customsql_edit_form extends moodleform {
         }
         return $errors;
     }
+
 }

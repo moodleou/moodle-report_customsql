@@ -26,7 +26,7 @@ define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
 function report_customsql_execute_query($sql, $params = null,
-                                        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
@@ -56,6 +56,19 @@ function report_customsql_get_query_placeholders($sql) {
     return $matches[0];
 }
 
+/**
+ * Return the type of form field to use for a placeholder, based on its name.
+ * @param string $name the placeholder name.
+ * @return string a formslib element type, for example 'text' or 'date_time_selector'.
+ */
+function report_customsql_get_element_type($name) {
+    $regex = '/^date|date$/';
+    if (preg_match($regex, $name)) {
+        return 'date_time_selector';
+    }
+    return 'text';
+}
+
 function report_customsql_generate_csv($report, $timenow) {
     global $DB;
     $starttime = microtime(true);
@@ -81,6 +94,12 @@ function report_customsql_generate_csv($report, $timenow) {
         }
 
         $data = get_object_vars($row);
+        foreach ($data as $name => $value) {
+            if (report_customsql_get_element_type($name) == 'date_time_selector' &&
+                    (int) $value == $value) {
+                $data[$name] = userdate($value, '%F %T');
+            }
+        }
         if ($report->singlerow) {
             array_unshift($data, strftime('%Y-%m-%d', $timenow));
         }
@@ -504,9 +523,7 @@ function report_customsql_email_report($report, $csvfilename = null) {
     foreach ($usernames as $username) {
         $recipient = $DB->get_record('user', array('username' => $username), '*', MUST_EXIST);
         $messageid = report_customsql_send_email_notification($recipient, $message);
-        if ($messageid) {
-            mtrace(get_string('emailsent', 'report_customsql', fullname($recipient)));
-        } else {
+        if (!$messageid) {
             mtrace(get_string('emailsentfailed', 'report_customsql', fullname($recipient)));
         }
     }

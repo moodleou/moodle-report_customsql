@@ -54,6 +54,17 @@ class report_customsql_test extends advanced_testcase {
                 report_customsql_get_month_starts(strtotime('23:59 29 November 2009')));
     }
 
+    public function test_report_customsql_get_element_type() {
+        $this->assertEquals('date_time_selector', report_customsql_get_element_type('start_date'));
+        $this->assertEquals('date_time_selector', report_customsql_get_element_type('startdate'));
+        $this->assertEquals('date_time_selector', report_customsql_get_element_type('date_closed'));
+        $this->assertEquals('date_time_selector', report_customsql_get_element_type('dateclosed'));
+
+        $this->assertEquals('text', report_customsql_get_element_type('anythingelse'));
+        $this->assertEquals('text', report_customsql_get_element_type('not_a_date_field'));
+        $this->assertEquals('text', report_customsql_get_element_type('mandated'));
+    }
+
     public function test_report_customsql_substitute_user_token() {
         $this->assertEquals('SELECT COUNT(*) FROM oh_quiz_attempts WHERE user = 123',
                 report_customsql_substitute_user_token('SELECT COUNT(*) FROM oh_quiz_attempts '.

@@ -116,6 +116,9 @@ if (!html_is_blank($report->description)) {
 
 if (!empty($queryparams)) {
     foreach ($queryparams as $name => $value) {
+        if (report_customsql_get_element_type($name) == 'date_time_selector') {
+            $value = userdate($value, '%F %T');
+        }
         echo html_writer::tag('p', get_string('parametervalue', 'report_customsql',
                 array('name' => html_writer::tag('b', str_replace('_', ' ', $name)),
                 'value' => s($value))));

@@ -25,7 +25,7 @@
 $string['addreport'] = 'Add a new query';
 $string['anyonewhocanveiwthisreport'] = 'Anyone who can view this report (report/customsql:view)';
 $string['archivedversions'] = 'Archived versions of this query';
-$string['at'] = 'At';
+$string['at'] = 'at';
 $string['automaticallymonthly'] = 'Scheduled, on the first day of each month';
 $string['automaticallyweekly'] = 'Scheduled, on the first day of each week';
 $string['availablereports'] = 'On-demand queries';
@@ -34,7 +34,7 @@ $string['backtoreportlist'] = 'Back to the list of queries';
 $string['changetheparameters'] = 'Change the parameters';
 $string['customsql:definequeries'] = 'Define custom queries';
 $string['customsql:view'] = 'View custom queries report';
-$string['daily'] = 'Daily';
+$string['daily'] = 'Scheduled, daily';
 $string['dailyqueries'] = 'Daily queries';
 $string['dailynote'] = 'These queries are run daily, when you click the link to view the results.';
 $string['deleteareyousure'] = 'Are you sure you want to delete this query?';
@@ -68,11 +68,12 @@ $string['manually'] = 'On-demand';
 $string['manualnote'] = 'These queries are run on-demand, when you click the link to view the results.';
 $string['morethanonerowreturned'] = 'More than one row was returned. This query should return one row.';
 $string['nodatareturned'] = 'This query did not return any data.';
-$string['noexplicitprefix'] = 'Please use prefix_ in the SQL, not {$a}.';
+$string['noexplicitprefix'] = 'Please do to include the table name prefix <tt>{$a}</tt> in the SQL. Instead, put the un-prefixed table name inside <tt>{}</tt> characters.';
 $string['noreportsavailable'] = 'No queries available';
 $string['norowsreturned'] = 'No rows were returned. This query should return one row.';
+$string['noscheduleifplaceholders'] = 'Queries containing placeholders can only be run on-demand.';
 $string['nosemicolon'] = 'You are not allowed a ; character in the SQL.';
-$string['notallowedwords'] = 'You are not allowed to use the words {$a} in the SQL.';
+$string['notallowedwords'] = 'You are not allowed to use the words <tt>{$a}</tt> in the SQL.';
 $string['note'] = 'Notes';
 $string['notrunyet'] = 'This query has not yet been run.';
 $string['onerow'] = 'The query returns one row, accumulate the results one row at a time';
@@ -80,11 +81,14 @@ $string['parametervalue'] = '{$a->name}: {$a->value}';
 $string['pluginname'] = 'Ad-hoc database queries';
 $string['queryfailed'] = 'Error when executing the query: {$a}';
 $string['querynote'] = '<ul>
-<li>The token <tt>%%%%WWWROOT%%%%</tt> in the results will be replaced with <tt>{$a}</tt>.</li>
-<li>Any field in the output that looks like a URL will automatically be made into a link.</li>
-<li>The token <tt>%%%%USERID%%%%</tt> in the query will be replaced with the user id of the user viewing the report, before the report is executed.</li>
-<li>For scheduled reports, the tokens <tt>%%%%STARTTIME%%%%</tt> and <tt>%%%%ENDTIME%%%%</tt> are replaced by the Unix timestamp at the start and end of the reporting week/month in the query before it is executed.</li>
+<li>The token <tt>%%WWWROOT%%</tt> in the results will be replaced with <tt>{$a}</tt>.</li>
+<li>Any value in the output that looks like a URL will automatically be made into a link.</li>
+<li>If a column name in the results ends with the characters <tt>date</tt>, and the column contains integer values, then they will be treated as Unix time-stamps, and automatically converted to human-readable dates.</li>
+<li>The token <tt>%%USERID%%</tt> in the query will be replaced with the user id of the user viewing the report, before the report is executed.</li>
+<li>For scheduled reports, the tokens <tt>%%STARTTIME%%</tt> and <tt>%%ENDTIME%%</tt> are replaced by the Unix timestamp at the start and end of the reporting week/month in the query before it is executed.</li>
 <li>You can put parameters into the SQL using named placeholders, for example <tt>:parameter_name</tt>. Then, when the report is run, the user can enter values for the parameters to use when running the query.</li>
+<li>If the <tt>:parameter_name</tt> starts or ends with the characters <tt>date</tt> then a date-time selector will be used to input that value, otherwise a plain text-box will be used.</li>
+<li>You cannot use the characters <tt>:</tt> or <tt>?</tt> in strings in your query. If you need them, you can use <tt>CHR(58)</tt> and <tt>CHR(63)</tt> respectively, along with string concatenation. (It is <tt>CHR</tt> for Postgres or Oracle, <tt>CHAR</tt> for MySQL or SQL server.)</li>
 </ul>';
 $string['queryparameters'] = 'Query parameters';
 $string['queryparams'] = 'Please enter default values for the query parameters.';

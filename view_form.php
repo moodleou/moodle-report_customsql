@@ -40,7 +40,8 @@ class report_customsql_view_form extends moodleform {
         $mform->addElement('header', 'heading', get_string('queryparameters', 'report_customsql'));
 
         foreach ($this->_customdata as $queryparam => $formparam) {
-            $mform->addElement('text', $formparam, str_replace('_', ' ', $queryparam));
+            $type = report_customsql_get_element_type($queryparam);
+            $mform->addElement($type, $formparam, str_replace('_', ' ', $queryparam));
         }
 
         $this->add_action_buttons(true, 'Run report');
