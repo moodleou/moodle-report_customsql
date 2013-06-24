@@ -80,7 +80,7 @@ $string['onerow'] = 'The query returns one row, accumulate the results one row a
 $string['parametervalue'] = '{$a->name}: {$a->value}';
 $string['pluginname'] = 'Ad-hoc database queries';
 $string['queryfailed'] = 'Error when executing the query: {$a}';
-$string['querylimit'] = 'Limit results returned';
+$string['querylimit'] = 'Limit rows returned';
 $string['querylimitrange'] = 'Number must be between 1 and {$a}';
 $string['querynote'] = '<ul>
 <li>The token <tt>%%WWWROOT%%</tt> in the results will be replaced with <tt>{$a}</tt>.</li>

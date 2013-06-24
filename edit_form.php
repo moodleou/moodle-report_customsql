@@ -66,12 +66,6 @@ class report_customsql_edit_form extends moodleform {
             $mform->addElement('static', 'spacer', '', '');
         }
 
-        $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
-        $mform->setType('querylimit', PARAM_INT);
-        $mform->setDefault('querylimit', REPORT_CUSTOMSQL_MAX_RECORDS);
-        $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
-                        'numeric', null, 'client');
-
         $mform->addElement('static', 'note', get_string('note', 'report_customsql'),
                            get_string('querynote', 'report_customsql', $CFG->wwwroot));
 
@@ -80,6 +74,12 @@ class report_customsql_edit_form extends moodleform {
                            $capabilityoptions);
         end($capabilityoptions);
         $mform->setDefault('capability', key($capabilityoptions));
+
+        $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
+        $mform->setType('querylimit', PARAM_INT);
+        $mform->setDefault('querylimit', REPORT_CUSTOMSQL_MAX_RECORDS);
+        $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
+                        'numeric', null, 'client');
 
         $runat = array();
         if ($hasparameters) {
