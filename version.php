@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2012011901;
+$plugin->version  = 2013062300;
 
 $plugin->requires = 2011120500;
 $plugin->cron = 300;
 
 $plugin->component = 'report_customsql';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.2.1';
+$plugin->release = '2.3+';
