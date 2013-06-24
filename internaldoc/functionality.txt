@@ -30,17 +30,21 @@ plain text input box will be used.
 
 06) 'Who can access this query' (select menu): access level options
 
-07) 'Run' (select menu): whether run the query on-demand or scheduled (Daily, weekly, Monthly)
+07) 'Limit rows returned' set the maximum number of rows this query may return.
+Useful if you want a query to return the top 10 somethings. Note that you cannot
+increase this beyond the hard limit of 5000 for any query, which is the default.
 
-08 'at' (select menu): full hour on the day
+08) 'Run' (select menu): whether run the query on-demand or scheduled (Daily, weekly, Monthly)
 
-09) 'Type of result' (checkbox): 'The query returns one row, accumulate the results one row at a time'
+09 'at' (select menu): full hour on the day
+
+10) 'Type of result' (checkbox): 'The query returns one row, accumulate the results one row at a time'
 checked/unchecked.
 
-10) 'Automatically email to' (text): a comma separated list of user names. When enabled,
+11) 'Automatically email to' (text): a comma separated list of user names. When enabled,
 and email system is setup, sends email to the each user in the list.
 
-11) 'What to email' (select menu): options that are pout into the email body.
+12) 'What to email' (select menu): options that are pout into the email body.
 
 Conditions
 ----------

@@ -14,14 +14,22 @@ placeholders before running the report.
 Scheduled reports can also be set to be send out be email whenever they are
 generated.
 
-See http://docs.moodle.org/24/en/Custom_SQL_queries_report for more information.
+If a column has a name ending in 'date' and contains integer values, then they
+will be assumed to be unix timestamps, and formatted as dates. If a query
+placeholder has a name ending in 'date', then users will be give a date-time
+selector to input the value of that parameter.
+
+You can set a limit on the maximum number of rows returned by a query
+(up to the hard limit of 5000).
+
+See http://docs.moodle.org/25/en/Custom_SQL_queries_report for more information.
 
 Written by Tim Hunt and converted to Moodle 2.0 by Derek Woolhead, both from
 The Open University (http://www.open.ac.uk/). There have also been contibutions
-but many others.
+but many others, as you can see in the git log.
 
 To install using git, type this command in the root of your Moodle install
-    git clone git://github.com/timhunt/moodle-report_customsql.git report/customsql
+    git clone git@github.com:moodleou/moodle-report_customsql.git report/customsql
 
 This version of the report is compatible with Moodle 2.2 or later. (Tested on
-Moodle 2.3+.)
+Moodle 2.4+.)
