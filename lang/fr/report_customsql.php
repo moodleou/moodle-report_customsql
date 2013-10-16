@@ -28,9 +28,9 @@ $string['archivedversions'] = 'Versions archivées de cette requête';
 $string['automaticallymonthly'] = 'Planifiée, le premier jour de chaque mois';
 $string['automaticallyweekly'] = 'Planifiée, le premier jour de chaque semaine';
 $string['availablereports'] = 'Requêtes à la demande';
-$string['availableto'] = 'Disponible pour $a.';
+$string['availableto'] = 'Disponible pour {$a}.';
 $string['backtoreportlist'] = 'Retour à la liste des requêtes';
-//$string['changetheparameters'] = '';
+$string['changetheparameters'] = 'Modifier les paramètres';
 $string['customsql:definequeries'] = 'Définir des requêtes personnalisées';
 $string['customsql:view'] = 'Voir les rapports personnalisés';
 $string['deleteareyousure'] = 'Êtes vous certain de vouloir supprimer cette requête ?';
@@ -38,47 +38,54 @@ $string['deletethisreport'] = 'Supprimer cette requête';
 $string['description'] = 'Description';
 $string['displayname'] = 'Nom de la requête';
 $string['displaynamerequired'] = 'Vous devez saisir un nom de requête';
-$string['displaynamex'] = 'Nom de la requête : $a';
+$string['displaynamex'] = 'Nom de la requête : {$a}';
 $string['downloadthisreportascsv'] = 'Télécharger le résultat sous forme CSV';
 $string['editingareport'] = 'Modifier une requête personnalisée';
 $string['editthisreport'] = 'Modifier cette requête';
-//$string['enterparameters'] = '';
+$string['enterparameters'] = 'Saisissez les paramètres de la requête ad-hoc en base';
 $string['errordeletingreport'] = 'Erreur de suppression d\'une requête.';
 $string['errorinsertingreport'] = 'Erreur d\'insertion d\'une requête.';
 $string['errorupdatingreport'] = 'Erreur de modification d\'une requête.';
-$string['invalidreportid'] = 'Requête invalide id $a.';
-$string['lastexecuted'] = 'Dernière exécution le $a->lastrun. Durée d\'exécution {$a->lastexecutiontime}s.';
+$string['invalidreportid'] = 'Requête invalide id {$a}.';
+$string['lastexecuted'] = 'Dernière exécution le {$a->lastrun}. Durée d\'exécution {$a->lastexecutiontime}s.';
 $string['manually'] = 'À la demande';
 $string['manualnote'] = 'Ces requêtes sont exécutées à la demande, lorsque vous cliquez sur leur lien pour voir les résultats.';
 $string['morethanonerowreturned'] = 'Plus d\'une ligne retournée comme résultat. Cette requête devrait retourner une seule ligne.';
 $string['nodatareturned'] = 'Cette requête n\'a retourné aucun résultat.';
-$string['noexplicitprefix'] = 'Utilisez prefix_ dans votre requête, au lieu de $a.';
+$string['noexplicitprefix'] = 'Utilisez prefix_ dans votre requête, au lieu de {$a}.';
 $string['noreportsavailable'] = 'Pas de requête disponible';
 $string['norowsreturned'] = 'Aucune ligne retournée comme résultat. Cette requête devrait retourner une ligne.';
 $string['nosemicolon'] = 'Vous ne pouvez pas utiliser le caractère ; dans la commande SQL.';
-$string['notallowedwords'] = 'Vous ne pouvez pas utiliser les mots $a dans la commande SQL.';
+$string['notallowedwords'] = 'Vous ne pouvez pas utiliser les mots {$a} dans la commande SQL.';
 $string['note'] = 'Attention';
 $string['notrunyet'] = 'Cette requête n\'a pas encore été exécutée.';
 $string['onerow'] = 'La requête renvoie une ligne, et cumule les résultats une ligne à la fois';
-//$string['parametervalue'] = '';
+$string['parametervalue'] = '{$a->name}: {$a->value}';
 $string['pluginname'] = 'Rapports personnalisés';
-$string['queryfailed'] = 'Erreur à l\'exécution de la requête : $a';
+$string['queryfailed'] = 'Erreur à l\'exécution de la requête : {$a}';
 $string['querynote'] = '<ul>
-<li>La chaîne <tt>%%%%WWWROOT%%%%</tt> dans les résultats sera remplacée par <tt>$a</tt>.</li>
+<li>La chaîne <tt>%%%%WWWROOT%%%%</tt> dans les résultats sera remplacée par <tt>{$a}</tt>.</li>
 <li>Tout champ de sortie ressemblant à une URL sera automatiquement transformé en lien.</li>
 <li>La chaîne <tt>%%%%USERID%%%%</tt> dans la requête sera remplacée par le \"user id\" de l\'utilisateur visualisant le rapport, avant l\'exécution du rapport.</li>
 <li>Pour des rapports programmés, les chaînes <tt>%%%%STARTTIME%%%%</tt> et <tt>%%%%ENDTIME%%%%</tt> sont remplacées par le timestamp Unix du début et de fin de semaine/mois du rapport dans la requête avant son exécution.</li>
-</ul>';// Note, new last li point needs to be translated.
-//$string['queryparameters'] = '';
-//$string['queryparams'] = '';
-//$string['queryparamschanged'] = '';
+<li>Vous pouvez placer des paramètres dans le SQL en utilisant des variables nommées, par exemple <tt>:parameter_name</tt>.
+    De la sorte, quand le rapport est lancé, l\'utilisateur peut saisir une valeur de paramètre pour compléter la requête.</li>
+<li>Si le <tt>:parameter_name</tt> commence ou termine par <tt>date</tt>, un sélecteur de date/horaire sera ajouté pour saisir la valeur,
+    sinon un champ de texte pur sera utilisé.</li>
+<li>Les caractères <tt>:</tt> et <tt>?</tt> sont interdits dans la requête. Si vous en avez besoin, utilisez
+   <tt>CHR(58)</tt> et <tt>CHR(63)</tt> respectivement, avec la concaténation de chaînes
+   (<tt>CHR</tt> pour Postgres et Oracle, <tt>CHAR</tt> pour MySQL et SQL server.)</li>
+</ul>';
+$string['queryparameters'] = 'Paramètres de requête';
+$string['queryparams'] = 'Saisissez les valeurs par défaut pour les paramètres de requête.';
+$string['queryparamschanged'] = 'Les noms de variables dans la requête ont changé.';
 $string['queryrundate'] = 'date d\'exécution de la requête';
 $string['querysql'] = 'Requête SQL';
 $string['querysqlrequried'] = 'Vous devez saisir du code SQL';
-$string['recordlimitreached'] = 'Cette requête a atteint la limite de $a lignes de résultat. Des lignes ont certainement été omises à la fin.';
-$string['reportfor'] = 'Requête exécutée le $a';
+$string['recordlimitreached'] = 'Cette requête a atteint la limite de {$a} lignes de résultat. Des lignes ont certainement été omises à la fin.';
+$string['reportfor'] = 'Requête exécutée le {$a}';
 $string['runable'] = 'Exécution';
-$string['runablex'] = 'Exécution : $a.';
+$string['runablex'] = 'Exécution : {$a}.';
 $string['schedulednote'] = 'Ces requêtes sont lancées automatiquement le premier jour de chaque semaine ou chaque mois, pour des rapports sur la semaine ou le mois précédent. Ces liens vous permettent de visualiser les résultats qui ont déjà été accumulés.';
 $string['scheduledqueries'] = 'Requêtes programmées';
 $string['typeofresult'] = 'Type de résultat';
