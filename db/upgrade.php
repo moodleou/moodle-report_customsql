@@ -72,5 +72,62 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2013062300, 'report', 'customsql');
     }
 
+    if ($oldversion < 2013102400) {
+
+        // Define table report_customsql_categories to be created.
+        $table = new xmldb_table('report_customsql_categories');
+
+        // Adding fields to table report_customsql_categories.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, 0, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
+
+        // Adding key to table report_customsql_categories.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for report_customsql_categories.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define field categoryid to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('categoryid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null, 'emailwhat');
+
+        // Conditionally launch add field categoryid.
+        if (! $dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add key (for the new field just added).
+        $key = new xmldb_key('categoryid', XMLDB_KEY_FOREIGN, array('categoryid'), 'report_customsql_categories', array('id'));
+        $dbman->add_key($table, $key);
+
+        // Create the default 'Miscellaneous' category.
+        $category = new stdClass();
+        $category->name = get_string('defaultcategory', 'report_customsql');
+        if (!$DB->record_exists('report_customsql_categories', array('name' => $category->name))) {
+            $category->id = $DB->insert_record('report_customsql_categories', $category);
+        }
+        // Update the existing query category ids, to move them into this category.
+        $sql = 'UPDATE {report_customsql_queries} SET categoryid =' . $category->id;
+        $DB->execute($sql);
+
+        // Report savepoint reached.
+        upgrade_plugin_savepoint(true, 2013102400, 'report', 'customsql');
+    }
+
+    // Repeat upgrade step that might have got missed on some branches.
+    if ($oldversion < 2014020300) {
+    require_once($CFG->dirroot . '/report/customsql/lib.php');
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2014020300, 'report', 'customsql');
+    }
+
     return true;
 }

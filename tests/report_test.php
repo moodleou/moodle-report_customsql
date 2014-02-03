@@ -215,6 +215,7 @@ class report_customsql_test extends advanced_testcase {
         $report->at = $at;
         $report->emailto = $emailto;
         $report->emailwhat = 'emailnumberofrows';
+        $report->categoryid = 1;
 
         return $DB->insert_record('report_customsql_queries', $report);
     }

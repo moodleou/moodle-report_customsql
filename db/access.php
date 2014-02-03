@@ -33,6 +33,15 @@ $capabilities = array(
             )
         ),
 
+    // People who can manage the reports categories.
+    'report/customsql:managecategories' => array(
+        'riskbitmask' => 0,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'legacy' => array(
+          )
+        ),
+
     // People who can define new queries.
     'report/customsql:definequeries' => array(
         'riskbitmask' => RISK_PERSONAL | RISK_DATALOSS | RISK_CONFIG,

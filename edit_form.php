@@ -103,6 +103,14 @@ class report_customsql_edit_form extends moodleform {
         $mform->disabledIf('at', 'runable', 'ne', 'daily');
         $mform->disabledIf('emailto', 'runable', 'eq', 'manual');
         $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
+        $mform->setType('emailto', PARAM_RAW);
+
+        // Add new category selection.
+        $categoryoptions = report_customsql_category_options();
+        $mform->addElement('select', 'categoryid', get_string('selectcategory', 'report_customsql'),
+                $categoryoptions);
+        $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
+        $mform->setDefault('categoryid', $catdefault);
 
         $this->add_action_buttons();
     }

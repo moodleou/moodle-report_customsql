@@ -611,3 +611,8 @@ function report_customsql_is_daily_report_ready($report, $timenow) {
     }
     return false;
 }
+
+function report_customsql_category_options() {
+    global $DB;
+    return $DB->get_records_menu('report_customsql_categories', null, 'name ASC', 'id, name');
+}

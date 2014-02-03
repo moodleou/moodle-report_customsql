@@ -15,20 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php file for the Custom SQL admin report.
+ * Database upgrades.
  *
- * @package report_customsql
- * @copyright 2009 The Open University
+ * @package report
+ * @subpackage customsql
+ * @copyright 2013 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+function xmldb_report_customsql_install() {
+    global $CFG, $DB;
 
-$plugin->version  = 2014020300;
+    // Create the default 'Miscellaneous' category.
+    $category = new stdClass();
+    $category->name = get_string('defaultcategory', 'report_customsql');
+    if (!$DB->record_exists('report_customsql_categories', array('name' => $category->name))) {
+        $DB->insert_record('report_customsql_categories', $category);
+    }
 
-$plugin->requires = 2012110900;
-$plugin->cron = 300;
-
-$plugin->component = 'report_customsql';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.5 for Moodle 2.4+';
+    return true;
+}

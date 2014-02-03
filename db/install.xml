@@ -19,7 +19,18 @@
         <FIELD NAME="singlerow" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" COMMENT="Only meaningful to set this scheduled reports. Means the report can only return one row of data, and the report builds up a row at a time." PREVIOUS="runable" NEXT="at"/>
         <FIELD NAME="at" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="The time for the daily report" PREVIOUS="singlerow" NEXT="emailto"/>
         <FIELD NAME="emailto" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="A comma separated list of usernames" PREVIOUS="at" NEXT="emailwhat"/>
-        <FIELD NAME="emailwhat" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="A list of email options in a select menu" PREVIOUS="emailto"/>
+        <FIELD NAME="emailwhat" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="A list of email options in a select menu" PREVIOUS="emailto" NEXT="categoryid"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="The category ID from report_customsql_categories table." PREVIOUS="emailwhat"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="categoryidkey"/>
+        <KEY NAME="categoryidkey" TYPE="foreign" FIELDS="categoryid" REFTABLE="report_customsql_categories" REFFIELDS="id"  PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="report_customsql_categories" COMMENT="A list of available categories" PREVIOUS="report_customsql_queries">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" UNSIGNED="false" SEQUENCE="true" NEXT="name" />
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="Miscellaneous" SEQUENCE="false" ENUM="false" COMMENT="A list of category names" PREVIOUS="id" />
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
