@@ -31,6 +31,7 @@ require_login();
 $context = context_system::instance();
 $PAGE->set_url(new moodle_url('/report/customsql/edit.php'));
 $PAGE->set_context($context);
+$PAGE->set_pagelayout('admin');
 require_capability('report/customsql:definequeries', $context);
 
 $relativeurl = 'edit.php';
