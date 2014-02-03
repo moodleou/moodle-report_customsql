@@ -61,6 +61,9 @@ class report_customsql_edit_form extends moodleform {
             foreach ($this->_customdata as $queryparam => $formparam) {
                 $type = report_customsql_get_element_type($queryparam);
                 $mform->addElement($type, $formparam, $queryparam);
+                if ($type == 'text') {
+                    $mform->setType($formparam, PARAM_RAW);
+                }
                 $hasparameters++;
             }
             $mform->addElement('static', 'spacer', '', '');
@@ -168,7 +171,7 @@ class report_customsql_edit_form extends moodleform {
                                                              'report_customsql');
                         }
                     }
-                    // Ckeck the list of users in emailto field.
+                    // Check the list of users in emailto field.
                     if ($data['runable'] !== 'manual') {
                         if ($invaliduser = report_customsql_validate_users($data['emailto'], $data['capability'])) {
                             $errors['emailto'] = $invaliduser;

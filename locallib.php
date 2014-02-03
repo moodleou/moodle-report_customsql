@@ -262,7 +262,7 @@ function report_customsql_log_view($id) {
 function report_customsql_print_reports($reports) {
     global $CFG, $OUTPUT;
 
-    $context = get_context_instance(CONTEXT_SYSTEM);
+    $context = context_system::instance();
     $canedit = has_capability('report/customsql:definequeries', $context);
     $capabilities = report_customsql_capability_options();
     foreach ($reports as $report) {
@@ -426,7 +426,7 @@ function report_customsql_validate_users($userstring, $capability) {
                 return get_string('usernotfound', 'report_customsql', $username);
             }
             // User does not have the chosen access level.
-            $context = get_context_instance(CONTEXT_USER, $user->id);
+            $context = context_user::instance($USER->id);
             $a->username = $username;
             if (!has_capability($capability, $context, $user)) {
                 return get_string('userhasnothiscapability', 'report_customsql', $a);

@@ -28,7 +28,7 @@ require_once(dirname(__FILE__) . '/edit_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 $PAGE->set_url(new moodle_url('/report/customsql/edit.php'));
 $PAGE->set_context($context);
 require_capability('report/customsql:definequeries', $context);
