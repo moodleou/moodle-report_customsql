@@ -97,7 +97,7 @@ function report_customsql_generate_csv($report, $timenow) {
         $data = get_object_vars($row);
         foreach ($data as $name => $value) {
             if (report_customsql_get_element_type($name) == 'date_time_selector' &&
-                    (int) $value == $value) {
+                    report_customsql_is_integer($value)) {
                 $data[$name] = userdate($value, '%F %T');
             }
         }
@@ -130,6 +130,14 @@ function report_customsql_generate_csv($report, $timenow) {
         }
     }
     return $csvtimestamp;
+}
+
+/**
+ * @param mixed $value some value
+ * @return whether $value is an integer, or a string that looks like an integer.
+ */
+function report_customsql_is_integer($value) {
+    return (string) (int) $value === (string) $value;
 }
 
 function report_customsql_csv_filename($report, $timenow) {

@@ -187,6 +187,13 @@ class report_customsql_test extends advanced_testcase {
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timenow));
     }
 
+    public function test_report_customsql_is_integer() {
+        $this->assertTrue(report_customsql_is_integer(1));
+        $this->assertTrue(report_customsql_is_integer('1'));
+        $this->assertFalse(report_customsql_is_integer('frog'));
+        $this->assertFalse(report_customsql_is_integer('2013-10-07'));
+    }
+
     /**
      * Create an entry in 'report_customsql_queries' table and return the id
      * @param string $runable
