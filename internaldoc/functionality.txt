@@ -11,6 +11,7 @@ they have access to. Results can be viewed on-screen or downloaded as CSV.
 
 User interface contains the following form elements
 ----------------------------------------------------
+
 01) 'Query name' (text): The name of the query.
 
 02) 'Description' (HTML editor): The description of the query.
@@ -46,12 +47,17 @@ and email system is setup, sends email to the each user in the list.
 
 12) 'What to email' (select menu): options that are pout into the email body.
 
+13) 'Category' (select menu): Each query is assigned to a category, which is used
+to group the display of the query list.
+
+
 Conditions
 ----------
 When Query SQL text {03) contains parameters, the query runs only on demond and
 08, 09, 10 and 11 are disabled.
 
 'at' (08) is enabled only when , Run (07) is set to 'Daily'.
+
 
 Output
 ------

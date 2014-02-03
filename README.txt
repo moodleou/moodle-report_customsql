@@ -22,6 +22,8 @@ selector to input the value of that parameter.
 You can set a limit on the maximum number of rows returned by a query
 (up to the hard limit of 5000).
 
+Reports can be grouped into categories, which helps when you have a lot of them.
+
 See http://docs.moodle.org/25/en/Custom_SQL_queries_report for more information.
 
 Written by Tim Hunt and converted to Moodle 2.0 by Derek Woolhead, both from
@@ -31,5 +33,4 @@ but many others, as you can see in the git log.
 To install using git, type this command in the root of your Moodle install
     git clone git@github.com:moodleou/moodle-report_customsql.git report/customsql
 
-This version of the report is compatible with Moodle 2.2 or later. (Tested on
-Moodle 2.4+.)
+This version of the report is compatible with Moodle 2.4 or later.

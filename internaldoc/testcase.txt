@@ -102,7 +102,7 @@ Case 2
 2) Press 'Add a new query' button or click on 'Edit this query' icon to edit an
 existing query.
 
-3) Give the query a name or modify the naem of an existing query
+3) Give the query a name or modify the name of an existing query
 
 4) write a description for the query
 
@@ -122,7 +122,7 @@ to be entered.
 
 9) From 'Run' menu, choose 'Daily'
 
-10) From 'at' menuw, choose the hour
+10) From 'at' menu, choose the hour
 
 11) check/uncheck the 'Type of result' checkbox
 
@@ -139,3 +139,5 @@ Notice, the email is in HTML format and the content depends on (13).
 Case ...
 ---------
 Considering the settings there are other cases we can experiment with.
+
+This file needs to be updated to allow for Categories.
