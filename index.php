@@ -60,7 +60,7 @@ foreach ($categories as $category) {
         $params = array('showcat' => $category->id);
     }
     $linkhref = new moodle_url('/report/customsql/index.php', $params);
-    $link = html_writer::link($linkhref, $category->name, array('class' =>'categoryname'));
+    $link = html_writer::link($linkhref, $category->name, array('class' => 'categoryname'));
     echo $OUTPUT->heading($link);
 
     $manualreports = $DB->get_records('report_customsql_queries',

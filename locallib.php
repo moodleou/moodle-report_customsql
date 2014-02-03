@@ -315,7 +315,7 @@ function report_customsql_time_note($report, $tag) {
         $note = get_string('notrunyet', 'report_customsql');
     }
 
-    return html_writer::tag($tag, $note, array('class'=> 'admin_note'));
+    return html_writer::tag($tag, $note, array('class' => 'admin_note'));
 }
 
 function report_customsql_pretify_column_names($row) {
@@ -351,7 +351,7 @@ function report_customsql_start_csv($handle, $firstrow, $datecol) {
  *      is defined by $timenow) and the timestamp for hour $at yesterday.
  */
 function report_customsql_get_daily_time_starts($timenow, $at) {
-    $hours =  $at;
+    $hours = $at;
     $minutes = 0;
     $dateparts = getdate($timenow);
     return array(
@@ -483,13 +483,13 @@ function report_customsql_get_message($report, $csvfilename) {
     // Construct message without the table.
     $fullmessage = '';
     if (!html_is_blank($report->description)) {
-        $fullmessage .=  html_writer::tag('p', format_text($report->description, FORMAT_HTML));
+        $fullmessage .= html_writer::tag('p', format_text($report->description, FORMAT_HTML));
     }
 
     if ($countrows === 1) {
-        $returnrows =  html_writer::tag('span', get_string('emailrow', 'report_customsql', $countrows));
+        $returnrows = html_writer::tag('span', get_string('emailrow', 'report_customsql', $countrows));
     } else {
-        $returnrows =  html_writer::tag('span', get_string('emailrows', 'report_customsql', $countrows));
+        $returnrows = html_writer::tag('span', get_string('emailrows', 'report_customsql', $countrows));
     }
     $url = new moodle_url('/report/customsql/view.php', array('id' => $report->id));
     $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, array('href' => $url)));

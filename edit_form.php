@@ -91,7 +91,8 @@ class report_customsql_edit_form extends moodleform {
             $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options());
         }
         $runat[] = $mform->createElement('select', 'at', null, report_customsql_daily_at_options());
-        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'), get_string('at', 'report_customsql'), false);
+        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'),
+                get_string('at', 'report_customsql'), false);
 
         $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
                            get_string('onerow', 'report_customsql'));
@@ -196,7 +197,7 @@ class report_customsql_edit_form extends moodleform {
             }
         }
 
-        // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS
+        // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
         if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
         }
