@@ -57,7 +57,7 @@ foreach ($categories as $category) {
     // Are we showing this cat? Default is hidden.
     $show = $category->id == $showcat && $category->id != $hidecat ? 'shown' : 'hidden';
 
-    echo html_writer::start_div('csql_category csql_category' . $show);
+    echo html_writer::start_tag('div', array('class'=>'csql_category csql_category' . $show));
     if ($category->id == $showcat) {
         $params = array('hidecat' => $category->id);
     } else {
@@ -77,7 +77,7 @@ foreach ($categories as $category) {
             "(runable = ? OR runable = ?) AND categoryid = ?",
             array('weekly', 'monthly', $category->id), 'id');
 
-    echo html_writer::start_div('csql_category_reports');
+    echo html_writer::start_tag('div', array('class'=>'csql_category_reports'));
     if (empty($manualreports) && empty($scheduledreports) && empty($dailyreports)) {
         echo $OUTPUT->heading(get_string('availablereports', 'report_customsql'), 3).
         html_writer::tag('p', get_string('noreportsavailable', 'report_customsql'));
@@ -98,8 +98,8 @@ foreach ($categories as $category) {
             report_customsql_print_reports($scheduledreports);
         }
     }
-    echo html_writer::end_div();
-    echo html_writer::end_div();
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
 }
 
 if (has_capability('report/customsql:definequeries', $context)) {
