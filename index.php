@@ -65,7 +65,6 @@ foreach ($categories as $category) {
     }
     $linkhref = new moodle_url('/report/customsql/index.php', $params);
     $link = html_writer::link($linkhref, $category->name, array('class' => 'categoryname'));
-    echo $OUTPUT->heading($link);
 
     $manualreports = $DB->get_records('report_customsql_queries',
             array('runable' => 'manual', 'categoryid' => $category->id), 'displayname');
@@ -76,6 +75,8 @@ foreach ($categories as $category) {
     $scheduledreports = $DB->get_records_select('report_customsql_queries',
             "(runable = ? OR runable = ?) AND categoryid = ?",
             array('weekly', 'monthly', $category->id), 'id');
+
+    echo $OUTPUT->heading($link . ' ('.count($manualreports).'/'.count($dailyreports).'/'.count($scheduledreports).')');
 
     echo html_writer::start_div('csql_category_reports');
     if (empty($manualreports) && empty($scheduledreports) && empty($dailyreports)) {
