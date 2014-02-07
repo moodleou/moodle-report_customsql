@@ -79,7 +79,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
         $table = new xmldb_table('report_customsql_categories');
 
         // Adding fields to table report_customsql_categories.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, 0, null);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
 
         // Adding key to table report_customsql_categories.
