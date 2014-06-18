@@ -54,6 +54,8 @@ if ($report->runable == 'manual') {
 
         $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
         $PAGE->set_context($context);
+        $PAGE->set_title($report->displayname);
+        $PAGE->navbar->add($report->displayname);
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
 
@@ -74,6 +76,8 @@ if ($report->runable == 'manual') {
         } else {
 
             admin_externalpage_setup('report_customsql');
+            $PAGE->set_title($report->displayname);
+            $PAGE->navbar->add($report->displayname);
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($report->displayname));
             if (!html_is_blank($report->description)) {
@@ -107,6 +111,8 @@ if ($report->runable == 'manual') {
 
 // Start the page.
 admin_externalpage_setup('report_customsql');
+$PAGE->set_title($report->displayname);
+$PAGE->navbar->add($report->displayname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($report->displayname));
 
