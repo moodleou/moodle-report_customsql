@@ -10,7 +10,7 @@ User interface contains the following form elements
 ----------------------------------------------------
 01) 'Query name' (text): The name of the query.
 
-02) 'Description' (HTML editor): The description of the quesry.
+02) 'Description' (HTML editor): The description of the query.
 
 03) 'Query SQL' (text): The sql query text (with or without parameter.
 
@@ -71,13 +71,13 @@ existing query.
 4) write a description for the query
 
 5) place your sql query in 'Query SQL' field. Note, the table name can be written
-in {} without the prefix or with the word 'prefix_' and not in {}. For instacne,
+in {} without the prefix or with the word 'prefix_' and not in {}. For instance,
 following queries are identical:
 q1) SELECT * FROM {report_customsql_queries} csql WHERE csql.runable = 'manual'
 q2) SELECT * FROM perifx_report_customsql_queries csql WHERE csql.runable = 'manual'
 
-6) Press 'Verify the Query SQL text and update the form' button if you hvae used
-parameters in your query. Then the parameter fields will apear for their values
+6) Press 'Verify the Query SQL text and update the form' button if you have used
+parameters in your query. Then the parameter fields will appear for their values
 to be entered.
 
 7) If there are parameters in the query, enter the values.
@@ -107,13 +107,13 @@ existing query.
 4) write a description for the query
 
 5) place your sql query in 'Query SQL' field. Note, the table name can be written
-in {} without the prefix or with the word 'prefix_' and not in {}. For instacne,
+in {} without the prefix or with the word 'prefix_' and not in {}. For instance,
 following queries are identical:
 q1) SELECT * FROM {report_customsql_queries} csql WHERE csql.runable = 'manual'
 q2) SELECT * FROM perifx_report_customsql_queries csql WHERE csql.runable = 'manual'
 
-6) Press 'Verify the Query SQL text and update the form' button if you hvae used
-parameters in your query. Then the parameter fields will apear for their values
+6) Press 'Verify the Query SQL text and update the form' button if you have used
+parameters in your query. Then the parameter fields will appear for their values
 to be entered.
 
 7) If there are parameters in the query, enter the values.
@@ -127,7 +127,7 @@ to be entered.
 11) check/uncheck the 'Type of result' checkbox
 
 12) Give a comma separated list of users (OUCUs) in 'Automatically email to' field,
-Notice, the user receiving email must exist and have the capability chaosen in (8).
+Notice, the user receiving email must exist and have the capability chosen in (8).
 
 13) From the menuw 'What to email' choose the desired option.
 
