@@ -74,7 +74,7 @@ foreach ($categories as $category) {
 
     $scheduledreports = $DB->get_records_select('report_customsql_queries',
             "(runable = ? OR runable = ?) AND categoryid = ?",
-            array('weekly', 'monthly', $category->id), 'id');
+            array('weekly', 'monthly', $category->id), 'displayname');
 
     echo $OUTPUT->heading($link . ' ('.count($manualreports).'/'.count($dailyreports).'/'.count($scheduledreports).')');
 
