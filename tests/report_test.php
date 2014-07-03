@@ -81,8 +81,8 @@ class report_customsql_test extends advanced_testcase {
     }
 
     public function test_report_customsql_runable_options() {
-        $options = array('manual'  => get_string('manually', 'report_customsql'),
-                         'daily'   => get_string('daily', 'report_customsql'),
+        $options = array('manual'  => get_string('manual', 'report_customsql'),
+                         'daily'   => get_string('automaticallydaily', 'report_customsql'),
                          'weekly'  => get_string('automaticallyweekly', 'report_customsql'),
                          'monthly' => get_string('automaticallymonthly', 'report_customsql'));
 

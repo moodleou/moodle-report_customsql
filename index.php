@@ -57,7 +57,7 @@ foreach ($categories as $category) {
     // Are we showing this cat? Default is hidden.
     $show = $category->id == $showcat && $category->id != $hidecat ? 'shown' : 'hidden';
 
-    echo html_writer::start_tag('div', array('class'=>'csql_category csql_category' . $show));
+    echo html_writer::start_tag('div', array('class' => 'csql_category csql_category' . $show));
     if ($category->id == $showcat) {
         $params = array('hidecat' => $category->id);
     } else {
@@ -66,38 +66,31 @@ foreach ($categories as $category) {
     $linkhref = new moodle_url('/report/customsql/index.php', $params);
     $link = html_writer::link($linkhref, $category->name, array('class' => 'categoryname'));
 
-    $manualreports = $DB->get_records('report_customsql_queries',
-            array('runable' => 'manual', 'categoryid' => $category->id), 'displayname');
+    $manualreports = report_customsql_get_reports_for($category->id, 'manual');
+    $dailyreports = report_customsql_get_reports_for($category->id, 'daily');
+    $weeklyreports = report_customsql_get_reports_for($category->id, 'weekly');
+    $monthlyreports = report_customsql_get_reports_for($category->id, 'monthly');
 
-    $dailyreports = $DB->get_records('report_customsql_queries',
-            array('runable' => 'daily', 'categoryid' => $category->id), 'displayname');
+    // Category content.
+    $cc = new stdClass();
+    $cc->manual = count($manualreports);
+    $cc->daily = count($dailyreports);
+    $cc->weekly = count($weeklyreports);
+    $cc->monthly = count($monthlyreports);
+    $reportcounts = get_string('categorycontent', 'report_customsql', $cc);
 
-    $scheduledreports = $DB->get_records_select('report_customsql_queries',
-            "(runable = ? OR runable = ?) AND categoryid = ?",
-            array('weekly', 'monthly', $category->id), 'displayname');
+    $reportcounts = html_writer::tag('span', $reportcounts, array('class' => 'reportcounts'));
+    echo $OUTPUT->heading($link . ' ' . $reportcounts);
 
-    echo $OUTPUT->heading($link . ' ('.count($manualreports).'/'.count($dailyreports).'/'.count($scheduledreports).')');
-
-    echo html_writer::start_tag('div', array('class'=>'csql_category_reports'));
-    if (empty($manualreports) && empty($scheduledreports) && empty($dailyreports)) {
+    echo html_writer::start_tag('div', array('class' => 'csql_category_reports'));
+    if (empty($manualreports) && empty($dailyreports) && empty($weeklyreports) && empty($monthlyreports)) {
         echo $OUTPUT->heading(get_string('availablereports', 'report_customsql'), 3).
         html_writer::tag('p', get_string('noreportsavailable', 'report_customsql'));
     } else {
-        if (!empty($manualreports)) {
-            echo $OUTPUT->heading(get_string('availablereports', 'report_customsql'), 3).
-            html_writer::tag('p', get_string('manualnote', 'report_customsql'));
-            report_customsql_print_reports($manualreports);
-        }
-        if (!empty($dailyreports)) {
-            echo $OUTPUT->heading(get_string('dailyqueries', 'report_customsql'), 3).
-            html_writer::tag('p', get_string('dailynote', 'report_customsql'));
-            report_customsql_print_reports($dailyreports);
-        }
-        if (!empty($scheduledreports)) {
-            echo $OUTPUT->heading(get_string('scheduledqueries', 'report_customsql'), 3).
-            html_writer::tag('p', get_string('schedulednote', 'report_customsql'));
-            report_customsql_print_reports($scheduledreports);
-        }
+        report_customsql_print_reports_for($manualreports, 'manual');
+        report_customsql_print_reports_for($dailyreports, 'daily');
+        report_customsql_print_reports_for($weeklyreports, 'weekly');
+        report_customsql_print_reports_for($monthlyreports, 'monthly');
     }
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
