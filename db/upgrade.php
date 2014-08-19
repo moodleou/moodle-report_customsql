@@ -34,6 +34,21 @@ function xmldb_report_customsql_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2012011900) {
+
+        // Add field to report_customsql_queries
+        $table = new xmldb_table('report_customsql_queries');
+        if ($dbman->table_exists($table)) {
+            // Define and add the field 'queryparams'.
+            $field = new xmldb_field('queryparams', XMLDB_TYPE_TEXT, 'small', null, null, null, null, 'querysql');
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2012011900, 'report', 'customsql');
+    }
+
     if ($oldversion < 2012092400) {
 
         // Add fields to report_customsql_queries.
