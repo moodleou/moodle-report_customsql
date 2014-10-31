@@ -94,6 +94,7 @@ if ($newreport = $mform->get_data()) {
             print_error('errorupdatingreport', 'report_customsql',
                         report_customsql_url('edit.php?id=' . $id));
         }
+        report_customsql_log_action('updated', $id);
 
     } else {
         $id = $DB->insert_record('report_customsql_queries', $newreport);
@@ -101,9 +102,9 @@ if ($newreport = $mform->get_data()) {
             print_error('errorinsertingreport', 'report_customsql',
                         report_customsql_url('edit.php'));
         }
+        report_customsql_log_action('created', $id);
     }
 
-    report_customsql_log_edit($id);
     if ($newreport->runable == 'manual') {
         redirect(report_customsql_url('view.php?id=' . $id));
     } else {
