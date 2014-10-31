@@ -46,7 +46,7 @@ if (optional_param('confirm', false, PARAM_BOOL)) {
         if (!$ok) {
             print_error('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
         }
-        report_customsql_log_delete($id);
+        report_customsql_log_action('deleted', $id);
     } else {
         print_error('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
     }

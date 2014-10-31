@@ -40,7 +40,7 @@ if (!empty($report->capability)) {
     require_capability($report->capability, $context);
 }
 
-report_customsql_log_view($id);
+report_customsql_log_action('viewed', $id);
 
 if ($report->runable == 'manual') {
 
