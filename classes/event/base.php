@@ -92,29 +92,11 @@ class report_base extends \core\event\base {
      * @return stdClass[] {log} table rows
      */
     public function get_legacy_logdata() {
-        global $DB;
-        $class = explode('_', get_called_class());
-        $action = '';
-        switch($this->action){
-            case 'viewed':
-                $action = 'view';
-                break;
-            case 'deleted':
-                $action = 'delete';
-                break;
-            case 'updated':
-                $action = 'edit';
-                break;
-            default:
-                return array();
-        }
-        $params = array(
-            'course' => 0,
-            'module' => 'admin',
-            'action' => $action.' query',
-            'cmid'   => 0
+        return array(
+            0,
+            'admin',
+            $this->action,
+            $this->get_url(),
         );
-        return $DB->get_records('log', $params);
-
     }
 }
