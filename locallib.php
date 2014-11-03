@@ -249,22 +249,22 @@ function report_customsql_contains_bad_word($string) {
     return preg_match('/\b('.implode('|', report_customsql_bad_words_list()).')\b/i', $string);
 }
 
-function report_customsql_log_action($action, $relativeurl, $id) {
-    global $CFG;
-    add_to_log(0, 'admin', $action.' query',
-               '../report/customsql/'.$relativeurl, $id);
-}
-
 function report_customsql_log_delete($id) {
-    report_customsql_log_action('delete', 'index.php', $id);
+    $event = \report_customsql\event\query_deleted::create(
+            array('objectid' => $id, 'context' => context_system::instance()));
+    $event->trigger();
 }
 
 function report_customsql_log_edit($id) {
-    report_customsql_log_action('edit', 'view.php?id='.$id, $id);
+    $event = \report_customsql\event\query_edited::create(
+            array('objectid' => $id, 'context' => context_system::instance()));
+    $event->trigger();
 }
 
 function report_customsql_log_view($id) {
-    report_customsql_log_action('view', 'view.php?id='.$id, $id);
+    $event = \report_customsql\event\query_viewed::create(
+            array('objectid' => $id, 'context' => context_system::instance()));
+    $event->trigger();
 }
 
 /**
