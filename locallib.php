@@ -216,7 +216,7 @@ function report_customsql_capability_options() {
 
 function report_customsql_runable_options($type = null) {
     if ($type === 'manual') {
-        return array('manual' => get_string('manually', 'report_customsql'));
+        return array('manual' => get_string('manual', 'report_customsql'));
     }
     return array('manual' => get_string('manual', 'report_customsql'),
                  'daily' => get_string('automaticallydaily', 'report_customsql'),
