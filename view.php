@@ -55,7 +55,6 @@ if ($report->runable == 'manual') {
         $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
         $PAGE->set_context($context);
         $PAGE->set_title($report->displayname);
-        $PAGE->navbar->add($report->displayname);
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
 
