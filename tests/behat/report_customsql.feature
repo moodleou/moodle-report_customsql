@@ -1,0 +1,140 @@
+@ou @ou_vle @report @report_customsql
+Feature: In an Ad-hoc databse queries (customsql) report, admin can create sql queries
+  In order to get certain data from the database
+  I need to log action and then log in as admin to view participation report
+
+  Background:
+    Given the following "courses" exist:
+      | fullname | shortname | category | groupmode |
+      | Course 1 | C1 | 0 | 1 |
+      | Course 2 | C2 | 0 | 1 |
+      | Course 3 | C3 | 0 | 2 |
+      | Course 4 | C4 | 0 | 2 |
+    Given the following "users" exist:
+      | username | firstname | lastname |
+      | teacher1 | T1 | Teqacher1 |
+      | student1 | S1 | Student1 |
+    And the following "course enrolments" exist:
+      | user | course | role |
+      | teacher1 | C1 | editingteacher |
+      | student1 | C1 | student |
+    And I log in as "admin"
+ 
+  @javascript @report_customsql_s1
+  Scenario: Create a query, edit it and then delete it.
+    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    And I follow "Ad-hoc database queries"
+
+    # start creating the first query
+    And I press "Add a new query"
+    And I set the field "Query name" to "Query 1"
+    And I set the field "Description" to "Description 1"
+    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher1' "
+    And I press "Verify the Query SQL text and update the form"
+    And I press "Save changes"
+    Then I should see "Query 1"
+    And I should see "Download these results as CSV"
+
+    # Edit this query
+    When I follow "Edit this query"
+    And I set the field "Query name" to "Query 2"
+    And I set the field "Description" to "Description 2"
+    And I set the field "Query SQL" to "SELECT * FROM {course} c where c.shortname = 'C2' "
+    And I press "Verify the Query SQL text and update the form"
+    And I press "Save changes"
+    Then I should see "Query 2"
+    And I follow "Delete this query"
+    And I press "Yes"
+
+  @javascript @report_customsql_s2
+  Scenario: Create a query where the query cannot be found in DB.
+    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    And I follow "Ad-hoc database queries"
+
+    # start creating a query
+    And I press "Add a new query"
+    And I set the field "Query name" to "Query should not be found"
+    And I set the field "Description" to "This query cannot be found in DB"
+    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher5' "
+    And I press "Verify the Query SQL text and update the form"
+    And I press "Save changes"
+    Then I should see "This query did not return any data."
+
+  @javascript @report_customsql_s3
+  Scenario: Create 2 categories and create a query for each category.
+    # Do the basic
+    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    And I follow "Ad-hoc database queries"
+    And I press "Manage report categories"
+ 
+    # Create the first category and create a query in this category.
+    And I press "Add a new category"
+    And I set the field "Category name" to "Category 1"
+    And I press "Add a new category"
+    Then I should see "Category 1"
+
+    And I follow "Ad-hoc database queries"
+    And I follow "Category 1"
+    Then I should see "No queries available"
+
+    And I press "Add a new query"
+    And I set the field "Query name" to "Query1 for category1"
+    And I set the field "Description" to "Description of query for cat1"
+    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher1' "
+    And I press "Verify the Query SQL text and update the form"
+    And I set the field "Select category for this report" to "Category 1"
+    And I press "Save changes"
+    Then I should see "Query1 for category1"
+
+    And I follow "Ad-hoc database queries"
+    And I follow "Category 1"
+    Then I should not see "No queries available"
+
+    And I follow "Ad-hoc database queries"
+    And I press "Manage report categories"
+ 
+    # Create another category
+    And I press "Add a new category"
+    And I set the field "Category name" to "Category 2"
+    And I press "Add a new category"
+    Then I should see "Manage report categories"
+ 
+    # Create a query in Category 2
+    And I follow "Ad-hoc database queries"
+    And I press "Add a new query"
+    And I set the field "Query name" to "Query for cat2"
+    And I set the field "Description" to "Description of query for cat2"
+    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher1' "
+    And I press "Verify the Query SQL text and update the form"
+    And I set the field "Select category for this report" to "Category 2"
+    And I press "Save changes"
+    Then I should see "Query for cat2"
+
+ @javascript @report_customsql_s4
+  Scenario: Create a query and then edit it by filling most of the elements in the form.
+    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    And I follow "Ad-hoc database queries"
+
+    # start creating the first query
+    And I press "Add a new query"
+    And I set the field "Query name" to "Query 1"
+    And I set the field "Description" to "Description 1"
+    And I set the field "Query SQL" to "SELECT * FROM {course} c where c.shortname = 'C1' "
+    And I press "Verify the Query SQL text and update the form"
+    And I set the field "id_runable" to "Scheduled, daily"
+    And I press "Save changes"
+    Then I should see "Query 1"
+    And I should see "Daily"
+
+    And I follow "Edit this query"
+    And I set the field "Query name" to "Query 2"
+    And I set the field "Description" to "Description 2"
+    And I set the field "Query SQL" to "SELECT * FROM {course} c where c.shortname = 'C2' "
+    And I press "Verify the Query SQL text and update the form"
+    And I set the field "id_runable" to "Scheduled, on the first day of each month"
+    And I set the field "Who can access this query" to "moodle/site:config"
+    And I set the field "Limit rows returned" to "1"
+    And I set the field "The query returns one row, accumulate the results one row at a time" to "1"
+    And I press "Save changes"
+    Then I should see "Query 2"
+    And I should see "Monthly"
