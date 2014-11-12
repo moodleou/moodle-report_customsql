@@ -17,18 +17,16 @@
 /**
  * version.php file for the Custom SQL admin report.
  *
- * @package report_customsql
+ * @package   report_customsql
  * @copyright 2009 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2014082100;
-
-$plugin->requires = 2012110900;
-$plugin->cron = 300;
-
+$plugin->version   = 2014111200;
+$plugin->requires  = 2014041100;
+$plugin->cron      = 300;
 $plugin->component = 'report_customsql';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.7 for Moodle 2.4+';
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = '2.8 for Moodle 2.7+';
