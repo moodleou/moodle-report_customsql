@@ -1,7 +1,8 @@
 @ou @ou_vle @report @report_customsql
-Feature: In an Ad-hoc databse queries (customsql) report, admin can create sql queries
-  In order to get certain data from the database
-  I need to log action and then log in as admin to view participation report
+Feature: Ad-hoc database queries report
+  As an administrator
+  In order to understand what is going on in my Moodle site
+  I need to be able to run arbitrary queries against the database
 
   Background:
     Given the following "courses" exist:

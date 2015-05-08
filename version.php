@@ -30,3 +30,5 @@ $plugin->cron      = 300;
 $plugin->component = 'report_customsql';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = '2.8 for Moodle 2.7+';
+
+$plugin->outestssufficient = true;
