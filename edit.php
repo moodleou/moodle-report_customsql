@@ -76,6 +76,9 @@ if ($newreport = $mform->get_data()) {
         $newreport->singlerow = 0;
     }
 
+    // Unwrap description text value saved in "editor" field type.
+    $newreport->description = $newreport->description['text'];
+
     // Pick up named parameters into serialised array.
     if ($queryparams) {
         foreach ($queryparams as $queryparam => $formparam) {
@@ -116,6 +119,8 @@ echo $OUTPUT->header().
      $OUTPUT->heading(get_string('editingareport', 'report_customsql'));
 
 if ($report) {
+    // Wrap description value as needed by "editor" field type.
+    $report->description = array('text' => $report->description);
     $mform->set_data($report);
 }
 
