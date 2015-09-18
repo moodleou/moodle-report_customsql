@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="report/customsql/db" VERSION="20091027" COMMENT="XMLDB file for Moodle report/customsql"
+<XMLDB PATH="report/customsql/db" VERSION="20150630" COMMENT="XMLDB file for Moodle report/customsql"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="report_customsql_queries" COMMENT="Custom SQL queries that can be run as ad-hoc reports.">
-    <FIELDS>
+      <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="displayname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the report as displayed in the UI"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="A human-readable description of the query."/>
@@ -22,16 +22,16 @@
         <FIELD NAME="emailto" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="A comma separated list of usernames"/>
         <FIELD NAME="emailwhat" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="A list of email options in a select menu"/>
         <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The category ID from report_customsql_categories table."/>
-    </FIELDS>
-    <KEYS>
+      </FIELDS>
+      <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="categoryidkey" TYPE="foreign" FIELDS="categoryid" REFTABLE="report_customsql_categories" REFFIELDS="id"/>
-    </KEYS>
-</TABLE>
-    <TABLE NAME="report_customsql_categories" COMMENT="A list of available categories" PREVIOUS="report_customsql_queries">
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="report_customsql_categories" COMMENT="A list of available categories">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="false" SEQUENCE="true" NEXT="name" />
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="Miscellaneous" SEQUENCE="false" COMMENT="A list of category names" PREVIOUS="id" />
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="A list of category names"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
