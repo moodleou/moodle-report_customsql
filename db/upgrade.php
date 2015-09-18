@@ -75,7 +75,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
     }
 
     if ($oldversion < 2013062300) {
-        require_once($CFG->dirroot . '/report/customsql/lib.php');
+        require_once($CFG->dirroot . '/report/customsql/locallib.php');
         $table = new xmldb_table('report_customsql_queries');
         $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED,
                 XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
@@ -133,7 +133,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
 
     // Repeat upgrade step that might have got missed on some branches.
     if ($oldversion < 2014020300) {
-        require_once($CFG->dirroot . '/report/customsql/lib.php');
+        require_once($CFG->dirroot . '/report/customsql/locallib.php');
         $table = new xmldb_table('report_customsql_queries');
         $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED,
                 XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');

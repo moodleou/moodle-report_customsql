@@ -18,7 +18,7 @@
  * Lang strings for report/customsql
  *
  * @package report_customsql
- * @copyright 2009 The Open University
+ * @copyright 2015 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,7 @@ $string['categorycontent'] = '({$a->manual} on-demand, {$a->daily} daily, {$a->w
 $string['categoryexists'] = 'Category names must be unique, this name already exists';
 $string['categorynamex'] = 'Category name: {$a}';
 $string['changetheparameters'] = 'Change the parameters';
+$string['crontask'] = 'Ad-hoc database queries: run scheduled reports task';
 $string['customsql:definequeries'] = 'Define custom queries';
 $string['customsql:managecategories'] = 'Define custom categories';
 $string['customsql:view'] = 'View custom queries report';

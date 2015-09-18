@@ -15,19 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php file for the Custom SQL admin report.
+ * Definition of Report Custom SQL scheduled tasks.
  *
- * @package   report_customsql
+ * @package report_customsql
+ * @category task
  * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015071000;
-$plugin->requires  = 2014041100;
-$plugin->component = 'report_customsql';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.9 for Moodle 2.7+';
-
-$plugin->outestssufficient = true;
+$tasks = array(
+    array(
+        'classname' => 'report_customsql\task\run_reports',
+        'blocking' => 0,
+        'minute' => '10',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*'
+    )
+);
