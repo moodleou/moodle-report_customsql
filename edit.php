@@ -119,7 +119,7 @@ echo $OUTPUT->header().
      $OUTPUT->heading(get_string('editingareport', 'report_customsql'));
 
 if ($report) {
-    $report->description = array('text' => $report->description, 'format' => FORMAT_HTML);
+    $report->description = array('text' => $report->description, 'format' => $report->descriptionformat);
     $mform->set_data($report);
 }
 

@@ -145,5 +145,20 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2014020300, 'report', 'customsql');
     }
 
+    if ($oldversion < 2015062900) {
+
+        // Define field descriptionformat to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('descriptionformat', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '1', 'description');
+
+        // Conditionally launch add field descriptionformat.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2015062900, 'report', 'customsql');
+    }
+
     return true;
 }
