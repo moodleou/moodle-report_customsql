@@ -17,9 +17,8 @@
 /**
  * Database upgrades.
  *
- * @package report
- * @subpackage customsql
- * @copyright 2012 The Open University
+ * @package report_customsql
+ * @copyright 2015 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +35,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
 
     if ($oldversion < 2012011900) {
 
-        // Add field to report_customsql_queries
+        // Add field to report_customsql_queries.
         $table = new xmldb_table('report_customsql_queries');
         if ($dbman->table_exists($table)) {
             // Define and add the field 'queryparams'.
