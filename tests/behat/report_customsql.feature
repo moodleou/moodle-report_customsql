@@ -28,22 +28,31 @@ Feature: Ad-hoc database queries report
 
     # start creating the first query
     And I press "Add a new query"
-    And I set the field "Query name" to "Query 1"
-    And I set the field "Description" to "Description 1"
-    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher1' "
+    And I set the following fields to these values:
+      | Query name  | Query 1                                              |
+      | Description | Description 1                                        |
+      | Query SQL   | SELECT * FROM {user} u where u.username = 'teacher1' |
+
     And I press "Verify the Query SQL text and update the form"
     And I press "Save changes"
     Then I should see "Query 1"
+    And I should see "Description 1"
     And I should see "Download these results as CSV"
 
     # Edit this query
     When I follow "Edit this query"
-    And I set the field "Query name" to "Query 2"
+    Then the following fields match these values:
+      | Query name  | Query 1                                              |
+      | Description | Description 1                                        |
+      | Query SQL   | SELECT * FROM {user} u where u.username = 'teacher1' |
+
+    When I set the field "Query name" to "Query 2"
     And I set the field "Description" to "Description 2"
     And I set the field "Query SQL" to "SELECT * FROM {course} c where c.shortname = 'C2' "
     And I press "Verify the Query SQL text and update the form"
     And I press "Save changes"
     Then I should see "Query 2"
+    And I should see "Description 2"
     And I follow "Delete this query"
     And I press "Yes"
 

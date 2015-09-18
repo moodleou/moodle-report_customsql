@@ -66,6 +66,9 @@ if ($mform->is_cancelled()) {
 }
 
 if ($newreport = $mform->get_data()) {
+    $newreport->descriptionformat = $newreport->description['format'];
+    $newreport->description = $newreport->description['text'];
+
     // Set the following fields to empty strings if the report is running manually.
     if ($newreport->runable === 'manual') {
         $newreport->at = '';
@@ -116,6 +119,7 @@ echo $OUTPUT->header().
      $OUTPUT->heading(get_string('editingareport', 'report_customsql'));
 
 if ($report) {
+    $report->description = array('text' => $report->description, 'format' => FORMAT_HTML);
     $mform->set_data($report);
 }
 
