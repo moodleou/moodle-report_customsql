@@ -641,3 +641,19 @@ function report_customsql_category_options() {
     global $DB;
     return $DB->get_records_menu('report_customsql_categories', null, 'name ASC', 'id, name');
 }
+
+
+function report_customsql_datatables() {
+    echo html_writer::script(false, new moodle_url('/report/customsql/datatables/media/js/jquery.js'));
+    echo html_writer::script(false, new moodle_url('/report/customsql/datatables/media/js/jquery.dataTables.js'));
+
+    $script = "$(document).ready(function() {
+$('.generaltable').dataTable({
+'bAutoWidth': false,
+'bInfo': false,
+'bPaginate': false,
+'aaSorting': [], /* disable initial sort */
+});
+});";
+    echo html_writer::script($script);
+}
