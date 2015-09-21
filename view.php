@@ -115,6 +115,8 @@ $PAGE->navbar->add($report->displayname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($report->displayname));
 
+report_customsql_datatables();
+
 if (!html_is_blank($report->description)) {
     echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
 }
