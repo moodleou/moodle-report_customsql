@@ -107,7 +107,8 @@ class report_customsql_edit_form extends moodleform {
         $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
         $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
         $mform->setType('emailto', PARAM_RAW);
-        $mform->setType('customdir', PARAM_RAW);
+        $mform->setType('customdir', PARAM_PATH);
+        $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
 
         // Add new category selection.
         $categoryoptions = report_customsql_category_options();
@@ -205,9 +206,12 @@ class report_customsql_edit_form extends moodleform {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
         }
 
-        // Check that the custom directory is writable, if provided.
+        // Check that the custom directory is writable and a directory, if provided.
         if (isset($data['customdir'])) {
-            if (!is_writable($data['customdir'])) {
+            if (!is_dir($data['customdir'])) {
+                $errors['customdir'] = get_string('notadirectory', 'report_customsql');
+            }
+            else if (!is_writable($data['customdir'])) {
                 $errors['customdir'] = get_string('directorynotwritable', 'report_customsql');
             }
         }
