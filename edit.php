@@ -74,6 +74,7 @@ if ($newreport = $mform->get_data()) {
         $newreport->at = '';
         $newreport->emailto = '';
         $newreport->emailwhat = '';
+        $newreport->customdir = '';
     }
     if ($newreport->runable == 'manual' || empty($newreport->singlerow)) {
         $newreport->singlerow = 0;

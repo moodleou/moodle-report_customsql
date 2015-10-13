@@ -112,6 +112,16 @@ function report_customsql_generate_csv($report, $timenow) {
         fclose($handle);
     }
 
+    // Copy the file to the custom directory.
+    if (!empty($report->customdir)) {
+        list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
+        $filename = $report->id . '-' . basename($csvfilename);
+        // Make sure we always have a working path.
+        $filepath = rtrim($report->customdir, '/');
+        $filepath = $filepath . '/' . $filename;
+        copy($csvfilename, $filepath);
+    }
+
     // Update the execution time in the DB.
     $updaterecord = new stdClass;
     $updaterecord->id = $report->id;

@@ -98,13 +98,16 @@ class report_customsql_edit_form extends moodleform {
                            get_string('onerow', 'report_customsql'));
 
         $mform->addElement('text', 'emailto', get_string('emailto', 'report_customsql'), 'size = 70');
+        $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
         $mform->addElement('select', 'emailwhat', get_string('emailwhat', 'report_customsql'),
                 report_customsql_email_options());
         $mform->disabledIf('singlerow', 'runable', 'eq', 'manual');
         $mform->disabledIf('at', 'runable', 'ne', 'daily');
         $mform->disabledIf('emailto', 'runable', 'eq', 'manual');
+        $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
         $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
         $mform->setType('emailto', PARAM_RAW);
+        $mform->setType('customdir', PARAM_RAW);
 
         // Add new category selection.
         $categoryoptions = report_customsql_category_options();
@@ -200,6 +203,13 @@ class report_customsql_edit_form extends moodleform {
         // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
         if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
+        }
+
+        // Check that the custom directory is writable, if provided.
+        if (isset($data['customdir'])) {
+            if (!is_writable($data['customdir'])) {
+                $errors['customdir'] = get_string('directorynotwritable', 'report_customsql');
+            }
         }
 
         return $errors;
