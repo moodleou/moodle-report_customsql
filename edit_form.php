@@ -207,7 +207,7 @@ class report_customsql_edit_form extends moodleform {
         }
 
         // Check that the custom directory is writable and a directory, if provided.
-        if (isset($data['customdir'])) {
+        if (isset($data['customdir']) && !empty($data['customdir'])) {
             if (!is_dir($data['customdir'])) {
                 $errors['customdir'] = get_string('notadirectory', 'report_customsql');
             }
