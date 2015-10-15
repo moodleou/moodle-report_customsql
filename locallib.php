@@ -665,6 +665,9 @@ function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename 
         // Make sure we always have a working path.
         $filepath = rtrim($report->customdir, '/');
         $filepath = $filepath . '/' . $filename;
-        copy($csvfilename, $filepath);
+        // Check that the file we want to copy exists, if not do nothing.
+        if (file_exists($csvfilename)) {
+            copy($csvfilename, $filepath);
+        }
     }
 }
