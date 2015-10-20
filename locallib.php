@@ -127,13 +127,14 @@ function report_customsql_generate_csv($report, $timenow) {
                 if (!empty($report->emailto)) {
                     report_customsql_email_report($report, $csvfilename);
                 }
-                report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename);
+                if (!empty($report->customdir)) {
+                    report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename);
+                }
             }
         } else { // If there is no data.
             if (!empty($report->emailto)) {
                 report_customsql_email_report($report);
             }
-            report_customsql_copy_csv_to_customdir($report, $timenow);
         }
     }
     return $csvtimestamp;
@@ -657,14 +658,12 @@ function report_customsql_category_options() {
  */
 function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename = null) {
     // Copy the file to the custom directory.
-    if (!empty($report->customdir)) {
-        if (!$csvfilename) {
-            list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
-        }
-        $filename = $report->id . '-' . basename($csvfilename);
-        // Make sure we always have a working path.
-        $filepath = rtrim($report->customdir, '/');
-        $filepath = $filepath . '/' . $filename;
-        copy($csvfilename, $filepath);
+    if (!$csvfilename) {
+        list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
     }
+    $filename = $report->id . '-' . basename($csvfilename);
+    // Make sure we always have a working path.
+    $filepath = rtrim($report->customdir, '/');
+    $filepath = $filepath . '/' . $filename;
+    copy($csvfilename, $filepath);
 }
