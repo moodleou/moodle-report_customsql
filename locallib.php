@@ -330,7 +330,7 @@ function report_customsql_print_reports_for($reports, $type) {
 }
 
 function report_customsql_time_note($report, $tag) {
-    if ($report->lastrun) {
+    if (isset($report->lastrun) && $report->lastrun) {
         $a = new stdClass;
         $a->lastrun = userdate($report->lastrun);
         $a->lastexecutiontime = $report->lastexecutiontime / 1000;
