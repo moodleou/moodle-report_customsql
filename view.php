@@ -41,6 +41,8 @@ if (!empty($report->capability)) {
 }
 
 report_customsql_log_view($id);
+$PAGE->set_url(new moodle_url('/report/customsql/view.php'));
+$PAGE->set_context($context);
 
 if ($report->runable == 'manual') {
 
@@ -52,8 +54,7 @@ if ($report->runable == 'manual') {
             $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
         }
 
-        $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
-        $PAGE->set_context($context);
+        $report->displayname = format_string($report->displayname);
         $PAGE->set_title($report->displayname);
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
@@ -74,11 +75,12 @@ if ($report->runable == 'manual') {
             }
         } else {
 
+            $report->displayname = format_string($report->displayname);
             admin_externalpage_setup('report_customsql');
             $PAGE->set_title($report->displayname);
             $PAGE->navbar->add($report->displayname);
             echo $OUTPUT->header();
-            echo $OUTPUT->heading(format_string($report->displayname));
+            echo $OUTPUT->heading($report->displayname);
             if (!html_is_blank($report->description)) {
                 echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
             }
@@ -109,11 +111,12 @@ if ($report->runable == 'manual') {
 }
 
 // Start the page.
+$report->displayname = format_string($report->displayname);
 admin_externalpage_setup('report_customsql');
 $PAGE->set_title($report->displayname);
 $PAGE->navbar->add($report->displayname);
 echo $OUTPUT->header();
-echo $OUTPUT->heading(format_string($report->displayname));
+echo $OUTPUT->heading($report->displayname);
 
 if (!html_is_blank($report->description)) {
     echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
@@ -154,7 +157,7 @@ if (is_null($csvtimestamp)) {
                 if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
                     $rowdata[] = '<a href="' . $value . '">' . $value . '</a>';
                 } else {
-                    $rowdata[] = $value;
+                    $rowdata[] = format_text($value, FORMAT_HTML, array('context'=>$context));
                 }
             }
             $table->data[] = $rowdata;
