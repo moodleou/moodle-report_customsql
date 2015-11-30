@@ -298,36 +298,41 @@ function report_customsql_print_reports_for($reports, $type) {
     $context = context_system::instance();
     $canedit = has_capability('report/customsql:definequeries', $context);
     $capabilities = report_customsql_capability_options();
+    
+    $table = new html_table();
+    $table->head = array(get_string('report'), get_string('notes', 'notes'), get_string('availableto', 'report_customsql', '..'));
+    if ($canedit) {
+        $table->head[] = get_string('action');
+        $table->size = array('40%', '30%', '20%', '10%');
+    } else {
+        $table->size = array('50%', '30%', '20%');
+    }
+    
+    $row = array();
     foreach ($reports as $report) {
         if (!empty($report->capability) && !has_capability($report->capability, $context)) {
             continue;
         }
 
-        echo html_writer::start_tag('p');
-        echo html_writer::tag('a', format_string($report->displayname),
-                              array('href' => report_customsql_url('view.php?id='.$report->id))).
-             ' '.report_customsql_time_note($report, 'span');
         if ($canedit) {
-            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'),
-                                                         'class' => 'iconsmall',
-                                                         'alt' => get_string('edit')));
-            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'),
-                                                           'class' => 'iconsmall',
-                                                           'alt' => get_string('delete')));
-            echo ' '.html_writer::tag('span', get_string('availableto', 'report_customsql',
-                                      $capabilities[$report->capability]),
-                                      array('class' => 'admin_note')).' '.
-                 html_writer::tag('a', $imgedit,
-                            array('title' => get_string('editthisreport', 'report_customsql'),
-                                  'href' => report_customsql_url('edit.php?id='.$report->id))).' '.
-                 html_writer::tag('a', $imgdelete,
-                            array('title' => get_string('deletethisreport', 'report_customsql'),
-                                  'href' => report_customsql_url('delete.php?id='.$report->id)));
+            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'), 'class' => 'iconsmall', 'alt' => get_string('edit')));
+            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'), 'class' => 'iconsmall', 'alt' => get_string('delete')));
+            $actions = html_writer::tag('a', $imgedit, array('title' => get_string('editthisreport', 'report_customsql'), 'href' => report_customsql_url('edit.php?id='.$report->id))).' ';
+            $actions .= html_writer::tag('a', $imgdelete, array('title' => get_string('deletethisreport', 'report_customsql'), 'href' => report_customsql_url('delete.php?id='.$report->id)));
+        } else {
+            $actions = '';
         }
-        echo html_writer::end_tag('p');
-        echo "\n";
+        $row[] = array(
+            '<a href="'.report_customsql_url('view.php?id='.$report->id).'">'.format_string($report->displayname).'</a>',
+            report_customsql_time_note($report, 'span'),
+            html_writer::tag('span', $capabilities[$report->capability], array('class' => 'admin_note')),
+            $actions
+        );
+        $table->data = $row;
     }
-}
+
+    echo html_writer::table($table);    
+    }
 
 function report_customsql_time_note($report, $tag) {
     if ($report->lastrun) {
