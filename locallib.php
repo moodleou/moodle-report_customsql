@@ -112,6 +112,7 @@ function report_customsql_generate_csv($report, $timenow) {
         fclose($handle);
     }
 
+
     // Update the execution time in the DB.
     $updaterecord = new stdClass;
     $updaterecord->id = $report->id;
@@ -120,13 +121,20 @@ function report_customsql_generate_csv($report, $timenow) {
     $DB->update_record('report_customsql_queries', $updaterecord);
 
     // Report is runable daily, weekly or monthly.
-    if (($report->runable != 'manual') && !empty($report->emailto)) {
+    if ($report->runable != 'manual') {
         if ($csvfilenames) {
             foreach ($csvfilenames as $csvfilename) {
-                report_customsql_email_report($report, $csvfilename);
+                if (!empty($report->emailto)) {
+                    report_customsql_email_report($report, $csvfilename);
+                }
+                if (!empty($report->customdir)) {
+                    report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename);
+                }
             }
         } else { // If there is no data.
-            report_customsql_email_report($report);
+            if (!empty($report->emailto)) {
+                report_customsql_email_report($report);
+            }
         }
     }
     return $csvtimestamp;
@@ -647,4 +655,22 @@ function report_customsql_is_daily_report_ready($report, $timenow) {
 function report_customsql_category_options() {
     global $DB;
     return $DB->get_records_menu('report_customsql_categories', null, 'name ASC', 'id, name');
+}
+
+/**
+ * Copies a csv file to an optional custom directory.
+ * @param object $report
+ * @param integer $timenow
+ * @param string $csvfilename 
+ */
+function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename = null) {
+    // Copy the file to the custom directory.
+    if (!$csvfilename) {
+        list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
+    }
+    $filename = $report->id . '-' . basename($csvfilename);
+    // Make sure we always have a working path.
+    $filepath = rtrim($report->customdir, '/');
+    $filepath = $filepath . '/' . $filename;
+    copy($csvfilename, $filepath);
 }
