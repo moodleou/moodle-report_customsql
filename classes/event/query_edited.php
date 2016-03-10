@@ -48,7 +48,7 @@ class query_edited extends \core\event\base {
     }
 
     public function get_url() {
-        return new \moodle_url('/report/customsql/view.php', array('id' => $this->context->instanceid));
+        return new \moodle_url('/report/customsql/view.php', array('id' => $this->objectid));
     }
 
     public function get_legacy_logdata() {
