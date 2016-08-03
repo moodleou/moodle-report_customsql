@@ -160,5 +160,18 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015062900, 'report', 'customsql');
     }
 
+    if ($oldversion < 2016011800) {
+
+        // Define field customdir to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('customdir', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'categoryid');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016011800, 'report', 'customsql');
+    }
+
     return true;
 }

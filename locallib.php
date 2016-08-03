@@ -120,13 +120,23 @@ function report_customsql_generate_csv($report, $timenow) {
     $DB->update_record('report_customsql_queries', $updaterecord);
 
     // Report is runable daily, weekly or monthly.
-    if (($report->runable != 'manual') && !empty($report->emailto)) {
+    if ($report->runable != 'manual') {
         if ($csvfilenames) {
             foreach ($csvfilenames as $csvfilename) {
-                report_customsql_email_report($report, $csvfilename);
+                if (!empty($report->emailto)) {
+                    report_customsql_email_report($report, $csvfilename);
+                }
+                if (!empty($report->customdir)) {
+                    report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename);
+                }
             }
         } else { // If there is no data.
-            report_customsql_email_report($report);
+            if (!empty($report->emailto)) {
+                report_customsql_email_report($report);
+            }
+            if (!empty($report->customdir)) {
+                report_customsql_copy_csv_to_customdir($report);
+            }
         }
     }
     return $csvtimestamp;
@@ -648,3 +658,36 @@ function report_customsql_category_options() {
     global $DB;
     return $DB->get_records_menu('report_customsql_categories', null, 'name ASC', 'id, name');
 }
+
+/**
+ * Copies a csv file to an optional custom directory or file path.
+ *
+ * @param object $report
+ * @param integer $timenow
+ * @param string $csvfilename
+ */
+function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename = null) {
+
+    // If the filename is empty then there was no data so we can't export a
+    // new file, but if we are saving over the same file then we should delete
+    // the existing file or it will have stale data in it.
+    if (empty($csvfilename)) {
+        $filepath = $report->customdir;
+        if (!is_dir($filepath)) {
+            file_put_contents($filepath, '');
+            mtrace("No data so resetting $filepath");
+        }
+        return;
+    }
+
+    $filename = $report->id . '-' . basename($csvfilename);
+    if (is_dir($report->customdir)) {
+        $filepath = realpath($report->customdir) . DIRECTORY_SEPARATOR . $filename;
+    } else {
+        $filepath = $report->customdir;
+    }
+
+    copy($csvfilename, $filepath);
+    mtrace("Exported $csvfilename to $filepath");
+}
+
