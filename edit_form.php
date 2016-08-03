@@ -207,14 +207,8 @@ class report_customsql_edit_form extends moodleform {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
         }
 
-        // At least one of emailto or customdir is required.
-        if (empty($data['emailto']) && empty($data['customdir'])) {
-            $errors['emailto'] = get_string('customdiroremailrequired', 'report_customsql');
-            $errors['customdir'] = get_string('customdiroremailrequired', 'report_customsql');
-        }
-
-        $path = $data['customdir'];
-        if (isset($path) && !empty($path)) {
+        if (!empty($data['customdir'])) {
+            $path = $data['customdir'];
 
             // The path either needs to be a writable directory ...
             if (is_dir($path) ) {
@@ -250,5 +244,4 @@ class report_customsql_edit_form extends moodleform {
 
         return $errors;
     }
-
 }

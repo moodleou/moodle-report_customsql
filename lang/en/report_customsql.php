@@ -41,7 +41,6 @@ $string['categorynamex'] = 'Category name: {$a}';
 $string['changetheparameters'] = 'Change the parameters';
 $string['crontask'] = 'Ad-hoc database queries: run scheduled reports task';
 $string['customdir'] = 'Export csv report to path / directory';
-$string['customdiroremailrequired'] = 'Either an email or an export path is required.';
 $string['customdir_help'] = 'Files are exported in the CSV format to the file path specified. If a directory is specified the filename format will be reportid-timecreated.csv.';
 $string['customdirmustexist'] = 'The directory "{$a}" does not exist.';
 $string['customdirnotadirectory'] = 'The path "{$a}" is not a directory.';
