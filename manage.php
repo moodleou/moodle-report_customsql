@@ -47,7 +47,7 @@ echo html_writer::tag('p', get_string('addcategorydesc', 'report_customsql'));
 if (!empty($categories)) {
     foreach ($categories as $category) {
         echo html_writer::start_tag('div');
-        $imgedit = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/edit'),
+        $imgedit = html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/edit'),
                 'class' => 'iconsmall', 'alt' => get_string('edit')));
         echo ' ' . html_writer::tag('span', $category->name . ' ', array('class' => 'report_customsql')) .
         html_writer::tag('a', $imgedit,
@@ -56,7 +56,7 @@ if (!empty($categories)) {
         if ($category->id != 1 &&
                 !$queries = $DB->get_records('report_customsql_queries',
                         array('categoryid' => $category->id))) {
-            $imgdelete = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'),
+            $imgdelete = html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'),
                     'class' => 'iconsmall', 'alt' => get_string('delete')));
             echo ' ' .  html_writer::tag('a', $imgdelete,
                     array('title' => get_string('deletethiscategory', 'report_customsql'),

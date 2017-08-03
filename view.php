@@ -204,10 +204,10 @@ if (!empty($queryparams)) {
 }
 
 if (has_capability('report/customsql:definequeries', $context)) {
-    $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'),
+    $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/edit'),
                                 'class' => 'iconsmall',
                                 'alt' => get_string('edit')));
-    $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'),
+    $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/delete'),
                                   'class' => 'iconsmall',
                                   'alt' => get_string('delete')));
     echo html_writer::start_tag('p').
@@ -222,7 +222,7 @@ if (has_capability('report/customsql:definequeries', $context)) {
          html_writer::end_tag('p');
 }
 
-$imglarrow = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/collapsed_rtl'),
+$imglarrow = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/collapsed_rtl'),
                               'class' => 'iconsmall',
                               'alt' => ''));
 echo html_writer::start_tag('p').

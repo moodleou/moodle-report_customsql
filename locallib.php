@@ -318,10 +318,10 @@ function report_customsql_print_reports_for($reports, $type) {
                               array('href' => report_customsql_url('view.php?id='.$report->id))).
              ' '.report_customsql_time_note($report, 'span');
         if ($canedit) {
-            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'),
+            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/edit'),
                                                          'class' => 'iconsmall',
                                                          'alt' => get_string('edit')));
-            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'),
+            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/delete'),
                                                            'class' => 'iconsmall',
                                                            'alt' => get_string('delete')));
             echo ' '.html_writer::tag('span', get_string('availableto', 'report_customsql',
