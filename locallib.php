@@ -135,7 +135,7 @@ function report_customsql_generate_csv($report, $timenow) {
                 report_customsql_email_report($report);
             }
             if (!empty($report->customdir)) {
-                report_customsql_copy_csv_to_customdir($report);
+                report_customsql_copy_csv_to_customdir($report, $timenow);
             }
         }
     }
