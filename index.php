@@ -52,6 +52,36 @@ if (!$showcat && count($categories) == 1) {
 
 echo $OUTPUT->header();
 
+// Show the Expand all / Collapse all
+$content = "
+<script>
+$(document).ready(function() {
+    $('.collapseexpand').click(function() {
+        if ($('.csql_categoryhidden').length > 0) { // There is at least one collapsed category section.
+            $('.csql_category').removeClass('csql_categoryhidden');
+            $('.csql_category').addClass('csql_categoryshown');
+            $(this).text('". get_string('collapseall')."');
+        } else {                                    // All category sections are expanded
+            $('.csql_category').removeClass('csql_categoryshown');
+            $('.csql_category').addClass('csql_categoryhidden');
+            $(this).text('". get_string('expandall')."');
+        }
+    });
+    $('.csql_category').click(function() {
+        if ($('.csql_categoryhidden').length > 0) { // There is at least one collapsed category section.
+            $('.collapseexpand').text('". get_string('expandall')."');
+        } else {
+            $('.collapseexpand').text('". get_string('collapseall')."');
+        }
+    });
+});
+</script>
+";
+$content .= html_writer::start_tag('div', array('class' => 'collapsible-actions'));
+$content .= html_writer::link('#', get_string('expandall'), array('class' => 'collapseexpand'));
+$content .= html_writer::end_tag('div');
+echo $content;
+
 foreach ($categories as $category) {
     // Are we showing this cat? Default is hidden.
     $show = $category->id == $showcat && $category->id != $hidecat ? 'shown' : 'hidden';
