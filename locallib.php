@@ -137,7 +137,7 @@ function report_customsql_generate_csv($report, $timenow) {
                 report_customsql_email_report($report);
             }
             if (!empty($report->customdir)) {
-                report_customsql_copy_csv_to_customdir($report);
+                report_customsql_copy_csv_to_customdir($report, $timenow);
             }
         }
     }
@@ -320,12 +320,8 @@ function report_customsql_print_reports_for($reports, $type) {
                               array('href' => report_customsql_url('view.php?id='.$report->id))).
              ' '.report_customsql_time_note($report, 'span');
         if ($canedit) {
-            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/edit'),
-                                                         'class' => 'iconsmall',
-                                                         'alt' => get_string('edit')));
-            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/delete'),
-                                                           'class' => 'iconsmall',
-                                                           'alt' => get_string('delete')));
+            $imgedit = $OUTPUT->pix_icon('t/edit', get_string('edit'));
+            $imgdelete = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             echo ' '.html_writer::tag('span', get_string('availableto', 'report_customsql',
                                       $capabilities[$report->capability]),
                                       array('class' => 'admin_note')).' '.
