@@ -23,6 +23,8 @@
  * @group report_customsql
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__) . '/../locallib.php');
 
 class report_customsql_test extends advanced_testcase {
