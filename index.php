@@ -52,6 +52,13 @@ if (!$showcat && count($categories) == 1) {
 
 echo $OUTPUT->header();
 
+$expandcollapsealllink = html_writer::link('#', get_string('expandall'), [
+        'class' => 'csql_expandcollapseall',
+        'data-expandalltext' => get_string('expandall'),
+        'data-collapsealltext' => get_string('collapseall')]);
+$expandcollapsealllink = html_writer::div($expandcollapsealllink, 'csql_expandcollapseallcontainer');
+echo $expandcollapsealllink;
+
 foreach ($categories as $category) {
     // Are we showing this cat? Default is hidden.
     $show = $category->id == $showcat && $category->id != $hidecat ? 'shown' : 'hidden';
@@ -95,6 +102,11 @@ foreach ($categories as $category) {
     echo html_writer::end_tag('div');
 }
 
+if (count($categories) >= 5) {
+    // If there are many categores, show the link again.
+    echo $expandcollapsealllink;
+}
+
 if (has_capability('report/customsql:definequeries', $context)) {
     echo $OUTPUT->single_button(report_customsql_url('edit.php'),
             get_string('addreport', 'report_customsql'));
@@ -105,7 +117,7 @@ if (has_capability('report/customsql:managecategories', $context)) {
             get_string('managecategories', 'report_customsql'));
 }
 
-// Add the reportcategories YUI script to the page.
-$PAGE->requires->yui_module('moodle-report_customsql-reportcategories', 'M.report_customsql.init');
+// Initialise the expand/collapse JavaScript.
+$PAGE->requires->js_call_amd('report_customsql/reportcategories', 'init');
 
 echo $OUTPUT->footer();
