@@ -20,7 +20,7 @@ Feature: Ad-hoc database queries report
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And I log in as "admin"
- 
+
   @javascript @report_customsql_s1
   Scenario: Create a query, edit it and then delete it.
     When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
@@ -76,7 +76,7 @@ Feature: Ad-hoc database queries report
     When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
     And I follow "Ad-hoc database queries"
     And I press "Manage report categories"
- 
+
     # Create the first category and create a query in this category.
     And I press "Add a new category"
     And I set the field "Category name" to "Category 1"
@@ -102,13 +102,13 @@ Feature: Ad-hoc database queries report
 
     And I follow "Ad-hoc database queries"
     And I press "Manage report categories"
- 
+
     # Create another category
     And I press "Add a new category"
     And I set the field "Category name" to "Category 2"
     And I press "Add a new category"
     Then I should see "Manage report categories"
- 
+
     # Create a query in Category 2
     And I follow "Ad-hoc database queries"
     And I press "Add a new query"
