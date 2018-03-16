@@ -35,4 +35,4 @@ To install using git, type this command in the root of your Moodle install
     git clone git@github.com:moodleou/moodle-report_customsql.git report/customsql
     echo '/report/customsql/' >> .git/info/exclude
 
-This version of the report is compatible with Moodle 3.3 or later.
+This version of the report is compatible with Moodle 3.2 or later.
