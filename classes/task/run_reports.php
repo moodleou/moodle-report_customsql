@@ -75,7 +75,7 @@ class run_reports extends \core\task\scheduled_task {
         $reportstorun = array_merge($dailyreportstorun, $scheduledreportstorun);
 
         foreach ($reportstorun as $report) {
-            mtrace("... Running report " . strip_tags($report->displayname));
+            mtrace("... Running report " . report_customsql_plain_text_report_name($report));
             try {
                 report_customsql_generate_csv($report, $timenow);
             } catch (\Exception $e) {

@@ -146,7 +146,7 @@ function report_customsql_generate_csv($report, $timenow) {
 
 /**
  * @param mixed $value some value
- * @return whether $value is an integer, or a string that looks like an integer.
+ * @return bool whether $value is an integer, or a string that looks like an integer.
  */
 function report_customsql_is_integer($value) {
     return (string) (int) $value === (string) $value;
@@ -487,7 +487,8 @@ function report_customsql_validate_users($userstring, $capability) {
 
 function report_customsql_get_message_no_data($report) {
     // Construct subject.
-    $subject = get_string('emailsubject', 'report_customsql', $report->displayname);
+    $subject = get_string('emailsubject', 'report_customsql',
+            report_customsql_plain_text_report_name($report->displayname));
     $url = new moodle_url('/report/customsql/view.php', array('id' => $report->id));
     $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, array('href' => $url)));
     $fullmessage = html_writer::tag('p', get_string('nodatareturned', 'report_customsql') . ' ' . $link);
@@ -519,7 +520,8 @@ function report_customsql_get_message($report, $csvfilename) {
     fclose($handle);
 
     // Construct subject.
-    $subject = get_string('emailsubject', 'report_customsql', $report->displayname);
+    $subject = get_string('emailsubject', 'report_customsql',
+            report_customsql_plain_text_report_name($report->displayname));
 
     // Construct message without the table.
     $fullmessage = '';
@@ -690,3 +692,12 @@ function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename 
     mtrace("Exported $csvfilename to $filepath");
 }
 
+/**
+ * Get a report name as plain text, for use in places like cron output and email subject lines.
+ *
+ * @param object $report report settings from the database.
+ */
+function report_customsql_plain_text_report_name($report) {
+    return format_string($report->displayname, true,
+            ['context' => \context_system::instance()]);
+}
