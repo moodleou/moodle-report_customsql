@@ -27,14 +27,16 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
+
+admin_externalpage_setup('report_customsql', '', ['id' => $id],
+        '/report/customsql/delete.php');
+$context = context_system::instance();
+require_capability('report/customsql:definequeries', $context);
+
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
-
-require_login();
-$context = context_system::instance();
-require_capability('report/customsql:definequeries', $context);
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
     $ok = $DB->delete_records('report_customsql_queries', array('id' => $id));
@@ -48,8 +50,6 @@ if (optional_param('confirm', false, PARAM_BOOL)) {
 $runnableoptions = report_customsql_runable_options();
 
 // Start the page.
-admin_externalpage_setup('report_customsql');
-
 echo $OUTPUT->header().
      $OUTPUT->heading(get_string('deleteareyousure', 'report_customsql')).
 

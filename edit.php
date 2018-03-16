@@ -27,11 +27,14 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/edit_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
+$id = optional_param('id', 0, PARAM_INT);
+$urlparams = [];
+if ($id) {
+    $urlparams['id'] = $id;
+}
+
+admin_externalpage_setup('report_customsql', '', $urlparams, '/report/customsql/edit.php');
 $context = context_system::instance();
-$PAGE->set_url(new moodle_url('/report/customsql/edit.php'));
-$PAGE->set_context($context);
-$PAGE->set_pagelayout('admin');
 require_capability('report/customsql:definequeries', $context);
 
 $relativeurl = 'edit.php';
@@ -39,7 +42,6 @@ $report = null;
 $reportquerysql = '';
 
 // Are we editing an existing report, or creating a new one.
-$id = optional_param('id', 0, PARAM_INT);
 if ($id) {
     $report = $DB->get_record('report_customsql_queries', array('id' => $id));
     if (!$report) {

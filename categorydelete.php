@@ -28,16 +28,17 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
+
+// Start the page.
+admin_externalpage_setup('report_customsql', '', ['id' => $id],
+        '/report/customsql/categorydelete.php');
+$context = context_system::instance();
+require_capability('report/customsql:managecategories', $context);
+
 $category = $DB->get_record('report_customsql_categories', array('id' => $id));
 if (!$category) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('manage.php'), $id);
 }
-
-require_login();
-$context = context_system::instance();
-$PAGE->set_url(new moodle_url('/report/customsql/categorydelete.php'));
-$PAGE->set_context($context);
-require_capability('report/customsql:managecategories', $context);
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
     require_sesskey();
@@ -52,9 +53,6 @@ if (optional_param('confirm', false, PARAM_BOOL)) {
     }
     redirect(report_customsql_url('manage.php'));
 }
-
-// Start the page.
-admin_externalpage_setup('report_customsql');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('deletecategoryareyousure', 'report_customsql'));

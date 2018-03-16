@@ -31,13 +31,10 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
+admin_externalpage_setup('report_customsql', '', null, '/report/customsql/manage.php');
 $context = context_system::instance();
-$PAGE->set_url(new moodle_url('/report/customsql/manage.php'));
-$PAGE->set_context($context);
 require_capability('report/customsql:managecategories', $context);
 
-admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header() . $OUTPUT->heading(get_string('managecategories', 'report_customsql'));
 
 $categories = $DB->get_records('report_customsql_categories', null, 'name ASC');

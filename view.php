@@ -29,6 +29,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
 $id = required_param('id', PARAM_INT);
+$urlparams = ['id' => $id];
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
@@ -52,9 +53,6 @@ if ($report->runable == 'manual') {
             $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
         }
 
-        $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
-        $PAGE->set_context($context);
-        $PAGE->set_title(format_string($report->displayname));
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
 
@@ -74,7 +72,8 @@ if ($report->runable == 'manual') {
             }
         } else {
 
-            admin_externalpage_setup('report_customsql');
+            admin_externalpage_setup('report_customsql', '', $urlparams,
+                    '/report/customsql/view.php');
             $PAGE->set_title(format_string($report->displayname));
             $PAGE->navbar->add(format_string($report->displayname));
             echo $OUTPUT->header();
@@ -106,10 +105,12 @@ if ($report->runable == 'manual') {
     }
 } else {
     $csvtimestamp = optional_param('timestamp', time(), PARAM_INT);
+    $urlparams['timestamp'] = $csvtimestamp;
 }
 
 // Start the page.
-admin_externalpage_setup('report_customsql');
+admin_externalpage_setup('report_customsql', '', $urlparams,
+        '/report/customsql/view.php');
 $PAGE->set_title(format_string($report->displayname));
 $PAGE->navbar->add(format_string($report->displayname));
 echo $OUTPUT->header();

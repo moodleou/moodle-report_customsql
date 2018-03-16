@@ -38,7 +38,8 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
+// Start the page.
+admin_externalpage_setup('report_customsql');
 $context = context_system::instance();
 require_capability('report/customsql:view', $context);
 
@@ -49,8 +50,6 @@ if (!$showcat && count($categories) == 1) {
     $showcat = reset($categories)->id;
 }
 
-// Start the page.
-admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header();
 
 foreach ($categories as $category) {
