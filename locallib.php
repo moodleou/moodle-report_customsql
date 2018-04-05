@@ -27,14 +27,28 @@ defined('MOODLE_INTERNAL') || die();
 define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
+function report_customsql_limitnum() {
+    global $CFG;
+
+    if ($CFG->report_customsql_unlimitedresults == 1) {
+        $limitnum = null;
+    } else if ($CFG->report_customsql_unlimitedresults == 0 && !empty($CFG->report_customsql_maxresults)) {
+        $limitnum = $CFG->report_customsql_maxresults;
+    } else {
+        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS;
+    }
+
+    return $limitnum;
+}
+
 function report_customsql_execute_query($sql, $params = null,
-        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+        $querylimit) {
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
 
     // Note: throws Exception if there is an error.
-    return $DB->get_recordset_sql($sql, $params, 0, $limitnum);
+    return $DB->get_recordset_sql($sql, $params, 0, $querylimit);
 }
 
 function report_customsql_prepare_sql($report, $timenow) {
@@ -78,7 +92,17 @@ function report_customsql_generate_csv($report, $timenow) {
     $sql = report_customsql_prepare_sql($report, $timenow);
 
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
-    $querylimit  = !empty($report->querylimit) ? $report->querylimit : REPORT_CUSTOMSQL_MAX_RECORDS;
+
+    $limitnum = report_customsql_limitnum();
+
+    if (isset($limitnum) && !empty($report->querylimit)) {
+        $querylimit = $report->querylimit < $limitnum ? $report->querylimit : $limitnum;
+    } else if (isset($limitnum)) {
+        $querylimit = $limitnum;
+    } else {
+        $querylimit = !empty($report->querylimit) ? $report->querylimit : $limitnum;
+    }
+
     $rs = report_customsql_execute_query($sql, $queryparams, $querylimit);
 
     $csvfilenames = array();

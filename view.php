@@ -37,6 +37,7 @@ if (!$report) {
 
 require_login();
 $context = context_system::instance();
+$PAGE->set_context($context);
 if (!empty($report->capability)) {
     require_capability($report->capability, $context);
 }
@@ -165,9 +166,21 @@ if (is_null($csvtimestamp)) {
         fclose($handle);
         echo html_writer::table($table);
 
-        if ($count >= REPORT_CUSTOMSQL_MAX_RECORDS) {
+        $limitnum = report_customsql_limitnum();
+        $reportlimit = get_string('reportlimit', 'report_customsql');
+        $adminlimit = get_string('adminlimit', 'report_customsql');
+
+        if ($CFG->report_customsql_unlimitedresults == 1) {
+            $querylimit = !empty($report->querylimit) ? $report->querylimit : $limitnum;
+            $limiter = $reportlimit;
+        } else {
+            $querylimit = !empty($report->querylimit) && $report->querylimit < $limitnum ? $report->querylimit : $limitnum;
+            $limiter = !empty($report->querylimit) && $report->querylimit < $limitnum ? $reportlimit : $adminlimit;
+        }
+
+        if ($count >= $querylimit) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
-                                                  REPORT_CUSTOMSQL_MAX_RECORDS),
+                                                  array('limiter' => $limiter, 'querylimit' => $querylimit)),
                                                   array('class' => 'admin_note'));
         }
         echo report_customsql_time_note($report, 'p').

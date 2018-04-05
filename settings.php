@@ -16,9 +16,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$settings = null;
-
 $ADMIN->add('reports', new admin_externalpage('report_customsql',
         get_string('pluginname', 'report_customsql'),
         new moodle_url('/report/customsql/index.php'),
         'report/customsql:view'));
+
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configcheckbox('report_customsql_unlimitedresults',
+            get_string('unlimitedresults', 'report_customsql'),
+            get_string('unlimitedresults_help', 'report_customsql'), 0));
+
+    $settings->add(new admin_setting_configtext('report_customsql_maxresults',
+            get_string('maxresults', 'report_customsql'),
+            get_string('maxresults_help', 'report_customsql'), '5000'));
+}
