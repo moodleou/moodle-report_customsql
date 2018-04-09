@@ -99,7 +99,7 @@ function report_customsql_generate_csv($report, $timenow) {
         $data = get_object_vars($row);
         foreach ($data as $name => $value) {
             if (report_customsql_get_element_type($name) == 'date_time_selector' &&
-                    report_customsql_is_integer($value)) {
+                    report_customsql_is_integer($value) && $value > 0) {
                 $data[$name] = userdate($value, '%F %T');
             }
         }
