@@ -80,9 +80,11 @@ class report_customsql_edit_form extends moodleform {
         end($capabilityoptions);
         $mform->setDefault('capability', key($capabilityoptions));
 
+        $querylimit = report_customsql_limitnum();
+
         $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
         $mform->setType('querylimit', PARAM_INT);
-        $mform->setDefault('querylimit', REPORT_CUSTOMSQL_MAX_RECORDS);
+        $mform->setDefault('querylimit', $querylimit);
         $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
                         'numeric', null, 'client');
 
@@ -205,7 +207,7 @@ class report_customsql_edit_form extends moodleform {
         }
 
         // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
-        if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
+        if (empty($data['querylimit'])) {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
         }
 

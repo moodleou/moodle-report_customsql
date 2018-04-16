@@ -121,6 +121,7 @@ $string['querynote'] = '<ul>
 <li>You can put parameters into the SQL using named placeholders, for example <tt>:parameter_name</tt>. Then, when the report is run, the user can enter values for the parameters to use when running the query.</li>
 <li>If the <tt>:parameter_name</tt> starts or ends with the characters <tt>date</tt> then a date-time selector will be used to input that value, otherwise a plain text-box will be used.</li>
 <li>You cannot use the characters <tt>:</tt>, <tt>;</tt> or <tt>?</tt> in strings in your query. If you need them, you can use the tokens <tt>%%C%%</tt>, <tt>%%S%%</tt> and <tt>%%Q%%</tt> respectively.</li>
+<li>You cannot use the word <tt>"create"</tt> in your query. If you need to use this in the select area, you can use the token <tt>%%M%%</tt>.</li>
 </ul>';
 $string['queryparameters'] = 'Query parameters';
 $string['queryparams'] = 'Please enter default values for the query parameters.';
@@ -128,7 +129,7 @@ $string['queryparamschanged'] = 'The placeholders in the query have changed.';
 $string['queryrundate'] = 'query run date';
 $string['querysql'] = 'Query SQL';
 $string['querysqlrequried'] = 'You must enter some SQL.';
-$string['recordlimitreached'] = 'This query reached the limit of {$a} rows. Some rows may have been omitted from the end.';
+$string['recordlimitreached'] = 'This query reached the {$a->limiter} limit of {$a->querylimit} rows. Some rows may have been omitted from the end.';
 $string['reportfor'] = 'Query run on {$a}';
 $string['requireint'] = 'Integer required';
 $string['runable'] = 'Run';
@@ -147,3 +148,9 @@ $string['verifyqueryandupdate'] = 'Verify the Query SQL text and update the form
 $string['weeklyheader'] = 'Weekly';
 $string['weeklyheader_help'] = 'These queries are automatically run on the first day of each week, to report on the previous week. These links let you view the results that has already been accumulated.';
 $string['whocanaccess'] = 'Who can access this query';
+$string['unlimitedresults'] = 'Unlimited results';
+$string['unlimitedresults_help'] = 'Allows unlimited results. Limits are set by the report creator. Sets the default max to the number specified below.';
+$string['maxresults'] = 'Maximum results';
+$string['maxresults_help'] = 'The maximum number of results returned. If unlimited results is selected, this value becomes the default max per query.';
+$string['reportlimit'] = 'report';
+$string['adminlimit'] = 'administrative';
