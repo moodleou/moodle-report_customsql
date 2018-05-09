@@ -35,7 +35,12 @@ if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
-require_login();
+// Setup the page.
+admin_externalpage_setup('report_customsql', '', $urlparams,
+        '/report/customsql/view.php');
+$PAGE->set_title(format_string($report->displayname));
+$PAGE->navbar->add(format_string($report->displayname));
+
 $context = context_system::instance();
 if (!empty($report->capability)) {
     require_capability($report->capability, $context);
@@ -108,11 +113,7 @@ if ($report->runable == 'manual') {
     $urlparams['timestamp'] = $csvtimestamp;
 }
 
-// Start the page.
-admin_externalpage_setup('report_customsql', '', $urlparams,
-        '/report/customsql/view.php');
-$PAGE->set_title(format_string($report->displayname));
-$PAGE->navbar->add(format_string($report->displayname));
+// Output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($report->displayname));
 
