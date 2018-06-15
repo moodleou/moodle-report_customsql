@@ -488,7 +488,7 @@ function report_customsql_validate_users($userstring, $capability) {
 function report_customsql_get_message_no_data($report) {
     // Construct subject.
     $subject = get_string('emailsubject', 'report_customsql',
-            report_customsql_plain_text_report_name($report->displayname));
+            report_customsql_plain_text_report_name($report));
     $url = new moodle_url('/report/customsql/view.php', array('id' => $report->id));
     $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, array('href' => $url)));
     $fullmessage = html_writer::tag('p', get_string('nodatareturned', 'report_customsql') . ' ' . $link);
@@ -521,7 +521,7 @@ function report_customsql_get_message($report, $csvfilename) {
 
     // Construct subject.
     $subject = get_string('emailsubject', 'report_customsql',
-            report_customsql_plain_text_report_name($report->displayname));
+            report_customsql_plain_text_report_name($report));
 
     // Construct message without the table.
     $fullmessage = '';
