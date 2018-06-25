@@ -24,8 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
-define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
+if (!defined('REPORT_CUSTOMSQL_MAX_RECORDS')) {
+    define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
+}
+if (!defined('REPORT_CUSTOMSQL_START_OF_WEEK')) {
+    define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
+}
 
 function report_customsql_execute_query($sql, $params = null,
         $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
