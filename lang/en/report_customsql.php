@@ -120,7 +120,7 @@ $string['querynote'] = '<ul>
 <li>For scheduled reports, the tokens <tt>%%STARTTIME%%</tt> and <tt>%%ENDTIME%%</tt> are replaced by the Unix timestamp at the start and end of the reporting week/month in the query before it is executed.</li>
 <li>You can put parameters into the SQL using named placeholders, for example <tt>:parameter_name</tt>. Then, when the report is run, the user can enter values for the parameters to use when running the query.</li>
 <li>If the <tt>:parameter_name</tt> starts or ends with the characters <tt>date</tt> then a date-time selector will be used to input that value, otherwise a plain text-box will be used.</li>
-<li>You cannot use the characters <tt>:</tt>, <tt>;</tt> or <tt>?</tt> in strings in your query. If you need them, you can use the tokens <tt>%%C%%</tt>, <tt>%%S%%</tt> and <tt>%%Q%%</tt> respectively.</li>
+<li>You cannot use the characters <tt>:</tt>, <tt>;</tt> or <tt>?</tt> in strings in your query.<ul><li>If you need them in output data (such as when outputting URLs), you can use the tokens <tt>%%C%%</tt>, <tt>%%S%%</tt> and <tt>%%Q%%</tt> respectively.</li><li>If you need them in input data (such as in a regular expression or when querying for the characters), you will need to use a database function to get the characters and concatenate them yourself. In Postgres, respectively these are CHR(58), CHR(59) and CHR(63); in MySQL CHAR(58), CHAR(59) and CHAR(63).</li></ul> </li>
 </ul>';
 $string['queryparameters'] = 'Query parameters';
 $string['queryparams'] = 'Please enter default values for the query parameters.';

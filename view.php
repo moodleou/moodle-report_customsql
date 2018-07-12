@@ -156,7 +156,7 @@ if (is_null($csvtimestamp)) {
                 if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
                     $rowdata[] = '<a href="' . $value . '">' . $value . '</a>';
                 } else {
-                    $rowdata[] = $value;
+                    $rowdata[] = s($value);
                 }
             }
             $table->data[] = $rowdata;
