@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Form for editing custom SQL reporting categories,
- * called from addcategory if you have the report/customsql:managecategories capability.
+ * Form for editing custom SQL reporting categories.
  *
  * @package report_customsql
  * @copyright 2013 The Open University
@@ -28,6 +27,16 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/formslib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
+
+/**
+ * Form for editing custom SQL reporting categories.
+ *
+ * This is used by addcategory.php, for users who have
+ * report/customsql:managecategories capability.
+ *
+ * @copyright 2013 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class report_customsql_addcategory_form extends moodleform {
 
     // Form definition.

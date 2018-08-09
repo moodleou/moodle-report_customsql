@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Database upgrades.
+ * Upgrade code for report_customsql.
  *
  * @package report_customsql
  * @copyright 2015 The Open University
@@ -26,7 +26,10 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
+ * Upgrade code for report_customsql.
+ *
  * @param string $oldversion the version we are upgrading from.
+ * @return bool true on success.
  */
 function xmldb_report_customsql_upgrade($oldversion) {
     global $CFG, $DB;

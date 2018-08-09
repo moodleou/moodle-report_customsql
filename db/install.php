@@ -15,16 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Database upgrades.
+ * Install code for report_customsql.
  *
- * @package report
- * @subpackage customsql
+ * @package report_customsql
  * @copyright 2013 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
+
+/**
+ * Install code for report_customsql.
+ *
+ * @return bool true on success.
+ */
 function xmldb_report_customsql_install() {
     global $CFG, $DB;
 

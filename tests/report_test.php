@@ -20,13 +20,19 @@
  * @package report_customsql
  * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group report_customsql
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/../locallib.php');
 
+
+/**
+ * Unit tests for (parts of) the custom SQL report.
+ *
+ * @copyright 2009 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class report_customsql_test extends advanced_testcase {
     public function test_get_week_starts_test() {
         $this->assertEquals(array(

@@ -33,7 +33,7 @@ define(['jquery'], function($) {
         /**
          * Initialise the tabs.
          */
-        init: function () {
+        init: function() {
             $('body').on('click', '.csql_category h2', t.expandCollapse);
             $('.csql_expandcollapseall').on('click', t.expandCollapseAll);
             t.updateExpandCollapseAll();
@@ -42,9 +42,9 @@ define(['jquery'], function($) {
         /**
          * Event handler for expanding or collapsing one section.
          *
-         * @param e DOM event.
+         * @param {Event} e DOM event.
          */
-        expandCollapse: function (e) {
+        expandCollapse: function(e) {
             var catwrapper = $(e.target).closest('.csql_category');
             if (catwrapper.length) {
                 if (catwrapper.hasClass('csql_categoryhidden')) {
@@ -60,9 +60,9 @@ define(['jquery'], function($) {
         /**
          * Event handler for expanding or collapsing one section.
          *
-         * @param e DOM event.
+         * @param {Event} DOM event.
          */
-        expandCollapseAll: function (e) {
+        expandCollapseAll: function(e) {
             if ($('.csql_categoryshown').length === 0) {
                 // All categories collapsed, do expand all.
                 $('.csql_category').removeClass('csql_categoryhidden');
@@ -80,7 +80,7 @@ define(['jquery'], function($) {
          * Update the text of the expand/collpase all link, based
          * on whether any sections are open.
          */
-        updateExpandCollapseAll: function () {
+        updateExpandCollapseAll: function() {
             var link = $('.csql_expandcollapseall');
             if ($('.csql_categoryshown').length === 0) {
                 // All categories collapsed, link should expand all.

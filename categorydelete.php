@@ -16,6 +16,7 @@
 
 /**
  * Script to delete a particular custom SQL category, with confirmation.
+ *
  * This will only work if the category has no queries assigned to it.
  *
  * @package report_customsql

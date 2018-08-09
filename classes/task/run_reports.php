@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A scheduled task for Report Custom SQL.
+ * A scheduled task for Report Custom SQL, to run the scheduled reports.
  *
  * @package report_customsql
  * @copyright 2015 The Open University
@@ -25,6 +25,13 @@
 namespace report_customsql\task;
 defined('MOODLE_INTERNAL') || die();
 
+
+/**
+ * A scheduled task for Report Custom SQL, to run the scheduled reports.
+ *
+ * @copyright 2015 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class run_reports extends \core\task\scheduled_task {
 
     /**
