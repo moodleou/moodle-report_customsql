@@ -24,11 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
 function report_customsql_execute_query($sql, $params = null,
-        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+        $limitnum) {
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
@@ -78,7 +77,7 @@ function report_customsql_generate_csv($report, $timenow) {
     $sql = report_customsql_prepare_sql($report, $timenow);
 
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
-    $querylimit  = !empty($report->querylimit) ? $report->querylimit : REPORT_CUSTOMSQL_MAX_RECORDS;
+    $querylimit  = !empty($report->querylimit) ? $report->querylimit : report_customsql_get_maximum_row_limit();
     $rs = report_customsql_execute_query($sql, $queryparams, $querylimit);
 
     $csvfilenames = array();
@@ -700,4 +699,12 @@ function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename 
 function report_customsql_plain_text_report_name($report) {
     return format_string($report->displayname, true,
             ['context' => \context_system::instance()]);
+}
+
+/**
+ * Get the maximum number of results returned for a query defined in admin settings
+ */
+function report_customsql_get_maximum_row_limit()
+{
+    return get_config('report_customsql', 'maxrowlimit');
 }

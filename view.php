@@ -166,9 +166,9 @@ if (is_null($csvtimestamp)) {
         fclose($handle);
         echo html_writer::table($table);
 
-        if ($count >= REPORT_CUSTOMSQL_MAX_RECORDS) {
+        if ($count >= report_customsql_get_maximum_row_limit()) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
-                                                  REPORT_CUSTOMSQL_MAX_RECORDS),
+                                                  report_customsql_get_maximum_row_limit()),
                                                   array('class' => 'admin_note'));
         }
         echo report_customsql_time_note($report, 'p').
