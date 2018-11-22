@@ -95,12 +95,12 @@ $string['monthlyheader_help'] = 'These queries are automatically run on the firs
 $string['monthlynote_help'] = 'These queries are automatically run on the first day of each month, to report on the previous month. These links let you view the results that has already been accumulated.';
 $string['morethanonerowreturned'] = 'More than one row was returned. This query should return one row.';
 $string['nodatareturned'] = 'This query did not return any data.';
-$string['noexplicitprefix'] = 'Please do to include the table name prefix <tt>{$a}</tt> in the SQL. Instead, put the un-prefixed table name inside <tt>{}</tt> characters.';
+$string['noexplicitprefix'] = 'Please do to include the table name prefix <code>{$a}</code> in the SQL. Instead, put the un-prefixed table name inside <code>{}</code> characters.';
 $string['noreportsavailable'] = 'No queries available';
 $string['norowsreturned'] = 'No rows were returned. This query should return one row.';
 $string['noscheduleifplaceholders'] = 'Queries containing placeholders can only be run on-demand.';
 $string['nosemicolon'] = 'You are not allowed a ; character in the SQL.';
-$string['notallowedwords'] = 'You are not allowed to use the words <tt>{$a}</tt> in the SQL.';
+$string['notallowedwords'] = 'You are not allowed to use the words <code>{$a}</code> in the SQL.';
 $string['note'] = 'Notes';
 $string['notrunyet'] = 'This query has not yet been run.';
 $string['onerow'] = 'The query returns one row, accumulate the results one row at a time';
@@ -113,14 +113,18 @@ $string['queryfailed'] = 'Error when executing the query: {$a}';
 $string['querylimit'] = 'Limit rows returned';
 $string['querylimitrange'] = 'Number must be between 1 and {$a}';
 $string['querynote'] = '<ul>
-<li>The token <tt>%%WWWROOT%%</tt> in the results will be replaced with <tt>{$a}</tt>.</li>
+<li>The token <code>%%WWWROOT%%</code> in the results will be replaced with <code>{$a}</code>.</li>
 <li>Any value in the output that looks like a URL will automatically be made into a link.</li>
-<li>If a column name in the results ends with the characters <tt>date</tt>, and the column contains integer values, then they will be treated as Unix time-stamps, and automatically converted to human-readable dates.</li>
-<li>The token <tt>%%USERID%%</tt> in the query will be replaced with the user id of the user viewing the report, before the report is executed.</li>
-<li>For scheduled reports, the tokens <tt>%%STARTTIME%%</tt> and <tt>%%ENDTIME%%</tt> are replaced by the Unix timestamp at the start and end of the reporting week/month in the query before it is executed.</li>
-<li>You can put parameters into the SQL using named placeholders, for example <tt>:parameter_name</tt>. Then, when the report is run, the user can enter values for the parameters to use when running the query.</li>
-<li>If the <tt>:parameter_name</tt> starts or ends with the characters <tt>date</tt> then a date-time selector will be used to input that value, otherwise a plain text-box will be used.</li>
-<li>You cannot use the characters <tt>:</tt>, <tt>;</tt> or <tt>?</tt> in strings in your query.<ul><li>If you need them in output data (such as when outputting URLs), you can use the tokens <tt>%%C%%</tt>, <tt>%%S%%</tt> and <tt>%%Q%%</tt> respectively.</li><li>If you need them in input data (such as in a regular expression or when querying for the characters), you will need to use a database function to get the characters and concatenate them yourself. In Postgres, respectively these are CHR(58), CHR(59) and CHR(63); in MySQL CHAR(58), CHAR(59) and CHAR(63).</li></ul> </li>
+<li>If your query results have two columns <code><i>column_name</i></code> and <code><i>column_name</i>_link_url</code> then the resulting report output will have a single column containing a link with first column as link text and second as URL.</li>
+<li>If a column name in the results ends with the characters <code>date</code>, and the column contains integer values, then they will be treated as Unix time-stamps, and automatically converted to human-readable dates.</li>
+<li>The token <code>%%USERID%%</code> in the query will be replaced with the user id of the user viewing the report, before the report is executed.</li>
+<li>For scheduled reports, the tokens <code>%%STARTTIME%%</code> and <code>%%ENDTIME%%</code> are replaced by the Unix timestamp at the start and end of the reporting week/month in the query before it is executed.</li>
+<li>You can put parameters into the SQL using named placeholders, for example <code>:parameter_name</code>. Then, when the report is run, the user can enter values for the parameters to use when running the query.</li>
+<li>If the <code>:parameter_name</code> starts or ends with the characters <code>date</code> then a date-time selector will be used to input that value, otherwise a plain text-box will be used.</li>
+<li>You cannot use the characters <code>:</code>, <code>;</code> or <code>?</code> in strings in your query.<ul>
+    <li>If you need them in output data (such as when outputting URLs), you can use the tokens <code>%%C%%</code>, <code>%%S%%</code> and <code>%%Q%%</code> respectively.</li>
+    <li>If you need them in input data (such as in a regular expression or when querying for the characters), you will need to use a database function to get the characters and concatenate them yourself. In Postgres, respectively these are CHR(58), CHR(59) and CHR(63); in MySQL CHAR(58), CHAR(59) and CHAR(63).</li>
+</ul></li>
 </ul>';
 $string['queryparameters'] = 'Query parameters';
 $string['queryparams'] = 'Please enter default values for the query parameters.';
@@ -128,6 +132,7 @@ $string['queryparamschanged'] = 'The placeholders in the query have changed.';
 $string['queryrundate'] = 'query run date';
 $string['querysql'] = 'Query SQL';
 $string['querysqlrequried'] = 'You must enter some SQL.';
+$string['recordcount'] = 'This report has {$a} rows.';
 $string['recordlimitreached'] = 'This query reached the limit of {$a} rows. Some rows may have been omitted from the end.';
 $string['reportfor'] = 'Query run on {$a}';
 $string['requireint'] = 'Integer required';

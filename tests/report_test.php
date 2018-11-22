@@ -202,12 +202,91 @@ class report_customsql_test extends advanced_testcase {
         $this->assertFalse(report_customsql_is_integer('2013-10-07'));
     }
 
+    public function test_report_customsql_get_table_headers() {
+        $rawheaders = [
+                'String date',
+                'Date date',
+                'URL to link',
+                'Link text',
+                'Link text link url',
+                'Not link',
+                'Just a link url',
+                'Not link link url',
+                'HTML should be escaped',
+        ];
+
+        list($headers, $linkcolumns) = report_customsql_get_table_headers($rawheaders);
+
+        $this->assertEquals([
+                'String date',
+                'Date date',
+                'URL to link',
+                'Link text',
+                'Not link',
+                'Just a link url',
+                'HTML should be escaped'], $headers);
+        $this->assertEquals([3 => 4, 4 => -1, 5 => 7, 7 => -1], $linkcolumns);
+    }
+
+    public function test_report_customsql_pretify_column_names() {
+        $row = new stdClass();
+        $row->column = 1;
+        $row->column_url = 2;
+        $row->column_3 = 3;
+        $query = "SELECT 1 AS First, 2 AS Column_URL, 3 AS column_3";
+        $this->assertEquals(['column', 'Column URL', 'column 3'],
+                report_customsql_pretify_column_names($row, $query));
+
+    }
+
+    public function test_report_customsql_pretify_column_names_multi_line() {
+        $row = new stdClass();
+        $row->column = 1;
+        $row->column_url = 2;
+        $row->column_3 = 3;
+        $query = "SELECT
+                         1 AS First,
+                         2 AS Column_URL,
+                         3 AS column_3
+                    FROM table";
+        $this->assertEquals(['column', 'Column URL', 'column 3'],
+                report_customsql_pretify_column_names($row, $query));
+
+    }
+
+    public function test_report_customsql_display_row() {
+        $rawdata = [
+                'Not a date',
+                '2018-11-22 00:00:00+00',
+                'http://example.com/1',
+                'This is a link',
+                'http://example.com/2',
+                'Non-link, invalid URL',
+                'http://example.com/3',
+                'Not a URL',
+                '<b>Raw HTML</b>',
+        ];
+        $linkcolumns = [3 => 4, 4 => -1, 5 => 7, 7 => -1];
+
+        $this->assertEquals([
+                'Not a date',
+                '2018-11-22 00:00:00+00',
+                '<a href="http://example.com/1">http://example.com/1</a>',
+                '<a href="http://example.com/2">This is a link</a>',
+                'Non-link, invalid URL',
+                '<a href="http://example.com/3">http://example.com/3</a>',
+                '&lt;b&gt;Raw HTML&lt;/b&gt;'], report_customsql_display_row($rawdata, $linkcolumns));
+    }
+
     /**
      * Create an entry in 'report_customsql_queries' table and return the id
+     *
      * @param string $runable
      * @param string $at
      * @param int $lastrun
      * @param string $emailto
+     *
+     * @return int the new query id.
      */
     private function create_a_database_row($runable, $at, $lastrun, $emailto) {
         global $DB;

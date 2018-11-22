@@ -6,19 +6,19 @@ Feature: Ad-hoc database queries report
 
   Background:
     Given the following "courses" exist:
-      | fullname | shortname | category | groupmode |
-      | Course 1 | C1 | 0 | 1 |
-      | Course 2 | C2 | 0 | 1 |
-      | Course 3 | C3 | 0 | 2 |
-      | Course 4 | C4 | 0 | 2 |
+      | fullname | shortname | groupmode |
+      | Course 1 | C1        | 1         |
+      | Course 2 | C2        | 1         |
+      | Course 3 | C3        | 2         |
+      | Course 4 | C4        | 2         |
     Given the following "users" exist:
       | username | firstname | lastname |
-      | teacher1 | T1 | Teqacher1 |
-      | student1 | S1 | Student1 |
+      | teacher  | T1        | Teacher  |
+      | student  | S1        | Student  |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | student1 | C1 | student |
+      | user    | course | role           |
+      | teacher | C1     | editingteacher |
+      | student | C1     | student        |
     And I log in as "admin"
 
   Scenario: Create a query, edit it and then delete it.
@@ -27,22 +27,23 @@ Feature: Ad-hoc database queries report
     # Start creating the first query.
     And I press "Add a new query"
     And I set the following fields to these values:
-      | Query name  | Query 1                                              |
-      | Description | Description 1                                        |
-      | Query SQL   | SELECT * FROM {user} u where u.username = 'teacher1' |
+      | Query name  | Query 1                                             |
+      | Description | Description 1                                       |
+      | Query SQL   | SELECT * FROM {user} u where u.username = 'teacher' |
 
     And I press "Verify the Query SQL text and update the form"
     And I press "Save changes"
     Then I should see "Query 1"
     And I should see "Description 1"
+    And I should see "This report has 1 rows."
     And I should see "Download these results as CSV"
 
     # Edit this query.
     When I follow "Edit this query"
     Then the following fields match these values:
-      | Query name  | Query 1                                              |
-      | Description | Description 1                                        |
-      | Query SQL   | SELECT * FROM {user} u where u.username = 'teacher1' |
+      | Query name  | Query 1                                             |
+      | Description | Description 1                                       |
+      | Query SQL   | SELECT * FROM {user} u where u.username = 'teacher' |
 
     When I set the field "Query name" to "Query 2"
     And I set the field "Description" to "Description 2"
@@ -51,12 +52,12 @@ Feature: Ad-hoc database queries report
     And I press "Save changes"
     Then I should see "Query 2"
     And I should see "Description 2"
+    And I should see "This report has 1 rows."
     And I follow "Delete this query"
     And I press "Yes"
 
   Scenario: Create a query where the query cannot be found in DB.
     When I navigate to "Reports > Ad-hoc database queries" in site administration
-    And I follow "Ad-hoc database queries"
 
     # start creating a query
     And I press "Add a new query"
@@ -70,7 +71,6 @@ Feature: Ad-hoc database queries report
   Scenario: Create 2 categories and create a query for each category.
     # Do the basic
     When I navigate to "Reports > Ad-hoc database queries" in site administration
-    And I follow "Ad-hoc database queries"
     And I press "Manage report categories"
 
     # Create the first category and create a query in this category.
@@ -86,7 +86,7 @@ Feature: Ad-hoc database queries report
     And I press "Add a new query"
     And I set the field "Query name" to "Query1 for category1"
     And I set the field "Description" to "Description of query for cat1"
-    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher1' "
+    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher' "
     And I press "Verify the Query SQL text and update the form"
     And I set the field "Select category for this report" to "Category 1"
     And I press "Save changes"
@@ -110,7 +110,7 @@ Feature: Ad-hoc database queries report
     And I press "Add a new query"
     And I set the field "Query name" to "Query for cat2"
     And I set the field "Description" to "Description of query for cat2"
-    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher1' "
+    And I set the field "Query SQL" to "SELECT * FROM {user} u where u.username = 'teacher' "
     And I press "Verify the Query SQL text and update the form"
     And I set the field "Select category for this report" to "Category 2"
     And I press "Save changes"
@@ -129,7 +129,6 @@ Feature: Ad-hoc database queries report
 
   Scenario: Create a query and then edit it by filling most of the elements in the form.
     When I navigate to "Reports > Ad-hoc database queries" in site administration
-    And I follow "Ad-hoc database queries"
 
     # start creating the first query
     And I press "Add a new query"
@@ -154,3 +153,36 @@ Feature: Ad-hoc database queries report
     And I press "Save changes"
     Then I should see "Query 2"
     And I should see "Monthly"
+
+  Scenario: A query that uses the various auto-formatting options
+    When I navigate to "Reports > Ad-hoc database queries" in site administration
+    And I press "Add a new query"
+    And I set the field "Query name" to "Test query"
+    And I set the field "Query SQL" to multiline:
+      """
+      SELECT
+        'Not a date'               AS String_date,
+        1542888000                 AS Date_date,
+        'http%%C%%//example.com/1' AS URL_to_link,
+        'This is a link'           AS Link_text,
+        'http%%C%%//example.com/2' AS Link_text_link_url,
+        'Non-link, invalid URL'    AS Not_link,
+        'Not a URL'                AS Not_link_link_url,
+        'http%%C%%//example.com/3' AS Just_a_link_url,
+        '<b>Raw HTML</b>'          AS HTML_should_be_escaped
+      """
+    And I press "Save changes"
+    Then I should see "Test query"
+    And "Not a date" row "String date" column of "report_customsql_results" table should contain "Not a date"
+    And "Not a date" row "Date date" column of "report_customsql_results" table should contain "2018-11-22"
+    And "Not a date" row "URL to link" column of "report_customsql_results" table should contain "http://example.com/1"
+    And "Not a date" row "Link text" column of "report_customsql_results" table should contain "This is a link"
+    And "Not a date" row "Not link" column of "report_customsql_results" table should contain "Non-link, invalid URL"
+    And "Not a date" row "Just a link url" column of "report_customsql_results" table should contain "http://example.com/3"
+    And "Not a date" row "HTML should be escaped" column of "report_customsql_results" table should contain "<b>Raw HTML</b>"
+    And "http://example.com/1" "link" in the "report_customsql_results" "table" should be visible
+    And "This is a link" "link" in the "report_customsql_results" "table" should be visible
+    And "Non-link, invalid URL" "link" should not exist in the "report_customsql_results" "table"
+    And "http://example.com/3" "link" in the "report_customsql_results" "table" should be visible
+    And I should not see "Link text link url" in the "report_customsql_results" "table"
+    And I should see "This report has 1 rows."

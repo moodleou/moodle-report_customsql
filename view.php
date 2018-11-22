@@ -26,7 +26,6 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_form.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/validateurlsyntax.php');
 
 $id = required_param('id', PARAM_INT);
 $urlparams = ['id' => $id];
@@ -148,18 +147,11 @@ if (is_null($csvtimestamp)) {
         }
 
         $table = new html_table();
-        $table->head = fgetcsv($handle);
+        $table->id = 'report_customsql_results';
+        list($table->head, $linkcolumns) = report_customsql_get_table_headers(fgetcsv($handle));
 
         while ($row = fgetcsv($handle)) {
-            $rowdata = array();
-            foreach ($row as $value) {
-                if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
-                    $rowdata[] = '<a href="' . $value . '">' . $value . '</a>';
-                } else {
-                    $rowdata[] = s($value);
-                }
-            }
-            $table->data[] = $rowdata;
+            $table->data[] = report_customsql_display_row($row, $linkcolumns);
             $count += 1;
         }
 
@@ -170,7 +162,11 @@ if (is_null($csvtimestamp)) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
                                                   REPORT_CUSTOMSQL_MAX_RECORDS),
                                                   array('class' => 'admin_note'));
+        } else {
+            echo html_writer::tag('p', get_string('recordcount', 'report_customsql', $count),
+                    array('class' => 'admin_note'));
         }
+
         echo report_customsql_time_note($report, 'p').
              html_writer::start_tag('p').
              html_writer::tag('a', get_string('downloadthisreportascsv', 'report_customsql'),

@@ -24,6 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->libdir . '/validateurlsyntax.php');
+
 define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
@@ -90,7 +93,7 @@ function report_customsql_generate_csv($report, $timenow) {
 
             if (!file_exists($csvfilename)) {
                 $handle = fopen($csvfilename, 'w');
-                report_customsql_start_csv($handle, $row, $report->singlerow);
+                report_customsql_start_csv($handle, $row, $report);
             } else {
                 $handle = fopen($csvfilename, 'a');
             }
@@ -280,9 +283,11 @@ function report_customsql_log_view($id) {
 }
 
 /**
- * Returns all reports for a given type sorted by report 'displaname'
+ * Returns all reports for a given type sorted by report 'displaname'.
+ *
  * @param int $categoryid
  * @param string $type, type of report (manual, daily, weekly or monthly)
+ * @return stdClass[] relevant rows from report_customsql_queries.
  */
 function report_customsql_get_reports_for($categoryid, $type) {
     global $DB;
@@ -291,7 +296,8 @@ function report_customsql_get_reports_for($categoryid, $type) {
 }
 
 /**
- * display the rports
+ * Display a list of reports of one type in one category.
+ *
  * @param object $reports, the result of DB query
  * @param string $type, type of report (manual, daily, weekly or monthly)
  */
@@ -337,6 +343,68 @@ function report_customsql_print_reports_for($reports, $type) {
     }
 }
 
+/**
+ * Get the list of actual column headers from the list of raw column names.
+ *
+ * This matches up the 'Column name' and 'Column name link url' columns.
+ *
+ * @param string[] $row the row of raw column headers from the CSV file.
+ * @return array with two elements: the column headers to use in the table, and the columns that are links.
+ */
+function report_customsql_get_table_headers($row) {
+    $colnames = array_combine($row, $row);
+    $linkcolumns = [];
+    $colheaders = [];
+
+    foreach ($row as $key => $colname) {
+        if (substr($colname, -9) === ' link url' && isset($colnames[substr($colname, 0, -9)])) {
+            // This is a link_url column for another column. Skip.
+            $linkcolumns[$key] = -1;
+
+        } else if (isset($colnames[$colname . ' link url'])) {
+            $colheaders[] = $colname;
+            $linkcolumns[$key] = array_search($colname . ' link url', $row);
+        } else {
+            $colheaders[] = $colname;
+        }
+    }
+
+    return [$colheaders, $linkcolumns];
+}
+
+/**
+ * Prepare the values in a data row for display.
+ *
+ * This deals with $linkcolumns as detected above and other values that looks like links.
+ * Auto-formatting dates is handled when the CSV is generated.
+ *
+ * @param string[] $row the row of raw data.
+ * @param int[] $linkcolumns
+ * @return string[] cell contents for output.
+ */
+function report_customsql_display_row($row, $linkcolumns) {
+    $rowdata = array();
+    foreach ($row as $key => $value) {
+        if (isset($linkcolumns[$key]) && $linkcolumns[$key] === -1) {
+            // This row is the link url for another row.
+            continue;
+        } else if (isset($linkcolumns[$key])) {
+            // Column with link url coming from another column.
+            if (validateUrlSyntax($row[$linkcolumns[$key]], 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
+                $rowdata[] = '<a href="' . s($row[$linkcolumns[$key]]) . '">' . s($value) . '</a>';
+            } else {
+                $rowdata[] = s($value);
+            }
+        } else if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
+            // Column where the value just looks like a link.
+            $rowdata[] = '<a href="' . s($value) . '">' . s($value) . '</a>';
+        } else {
+            $rowdata[] = s($value);
+        }
+    }
+    return $rowdata;
+}
+
 function report_customsql_time_note($report, $tag) {
     if ($report->lastrun) {
         $a = new stdClass;
@@ -351,9 +419,19 @@ function report_customsql_time_note($report, $tag) {
     return html_writer::tag($tag, $note, array('class' => 'admin_note'));
 }
 
-function report_customsql_pretify_column_names($row) {
-    $colnames = array();
+
+function report_customsql_pretify_column_names($row, $querysql) {
+    $colnames = [];
+
     foreach (get_object_vars($row) as $colname => $ignored) {
+        // Databases tend to return the columns lower-cased.
+        // Try to get the original case from the query.
+        if (preg_match('~SELECT.*\b(' . preg_quote($colname, '~') . ')\b.*(FROM|$)~is',
+                $querysql, $matches)) {
+            $colname = $matches[1];
+        }
+
+        // Change underscores to spaces.
         $colnames[] = str_replace('_', ' ', $colname);
     }
     return $colnames;
@@ -377,9 +455,9 @@ function report_customsql_write_csv_row($handle, $data) {
     fwrite($handle, implode(',', $escapeddata)."\r\n");
 }
 
-function report_customsql_start_csv($handle, $firstrow, $datecol) {
-    $colnames = report_customsql_pretify_column_names($firstrow);
-    if ($datecol) {
+function report_customsql_start_csv($handle, $firstrow, $report) {
+    $colnames = report_customsql_pretify_column_names($firstrow, $report->querysql);
+    if ($report->singlerow) {
         array_unshift($colnames, get_string('queryrundate', 'report_customsql'));
     }
     report_customsql_write_csv_row($handle, $colnames);
