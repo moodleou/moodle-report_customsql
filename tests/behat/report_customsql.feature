@@ -22,10 +22,9 @@ Feature: Ad-hoc database queries report
     And I log in as "admin"
 
   Scenario: Create a query, edit it and then delete it.
-    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
-    And I follow "Ad-hoc database queries"
+    When I navigate to "Reports > Ad-hoc database queries" in site administration
 
-    # start creating the first query
+    # Start creating the first query.
     And I press "Add a new query"
     And I set the following fields to these values:
       | Query name  | Query 1                                              |
@@ -38,7 +37,7 @@ Feature: Ad-hoc database queries report
     And I should see "Description 1"
     And I should see "Download these results as CSV"
 
-    # Edit this query
+    # Edit this query.
     When I follow "Edit this query"
     Then the following fields match these values:
       | Query name  | Query 1                                              |
@@ -56,7 +55,7 @@ Feature: Ad-hoc database queries report
     And I press "Yes"
 
   Scenario: Create a query where the query cannot be found in DB.
-    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    When I navigate to "Reports > Ad-hoc database queries" in site administration
     And I follow "Ad-hoc database queries"
 
     # start creating a query
@@ -70,7 +69,7 @@ Feature: Ad-hoc database queries report
 
   Scenario: Create 2 categories and create a query for each category.
     # Do the basic
-    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    When I navigate to "Reports > Ad-hoc database queries" in site administration
     And I follow "Ad-hoc database queries"
     And I press "Manage report categories"
 
@@ -118,7 +117,7 @@ Feature: Ad-hoc database queries report
     Then I should see "Query for cat2"
 
     # Test exand/collapse of categories.
-    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    When I navigate to "Reports > Ad-hoc database queries" in site administration
     Then I should see "Expand all"
     And I should not see "Query1 for category1"
     When I follow "Category 1"
@@ -129,7 +128,7 @@ Feature: Ad-hoc database queries report
     And I should see "Expand all"
 
   Scenario: Create a query and then edit it by filling most of the elements in the form.
-    When I navigate to "Ad-hoc database queries" node in "Site administration > Reports"
+    When I navigate to "Reports > Ad-hoc database queries" in site administration
     And I follow "Ad-hoc database queries"
 
     # start creating the first query
