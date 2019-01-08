@@ -36,6 +36,12 @@ function report_customsql_execute_query($sql, $params = null,
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
 
+    foreach ($params as $name => $value) {
+        if (((string) (int) $value) === ((string) $value)) {
+            $params[$name] = (int) $value;
+        }
+    }
+
     // Note: throws Exception if there is an error.
     return $DB->get_recordset_sql($sql, $params, 0, $limitnum);
 }

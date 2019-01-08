@@ -115,7 +115,15 @@ if ($report->runable == 'manual') {
                     $e->getMessage());
     }
 } else {
-    $csvtimestamp = optional_param('timestamp', time(), PARAM_INT);
+    // Runs on schedule.
+    $csvtimestamp = optional_param('timestamp', null, PARAM_INT);
+    if ($csvtimestamp === null) {
+        $archivetimes = report_customsql_get_archive_times($report);
+        $csvtimestamp = array_shift($archivetimes);
+    }
+    if ($csvtimestamp === null) {
+        $csvtimestamp = time();
+    }
     $urlparams['timestamp'] = $csvtimestamp;
 }
 
