@@ -34,11 +34,18 @@ if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
+$embed = optional_param('embed', 0, PARAM_BOOL);
+$urlparams['embed'] = $embed;
+
 // Setup the page.
 admin_externalpage_setup('report_customsql', '', $urlparams,
         '/report/customsql/view.php');
 $PAGE->set_title(format_string($report->displayname));
 $PAGE->navbar->add(format_string($report->displayname));
+
+if ($embed) {
+    $PAGE->set_pagelayout('embedded');
+}
 
 $context = context_system::instance();
 if (!empty($report->capability)) {
