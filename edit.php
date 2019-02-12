@@ -93,7 +93,15 @@ if ($newreport = $mform->get_data()) {
         $newreport->queryparams = '';
     }
 
-    if ($id) {
+/* START: SNOMED CUSTOM ADDITION TO ENABLE COPYING OF AN EXISTING QUERY */
+	if($newreport->saveascopy) {
+		$id=0;
+		$newreport->displayname .= ' (copy)';
+		}
+/* END: SNOMED CUSTOM ADDITION TO ENABLE COPYING OF AN EXISTING QUERY */
+
+    if ($id)
+	{
         $newreport->id = $id;
         $ok = $DB->update_record('report_customsql_queries', $newreport);
         if (!$ok) {

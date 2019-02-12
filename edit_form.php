@@ -119,7 +119,11 @@ class report_customsql_edit_form extends moodleform {
                 $categoryoptions);
         $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
         $mform->setDefault('categoryid', $catdefault);
-
+		
+/* START: SNOMED CUSTOM ADDITION TO ENABLE COPYING OF AN EXISTING QUERY */
+		$mform->addElement('checkbox','saveascopy',get_string('save_as_copy','report_customsql'),get_string('save_new_query','report_customsql'));
+/* END: SNOMED CUSTOM ADDITION TO ENABLE COPYING OF AN EXISTING QUERY */		
+		
         $this->add_action_buttons();
     }
 
