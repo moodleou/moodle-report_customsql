@@ -39,7 +39,7 @@ $urlparams['embed'] = $embed;
 
 // Setup the page.
 admin_externalpage_setup('report_customsql', '', $urlparams,
-        '/report/customsql/view.php');
+        '/report/customsql/view.php', ['pagelayout' => 'report']);
 $PAGE->set_title(format_string($report->displayname));
 $PAGE->navbar->add(format_string($report->displayname));
 
