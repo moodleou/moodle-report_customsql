@@ -432,7 +432,7 @@ function report_customsql_pretify_column_names($row, $querysql) {
     foreach (get_object_vars($row) as $colname => $ignored) {
         // Databases tend to return the columns lower-cased.
         // Try to get the original case from the query.
-        if (preg_match('~SELECT.*\b(' . preg_quote($colname, '~') . ')\b.*(FROM|$)~is',
+        if (preg_match('~SELECT.*?\s(' . preg_quote($colname, '~') . ')\b~is',
                 $querysql, $matches)) {
             $colname = $matches[1];
         }
