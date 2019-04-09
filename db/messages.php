@@ -27,6 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 $messageproviders = array(
     // Notify users on the list who can view repot custimsql.
     'notification' => array(
-        'capability' => 'report/customsql:view'
+        'capability' => 'report/customsql:view',
+
+        'defaults' => array(
+            'email' => MESSAGE_FORCED,
+        ),
     ),
 );
