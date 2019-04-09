@@ -698,12 +698,12 @@ function report_customsql_get_ready_to_run_daily_reports($timenow) {
 function report_customsql_send_email_notification($recipient, $message) {
 
     // Prepare the message.
-    $eventdata = new stdClass();
+    $eventdata = new \core\message\message();
     $eventdata->component         = 'report_customsql';
     $eventdata->name              = 'notification';
     $eventdata->notification      = 1;
-
-    $eventdata->userfrom          = get_admin();
+    $eventdata->courseid          = SITEID;
+    $eventdata->userfrom          = \core_user::get_support_user();
     $eventdata->userto            = $recipient;
     $eventdata->subject           = $message->subject;
     $eventdata->fullmessage       = $message->fullmessage;

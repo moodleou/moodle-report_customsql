@@ -279,6 +279,44 @@ class report_customsql_test extends advanced_testcase {
     }
 
     /**
+     * Test plugin emailing of reports
+     *
+     * @return void
+     */
+    public function test_report_customsql_email_report() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $user = $this->getDataGenerator()->create_user();
+
+        $id = $this->create_a_database_row('daily', 2, 1, $user->username);
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
+
+        // Give our test user the capability to view the report.
+        $userrole = $DB->get_record('role', ['shortname' => 'user']);
+        role_change_permission($userrole->id, context_system::instance(), $report->capability, CAP_ALLOW);
+
+        // Send the report, catch everything sent through message_send API.
+        $sink = $this->redirectMessages();
+
+        report_customsql_email_report($report);
+
+        $messages = $sink->get_messages();
+        $this->assertCount(1, $messages);
+
+        $message = reset($messages);
+        $this->assertEquals(\core_user::get_support_user()->id, $message->useridfrom);
+        $this->assertEquals($user->id, $message->useridto);
+
+        $expectedsubject = get_string('emailsubject', 'report_customsql',
+            report_customsql_plain_text_report_name($report));
+        $this->assertEquals($expectedsubject, $message->subject);
+
+        $sink->close();
+    }
+
+    /**
      * Create an entry in 'report_customsql_queries' table and return the id
      *
      * @param string $runable
