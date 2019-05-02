@@ -71,8 +71,20 @@ if ($report->runable == 'manual') {
             redirect(report_customsql_url('index.php'));
         }
 
-        if ($newreport = $mform->get_data()) {
-
+        // Allow form bypass if all queryparams supplied
+        if ($queryparams) {
+            foreach ($queryparams as $queryparam => $formparam) {
+                if ($qs_value = optional_param($queryparam, null, PARAM_RAW)) {
+                    
+                    $queryparams[$queryparam] = $qs_value;
+                    $qs_params++;
+                }
+            }
+        }
+        if (count($queryparams) == $qs_params) {
+            // Fall through to display results
+            $report->queryparams = serialize($queryparams);
+        } else if ($newreport = $mform->get_data()) {
             // Pick up named parameters into serialised array.
             if ($queryparams) {
                 foreach ($queryparams as $queryparam => $formparam) {
@@ -96,7 +108,8 @@ if ($report->runable == 'manual') {
             $report->description = strip_tags($report->description);
             $queryparams = unserialize($report->queryparams);
             foreach ($queryparams as $param => $value) {
-                $report->{'queryparam'.$param} = $value;
+                $qs_value = optional_param($param, null, PARAM_RAW);
+                $report->{'queryparam'.$param} = !is_null($qs_value) ? $qs_value : $value;
             }
             $mform->set_data($report);
             $mform->display();
