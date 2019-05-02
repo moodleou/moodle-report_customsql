@@ -49,6 +49,6 @@ class report_customsql_view_form extends moodleform {
             }
         }
 
-        $this->add_action_buttons(true, 'Run report');
+        $this->add_action_buttons(true, get_string('runreport', 'report_customsql'));
     }
 }
