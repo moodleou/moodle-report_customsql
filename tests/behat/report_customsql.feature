@@ -36,7 +36,8 @@ Feature: Ad-hoc database queries report
     Then I should see "Query 1"
     And I should see "Description 1"
     And I should see "This report has 1 rows."
-    And I should see "Download these results as CSV"
+    And I should see "Download these results as"
+    And the "Download these results as" select box should contain "Comma separated values (.csv)"
 
     # Edit this query.
     When I follow "Edit this query"

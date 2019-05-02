@@ -25,9 +25,11 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->libdir . '/dataformatlib.php');
 
 $id = required_param('id', PARAM_INT);
 $csvtimestamp = required_param('timestamp', PARAM_INT);
+$dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
@@ -46,4 +48,15 @@ if (!is_readable($csvfilename)) {
                 report_customsql_url('view.php?id=' . $id));
 }
 
-send_file($csvfilename, 'report.csv', 'default' , 0, false, true, 'text/csv; charset=UTF-8');
+$handle = fopen($csvfilename, 'r');
+
+list($columns, $linkcolumns) = report_customsql_get_table_headers(fgetcsv($handle));
+$rows = [];
+
+while ($row = fgetcsv($handle)) {
+    $rows[] = report_customsql_display_row($row, $linkcolumns);
+}
+
+fclose($handle);
+
+download_as_dataformat('report', $dataformat, $columns, $rows);
