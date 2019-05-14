@@ -689,7 +689,7 @@ function report_customsql_get_ready_to_run_daily_reports($timenow) {
     foreach ($reports as $id => $r) {
         // Check whether the report is ready to run.
         if (!report_customsql_is_daily_report_ready($r, $timenow)) {
-            //continue;
+            continue;
         }
         $reportstorun[$id] = $r;
     }
