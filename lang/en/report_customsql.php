@@ -30,6 +30,7 @@ $string['anyonewhocanveiwthisreport'] = 'Anyone who can view this report (report
 $string['archivedversions'] = 'Archived versions of this query';
 $string['at'] = 'at';
 $string['automaticallydaily'] = 'Scheduled, daily';
+$string['automaticallyhourly'] = 'Scheduled, hourly';
 $string['automaticallymonthly'] = 'Scheduled, on the first day of each month';
 $string['automaticallyweekly'] = 'Scheduled, on the first day of each week';
 $string['availablereports'] = 'On-demand queries';
