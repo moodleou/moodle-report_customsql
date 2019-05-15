@@ -704,7 +704,7 @@ function report_customsql_get_ready_to_run_daily_reports($timenow) {
  */
 function report_customsql_send_email_notification($recipient, $message, $csvfilename = null) {
     global $CFG;
-    // Messaging does not support attachments, so send an email if attachment is required
+    // Our attachment is not a stored_file, so is not supported by the Messaging API. Send an email if attachment is required
     if ($csvfilename) {
         $parts = explode('/', $csvfilename);
         $filename = $parts[count($parts) - 1];
