@@ -74,7 +74,8 @@ class run_reports extends \core\task\scheduled_task {
         // Get weekly and monthly scheduled reports.
         $scheduledreportstorun = $DB->get_records_select('report_customsql_queries',
                                             "(runable = 'weekly' AND lastrun < :startofthisweek) OR
-                                             (runable = 'monthly' AND lastrun < :startofthismonth)",
+                                             (runable = 'monthly' AND lastrun < :startofthismonth) OR 
+                                             (runable = 'hourly')",
                                             array('startofthisweek' => $startofthisweek,
                                                   'startofthismonth' => $startofthismonth), 'lastrun');
 
