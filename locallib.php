@@ -60,11 +60,25 @@ function report_customsql_prepare_sql($report, $timenow) {
 /**
  * Extract all the placeholder names from the SQL.
  * @param string $sql The sql.
- * @return array placeholder names
+ * @return array placeholder names including the leading colon.
  */
 function report_customsql_get_query_placeholders($sql) {
     preg_match_all('/(?<!:):[a-z][a-z0-9_]*/', $sql, $matches);
     return $matches[0];
+}
+
+/**
+ * Extract all the placeholder names from the SQL, and work out the corresponding form field names.
+ *
+ * @param string $querysql The sql.
+ * @return string[] placeholder name => form field name.
+ */
+function report_customsql_get_query_placeholders_and_field_names(string $querysql): array {
+    $queryparams = [];
+    foreach (report_customsql_get_query_placeholders($querysql) as $queryparam) {
+        $queryparams[substr($queryparam, 1)] = 'queryparam' . substr($queryparam, 1);
+    }
+    return $queryparams;
 }
 
 /**
@@ -641,7 +655,7 @@ function report_customsql_get_message($report, $csvfilename) {
 }
 
 function report_customsql_email_report($report, $csvfilename = null) {
-    global $CFG, $DB, $OUTPUT;
+    global $DB;
 
     // If there are no recipients return.
     if (!$report->emailto) {
@@ -698,8 +712,9 @@ function report_customsql_get_ready_to_run_daily_reports($timenow) {
 /**
  * Sends a notification message to the reciepients.
  *
- * @param object $recepient, the message recipient.
- * @param object $message, the message objectr.
+ * @param object $recipient the message recipient.
+ * @param object $message the message object.
+ * @return mixed result of {@link message_send()}.
  */
 function report_customsql_send_email_notification($recipient, $message) {
 
@@ -722,7 +737,9 @@ function report_customsql_send_email_notification($recipient, $message) {
 
 /**
  * Check if the report is ready to run.
+ *
  * @param object $report
+ * @param int $timenow
  * @return boolean
  */
 function report_customsql_is_daily_report_ready($report, $timenow) {
@@ -780,8 +797,9 @@ function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename 
  * Get a report name as plain text, for use in places like cron output and email subject lines.
  *
  * @param object $report report settings from the database.
+ * @return string the usable version of the name.
  */
-function report_customsql_plain_text_report_name($report) {
+function report_customsql_plain_text_report_name($report): string {
     return format_string($report->displayname, true,
-            ['context' => \context_system::instance()]);
+            ['context' => context_system::instance()]);
 }

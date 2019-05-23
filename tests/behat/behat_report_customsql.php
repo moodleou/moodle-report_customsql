@@ -53,7 +53,6 @@ class behat_report_customsql extends behat_base {
      * @param TableNode $data Supplied data
      */
     public function the_following_custom_sql_report_exists(TableNode $data) {
-        global $DB;
         $report = $data->getRowsHash();
 
         // Report name.
@@ -102,7 +101,7 @@ class behat_report_customsql extends behat_base {
             $report['runable'] = 'manual';
         }
 
-        $DB->insert_record('report_customsql_queries', (object) $report);
+        $this->save_new_report($report);
     }
 
     /**
@@ -122,7 +121,6 @@ class behat_report_customsql extends behat_base {
      * @param PyStringNode $querysql The query SQL
      */
     public function the_custom_sql_report_x_exists(string $reportname, PyStringNode $querysql) {
-        global $DB;
         $report = [
             'displayname' => $reportname,
             'description' => '',
@@ -133,6 +131,19 @@ class behat_report_customsql extends behat_base {
             'capability' => 'moodle/site:config',
             'runable' => 'manual',
         ];
+
+        $this->save_new_report($report);
+    }
+
+    protected function save_new_report(array $report) {
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/report/customsql/locallib.php');
+
+        $params = report_customsql_get_query_placeholders_and_field_names($report['querysql']);
+        if ($params) {
+            $report['queryparams'] = serialize($params);
+        }
 
         $DB->insert_record('report_customsql_queries', (object) $report);
     }
@@ -190,7 +201,7 @@ class behat_report_customsql extends behat_base {
             $queryparams[] = $name . '=' . urlencode($rowdata[1]);
         }
 
-        $this->getSession()->visit($this->locate_path('/report/customsql/view.php?id=' .
+        $this->getSession()->visit($this->locate_path('/report/customsql/view.php?' .
                 implode('&', $queryparams)));
     }
 

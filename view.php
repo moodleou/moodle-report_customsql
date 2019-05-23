@@ -58,29 +58,44 @@ if ($report->runable == 'manual') {
 
     // Allow query parameters to be entered.
     if (!empty($report->queryparams)) {
+        $queryparams = report_customsql_get_query_placeholders_and_field_names($report->querysql);
 
-        $queryparams = array();
-        foreach (report_customsql_get_query_placeholders($report->querysql) as $queryparam) {
-            $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
+        // Get any query param values that are given in the URL.
+        $paramvalues = [];
+        foreach ($queryparams as $queryparam => $notused) {
+            $value = optional_param($queryparam, null, PARAM_RAW);
+            if ($value !== null && $value !== '') {
+                $paramvalues[$queryparam] = $value;
+            }
         }
 
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
+        $formdefaults = [];
+        if ($report->queryparams) {
+            foreach (unserialize($report->queryparams) as $queryparam => $defaultvalue) {
+                $formdefaults[$queryparams[$queryparam]] = $defaultvalue;
+            }
+        }
+        foreach ($paramvalues as $queryparam => $value) {
+            $formdefaults[$queryparams[$queryparam]] = $value;
+        }
+        $mform->set_data($formdefaults);
 
         if ($mform->is_cancelled()) {
             redirect(report_customsql_url('index.php'));
         }
 
-        if ($newreport = $mform->get_data()) {
+        if (($newreport = $mform->get_data()) || count($paramvalues) == count($queryparams)) {
 
             // Pick up named parameters into serialised array.
-            if ($queryparams) {
+            if ($newreport) {
                 foreach ($queryparams as $queryparam => $formparam) {
-                    $queryparams[$queryparam] = $newreport->{$formparam};
-                    unset($newreport->{$formparam});
+                    $paramvalues[$queryparam] = $newreport->{$formparam};
                 }
-                $report->queryparams = serialize($queryparams);
             }
+            $report->queryparams = serialize($paramvalues);
+
         } else {
 
             admin_externalpage_setup('report_customsql', '', $urlparams,
@@ -92,13 +107,6 @@ if ($report->runable == 'manual') {
             if (!html_is_blank($report->description)) {
                 echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
             }
-
-            $report->description = strip_tags($report->description);
-            $queryparams = unserialize($report->queryparams);
-            foreach ($queryparams as $param => $value) {
-                $report->{'queryparam'.$param} = $value;
-            }
-            $mform->set_data($report);
             $mform->display();
 
             echo $OUTPUT->footer();
@@ -135,8 +143,8 @@ if (!html_is_blank($report->description)) {
     echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
 }
 
-if (!empty($queryparams)) {
-    foreach ($queryparams as $name => $value) {
+if (!empty($paramvalues)) {
+    foreach ($paramvalues as $name => $value) {
         if (report_customsql_get_element_type($name) == 'date_time_selector') {
             $value = userdate($value, '%F %T');
         }
@@ -158,7 +166,7 @@ if (is_null($csvtimestamp)) {
 
         if ($report->runable != 'manual' && !$report->singlerow) {
             echo $OUTPUT->heading(get_string('reportfor', 'report_customsql',
-                                         userdate($csvtimestamp, get_string('strftimedate'))), 3);
+                    userdate($csvtimestamp, get_string('strftimedate'))), 3);
         }
 
         $table = new html_table();

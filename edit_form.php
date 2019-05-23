@@ -157,20 +157,18 @@ class report_customsql_edit_form extends moodleform {
             $sql = report_customsql_prepare_sql($report, time());
 
             // Check for required query parameters if there are any.
-            $queryparams = array();
-            foreach (report_customsql_get_query_placeholders($sql) as $queryparam) {
-                $queryparam = substr($queryparam, 1);
-                $formparam = 'queryparam' . $queryparam;
+            $paramvalues = [];
+            foreach (report_customsql_get_query_placeholders_and_field_names($sql) as $queryparam => $formparam) {
                 if (!isset($data[$formparam])) {
                     $errors['params'] = get_string('queryparamschanged', 'report_customsql');
                     break;
                 }
-                $queryparams[$queryparam] = $data[$formparam];
+                $paramvalues[$queryparam] = $data[$formparam];
             }
 
             if (!isset($errors['params'])) {
                 try {
-                    $rs = report_customsql_execute_query($sql, $queryparams, 2);
+                    $rs = report_customsql_execute_query($sql, $paramvalues, 2);
 
                     if (!empty($data['singlerow'])) {
                         // Count rows for Moodle 2 as all Moodle 1.9 useful and more performant

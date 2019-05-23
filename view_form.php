@@ -35,8 +35,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  */
 class report_customsql_view_form extends moodleform {
     public function definition() {
-        global $CFG;
-
         $mform = $this->_form;
 
         $mform->addElement('header', 'heading', get_string('queryparameters', 'report_customsql'));

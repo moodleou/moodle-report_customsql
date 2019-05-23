@@ -133,3 +133,54 @@ Feature: Ad-hoc database queries report
     And "http://example.com/3" "link" should exist in the "report_customsql_results" "table"
     And I should not see "Link text link url" in the "report_customsql_results" "table"
     And I should see "This report has 1 rows."
+
+  Scenario: Create and run an Ad-hoc database query that has parameters
+    When I log in as "admin"
+    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    And I press "Add a new query"
+    And I set the following fields to these values:
+      | Query name  | Find user                                       |
+      | Query SQL   | SELECT * FROM {user} WHERE username = :username |
+    And I press "Verify the Query SQL text and update the form"
+    And I set the field "username" to "frog"
+    And I press "Save changes"
+    Then I should see "Find user"
+    And I should see "Query parameters"
+    And the field "username" matches value "frog"
+    And I set the field "username" to "admin"
+    And I press "Run query"
+    And I should see "Find user"
+    And I should see "username: admin"
+    And I should see "moodle@example.com"
+    And I should see "This report has 1 rows."
+
+  Scenario: Link directly to an Ad-hoc database query that has parameters
+    Given the following custom sql report exists:
+      | name        | Find user                                       |
+      | querysql    | SELECT * FROM {user} WHERE username = :username |
+    When I log in as "admin"
+    And I view the "Find user" custom sql report with these URL parameters:
+      | username | frog |
+    Then I should see "This query did not return any data."
+    And I view the "Find user" custom sql report with these URL parameters:
+      | username | admin |
+    And I should see "moodle@example.com"
+    And I should see "This report has 1 rows."
+
+  Scenario: Link directly to an Ad-hoc database query giving some parameters
+    Given the following custom sql report exists:
+      | name        | Find user                                                                  |
+      | querysql    | SELECT * FROM {user} WHERE firstname = :firstname AND lastname = :lastname |
+    When I log in as "admin"
+    And I view the "Find user" custom sql report with these URL parameters:
+      | firstname | Admin |
+    Then I should see "Find user"
+    And I should see "Query parameters"
+    And the field "firstname" matches value "Admin"
+    And I set the field "lastname" to "User"
+    And I press "Run query"
+    And I should see "Find user"
+    And I should see "firstname: Admin"
+    And I should see "lastname: User"
+    And I should see "moodle@example.com"
+    And I should see "This report has 1 rows."

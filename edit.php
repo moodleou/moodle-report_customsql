@@ -56,10 +56,7 @@ if ($id) {
 }
 
 $querysql = optional_param('querysql', $reportquerysql, PARAM_RAW);
-$queryparams = array();
-foreach (report_customsql_get_query_placeholders($querysql) as $queryparam) {
-    $queryparams[substr($queryparam, 1)] = 'queryparam' . substr($queryparam, 1);
-}
+$queryparams = report_customsql_get_query_placeholders_and_field_names($querysql);
 
 $mform = new report_customsql_edit_form(report_customsql_url($relativeurl), $queryparams);
 
