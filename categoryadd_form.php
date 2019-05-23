@@ -42,7 +42,7 @@ class report_customsql_addcategory_form extends moodleform {
     // Form definition.
     public function definition() {
         global $CFG, $DB;
-        $mform =& $this->_form;
+        $mform = $this->_form;
         $categoryid = $this->_customdata['categoryid'];
 
         $editoroptions = array();

@@ -338,10 +338,10 @@ function report_customsql_print_reports_for($reports, $type) {
                                       $capabilities[$report->capability]),
                                       array('class' => 'admin_note')).' '.
                  html_writer::tag('a', $imgedit,
-                            array('title' => get_string('editthisreport', 'report_customsql'),
-                                  'href' => report_customsql_url('edit.php?id='.$report->id))).' '.
+                         ['title' => get_string('editreportx', 'report_customsql', format_string($report->displayname)),
+                          'href' => report_customsql_url('edit.php?id='.$report->id)]) . ' ' .
                  html_writer::tag('a', $imgdelete,
-                            array('title' => get_string('deletethisreport', 'report_customsql'),
+                            array('title' => get_string('deletereportx', 'report_customsql', format_string($report->displayname)),
                                   'href' => report_customsql_url('delete.php?id='.$report->id)));
         }
         echo html_writer::end_tag('p');
