@@ -139,6 +139,7 @@ $string['reportfor'] = 'Query run on {$a}';
 $string['requireint'] = 'Integer required';
 $string['runable'] = 'Run';
 $string['runablex'] = 'Run: {$a}';
+$string['runquery'] = 'Run query';
 $string['schedulednote'] = 'These queries are automatically run on the first day of each week or month, to report on the previous week or month. These links let you view the results that has already been accumulated.';
 $string['scheduledqueries'] = 'Scheduled queries';
 $string['typeofresult'] = 'Type of result';
