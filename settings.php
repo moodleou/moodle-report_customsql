@@ -26,10 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 $ADMIN->add('reports', new admin_externalpage(
     'report_customsql',
-        get_string('pluginname', 'report_customsql'),
-        new moodle_url('/report/customsql/index.php'),
-        'report/customsql:view'
-));
+    get_string('pluginname', 'report_customsql'),
+    new moodle_url('/report/customsql/index.php'),
+    'report/customsql:view'));
 
 if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext(

@@ -26,8 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
-function report_customsql_execute_query($sql, $params = null,
-        $limitnum) {
+function report_customsql_execute_query($sql, $params = null, $limitnum) {
     global $CFG, $DB;
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
@@ -704,7 +703,6 @@ function report_customsql_plain_text_report_name($report) {
 /**
  * Get the maximum number of results returned for a query defined in admin settings
  */
-function report_customsql_get_maximum_row_limit()
-{
+function report_customsql_get_maximum_row_limit() {
     return get_config('report_customsql', 'maxrowlimit');
 }
