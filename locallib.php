@@ -503,7 +503,7 @@ function report_customsql_get_month_starts($timenow) {
     );
 }
 
-function report_customsql_get_hourly_starts($timenow) {
+function report_customsql_get_asap_starts($timenow) {
     $dateparts = getdate($timenow);
 
     return array(
@@ -514,8 +514,8 @@ function report_customsql_get_hourly_starts($timenow) {
 
 function report_customsql_get_starts($report, $timenow) {
     switch ($report->runable) {
-        case 'hourly':
-            return report_customsql_get_hourly_starts($timenow);
+        case 'asap':
+            return report_customsql_get_asap_starts($timenow);
         case 'daily':
             return report_customsql_get_daily_time_starts($timenow, $report->at);
         case 'weekly':
