@@ -73,7 +73,7 @@ foreach ($categories as $category) {
     $link = html_writer::link($linkhref, $category->name, array('class' => 'categoryname'));
 
     $manualreports = report_customsql_get_reports_for($category->id, 'manual');
-    $houlyreports = report_customsql_get_reports_for($category->id, 'hourly');
+    $asapreports = report_customsql_get_reports_for($category->id, 'asap');
     $dailyreports = report_customsql_get_reports_for($category->id, 'daily');
     $weeklyreports = report_customsql_get_reports_for($category->id, 'weekly');
     $monthlyreports = report_customsql_get_reports_for($category->id, 'monthly');
@@ -81,7 +81,7 @@ foreach ($categories as $category) {
     // Category content.
     $cc = new stdClass();
     $cc->manual = count($manualreports);
-    $cc->hourly = count($houlyreports);
+    $cc->asap = count($asapreports);
     $cc->daily = count($dailyreports);
     $cc->weekly = count($weeklyreports);
     $cc->monthly = count($monthlyreports);
@@ -91,12 +91,12 @@ foreach ($categories as $category) {
     echo $OUTPUT->heading($link . ' ' . $reportcounts);
 
     echo html_writer::start_tag('div', array('class' => 'csql_category_reports'));
-    if (empty($manualreports) && empty($houlyreports) && empty($dailyreports) && empty($weeklyreports) && empty($monthlyreports)) {
+    if (empty($manualreports) && empty($asapreports) && empty($dailyreports) && empty($weeklyreports) && empty($monthlyreports)) {
         echo $OUTPUT->heading(get_string('availablereports', 'report_customsql'), 3).
         html_writer::tag('p', get_string('noreportsavailable', 'report_customsql'));
     } else {
         report_customsql_print_reports_for($manualreports, 'manual');
-        report_customsql_print_reports_for($houlyreports, 'hourly');
+        report_customsql_print_reports_for($asapreports, 'hourly');
         report_customsql_print_reports_for($dailyreports, 'daily');
         report_customsql_print_reports_for($weeklyreports, 'weekly');
         report_customsql_print_reports_for($monthlyreports, 'monthly');
