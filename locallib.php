@@ -234,7 +234,7 @@ function report_customsql_runable_options($type = null) {
         return array('manual' => get_string('manual', 'report_customsql'));
     }
     return array('manual' => get_string('manual', 'report_customsql'),
-                 'hourly' => get_string('automaticallyhourly', 'report_customsql'),
+                 'asap' => get_string('automaticallyasap', 'report_customsql'),
                  'daily' => get_string('automaticallydaily', 'report_customsql'),
                  'weekly' => get_string('automaticallyweekly', 'report_customsql'),
                  'monthly' => get_string('automaticallymonthly', 'report_customsql')
