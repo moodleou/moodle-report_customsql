@@ -254,6 +254,46 @@ class report_customsql_test extends advanced_testcase {
 
     }
 
+    public function test_report_customsql_pretify_column_names_same_name_diff_capitialisation() {
+        $row = new stdClass();
+        $row->course = 'B747-19B';
+        $query = "SELECT t.course AS Course
+                    FROM table";
+        $this->assertEquals(['Course'],
+                report_customsql_pretify_column_names($row, $query));
+
+    }
+
+    public function test_report_customsql_pretify_column_names_issue() {
+        $row = new stdClass();
+        $row->website = 'B747-19B';
+        $row->website_link_url = '%%WWWROOT%%/course/view.php%%Q%%id=123';
+        $row->subpage = 'Self-referential nightmare';
+        $row->subpage_link_url = '%%WWWROOT%%/mod/subpage/view.php%%Q%%id=4567';
+
+        $query = "
+                SELECT c.shortname AS Website,
+                       '%%WWWROOT%%/course/view.php%%Q%%id=' || c.id AS Website_link_url,
+                       s.name AS Subpage,
+                       '%%WWWROOT%%/mod/subpage/view.php%%Q%%id=' || cm.id AS Subpage_link_url
+
+                  FROM {subpage_sections} ss
+                  JOIN {subpage} s ON s.id = ss.subpageid
+                  JOIN {course_sections} cs ON cs.id = ss.sectionid
+                  JOIN {course_modules} cm ON cm.instance = s.id
+                  JOIN {modules} mod ON mod.id = cm.module
+                  JOIN {course} c ON c.id = cm.course
+
+                 WHERE mod.name = 'subpage'
+                   AND ',' || cs.sequence || ',' LIKE '%,' || cm.id || ',%'
+
+              ORDER BY website, subpage";
+
+        $this->assertEquals(['Website', 'Website link url', 'Subpage', 'Subpage link url'],
+                report_customsql_pretify_column_names($row, $query));
+
+    }
+
     public function test_report_customsql_display_row() {
         $rawdata = [
                 'Not a date',
@@ -276,6 +316,44 @@ class report_customsql_test extends advanced_testcase {
                 'Non-link, invalid URL',
                 '<a href="http://example.com/3">http://example.com/3</a>',
                 '&lt;b&gt;Raw HTML&lt;/b&gt;'], report_customsql_display_row($rawdata, $linkcolumns));
+    }
+
+    /**
+     * Test plugin emailing of reports
+     *
+     * @return void
+     */
+    public function test_report_customsql_email_report() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $user = $this->getDataGenerator()->create_user();
+
+        $id = $this->create_a_database_row('daily', 2, 1, $user->username);
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
+
+        // Give our test user the capability to view the report.
+        $userrole = $DB->get_record('role', ['shortname' => 'user']);
+        role_change_permission($userrole->id, context_system::instance(), $report->capability, CAP_ALLOW);
+
+        // Send the report, catch everything sent through message_send API.
+        $sink = $this->redirectMessages();
+
+        report_customsql_email_report($report);
+
+        $messages = $sink->get_messages();
+        $this->assertCount(1, $messages);
+
+        $message = reset($messages);
+        $this->assertEquals(\core_user::get_support_user()->id, $message->useridfrom);
+        $this->assertEquals($user->id, $message->useridto);
+
+        $expectedsubject = get_string('emailsubject', 'report_customsql',
+            report_customsql_plain_text_report_name($report));
+        $this->assertEquals($expectedsubject, $message->subject);
+
+        $sink->close();
     }
 
     /**

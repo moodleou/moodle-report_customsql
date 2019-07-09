@@ -62,7 +62,7 @@ if ($mform->is_cancelled()) {
 
 if ($data = $mform->get_data()) {
     if ($isadding) {
-        $DB->insert_record('report_customsql_categories', $data, true);
+        $DB->insert_record('report_customsql_categories', $data);
     } else {
         $updrec = new stdClass();
         $updrec->id = $data->id;

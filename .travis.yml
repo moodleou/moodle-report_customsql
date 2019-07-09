@@ -7,8 +7,7 @@ addons:
   postgresql: "9.6"
   apt:
     packages:
-      - oracle-java8-installer
-      - oracle-java8-set-default
+      - openjdk-8-jre-headless
       - chromium-chromedriver
 
 cache:
@@ -22,6 +21,11 @@ matrix:
       env:
       - MOODLE_BRANCH=master
       - DB=pgsql
+
+    - php: 7.1
+      env:
+      - MOODLE_BRANCH=MOODLE_36_STABLE
+      - DB=mysqli
 
     - php: 7.1
       env:
