@@ -270,8 +270,11 @@ function report_customsql_daily_at_options() {
 }
 
 function report_customsql_email_options() {
-    return array('emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
-            'emailresults' => get_string('emailresults', 'report_customsql'),
+    return array(
+        'emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
+        'emailresults' => get_string('emailresults', 'report_customsql'),
+        'emailnumberofrowsandcsv' => get_string('emailnumberofrowsandcsv', 'report_customsql'),
+        'emailresultsandcsv' => get_string('emailresultsandcsv', 'report_customsql')
     );
 }
 
@@ -638,7 +641,7 @@ function report_customsql_get_message($report, $csvfilename) {
 
     // Construct message in html.
     $fullmessagehtml = null;
-    if ($report->emailwhat === 'emailresults') {
+    if ($report->emailwhat === 'emailresults' || $report->emailwhat === 'emailresultsandcsv') {
         $fullmessagehtml = html_writer::table($table);
     }
     $fullmessagehtml .= $fullmessage;
@@ -672,7 +675,7 @@ function report_customsql_email_report($report, $csvfilename = null) {
     $usernames = preg_split("/[\s,;]+/", $report->emailto);
     foreach ($usernames as $username) {
         $recipient = $DB->get_record('user', array('username' => $username), '*', MUST_EXIST);
-        $messageid = report_customsql_send_email_notification($recipient, $message);
+        $messageid = report_customsql_send_email_notification($recipient, $message, $csvfilename);
         if (!$messageid) {
             mtrace(get_string('emailsentfailed', 'report_customsql', fullname($recipient)));
         }
@@ -716,23 +719,30 @@ function report_customsql_get_ready_to_run_daily_reports($timenow) {
  * @param object $message the message object.
  * @return mixed result of {@link message_send()}.
  */
-function report_customsql_send_email_notification($recipient, $message) {
-
-    // Prepare the message.
-    $eventdata = new \core\message\message();
-    $eventdata->component         = 'report_customsql';
-    $eventdata->name              = 'notification';
-    $eventdata->notification      = 1;
-    $eventdata->courseid          = SITEID;
-    $eventdata->userfrom          = \core_user::get_support_user();
-    $eventdata->userto            = $recipient;
-    $eventdata->subject           = $message->subject;
-    $eventdata->fullmessage       = $message->fullmessage;
-    $eventdata->fullmessageformat = $message->fullmessageformat;
-    $eventdata->fullmessagehtml   = $message->fullmessagehtml;
-    $eventdata->smallmessage      = $message->smallmessage;
-
-    return message_send($eventdata);
+function report_customsql_send_email_notification($recipient, $message, $csvfilename = null) {
+    global $CFG;
+    // Messaging does not support attachments, so send an email if attachment is required
+    if ($csvfilename) {
+        $parts = explode('/', $csvfilename);
+        $filename = $parts[count($parts) - 1];
+        $path = str_replace("{$CFG->dataroot}/", "", $csvfilename);
+        return email_to_user($recipient, get_admin(), $message->subject, $message->fullmessage, $message->fullmessagehtml, $path, $filename);
+    } else {
+        // Prepare the message.
+        $eventdata = new stdClass();
+        $eventdata->component         = 'report_customsql';
+        $eventdata->name              = 'notification';
+        $eventdata->notification      = 1;
+        $eventdata->userfrom          = get_admin();
+        $eventdata->userto            = $recipient;
+        $eventdata->subject           = $message->subject;
+        $eventdata->fullmessage       = $message->fullmessage;
+        $eventdata->fullmessageformat = $message->fullmessageformat;
+        $eventdata->fullmessagehtml   = $message->fullmessagehtml;
+        $eventdata->smallmessage      = $message->smallmessage;
+        
+        return message_send($eventdata);
+    }  
 }
 
 /**
