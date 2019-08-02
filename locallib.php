@@ -27,12 +27,19 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
 function report_customsql_execute_query($sql, $params = null,
-        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+        $limitnum = null) {
     global $CFG, $DB;
+  
+    $config = get_config('report_customsql');
+    if (!isset($config->max_records)) {
+        throw new moodle_exception('errormissingconfig', 'report_customsql');
+    }
+    if(is_null($limitnum)){
+        $limitnum = $config->max_records;
+    }
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
 
@@ -100,8 +107,13 @@ function report_customsql_generate_csv($report, $timenow) {
 
     $sql = report_customsql_prepare_sql($report, $timenow);
 
+    $config = get_config('report_customsql');
+    if (!isset($config->max_records)) {
+        throw new moodle_exception('errormissingconfig', 'report_customsql');
+    }
+
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
-    $querylimit  = !empty($report->querylimit) ? $report->querylimit : REPORT_CUSTOMSQL_MAX_RECORDS;
+    $querylimit  = !empty($report->querylimit) ? $report->querylimit : $config->max_records;
     $rs = report_customsql_execute_query($sql, $queryparams, $querylimit);
 
     $csvfilenames = array();

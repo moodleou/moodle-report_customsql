@@ -36,6 +36,11 @@ require_once(dirname(__FILE__) . '/locallib.php');
 class report_customsql_edit_form extends moodleform {
     public function definition() {
         global $CFG;
+      
+        $config = get_config('report_customsql');
+        if (!isset($config->max_records)) {
+            throw new moodle_exception('errormissingconfig', 'report_customsql');
+        }
 
         $mform = $this->_form;
 
@@ -88,7 +93,7 @@ class report_customsql_edit_form extends moodleform {
 
         $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
         $mform->setType('querylimit', PARAM_INT);
-        $mform->setDefault('querylimit', REPORT_CUSTOMSQL_MAX_RECORDS);
+        $mform->setDefault('querylimit', $config->max_records);
         $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
                         'numeric', null, 'client');
 
@@ -201,9 +206,13 @@ class report_customsql_edit_form extends moodleform {
             }
         }
 
-        // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
-        if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
-            $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
+        // Check querylimit in range 1 .. $config->max_records.
+        $config = get_config('report_customsql');
+        if (!isset($config->max_records)) {
+            throw new moodle_exception('errormissingconfig', 'report_customsql');
+        }
+        if (empty($data['querylimit']) || $data['querylimit'] > $config->max_records) {
+            $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', $config->max_records);
         }
 
         if (!empty($data['customdir'])) {
