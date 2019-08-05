@@ -37,7 +37,7 @@ class report_customsql_edit_form extends moodleform {
     public function definition() {
         global $CFG;
       
-        $config = get_config('report_customsql');
+        $config = get_config('report_customsql_settings');
         if (!isset($config->max_records)) {
             throw new moodle_exception('errormissingconfig', 'report_customsql');
         }
@@ -207,7 +207,7 @@ class report_customsql_edit_form extends moodleform {
         }
 
         // Check querylimit in range 1 .. $config->max_records.
-        $config = get_config('report_customsql');
+        $config = get_config('report_customsql_settings');
         if (!isset($config->max_records)) {
             throw new moodle_exception('errormissingconfig', 'report_customsql');
         }

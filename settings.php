@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ( $hassiteconfig ){
-    $settings = new admin_settingpage( 'report_customsql', 
-            get_string('pluginname', 'report_customsql') );
+    $settings = new admin_settingpage( 'report_customsql_settings', 
+            get_string('settings', 'report_customsql') );
 
     $ADMIN->add( 'reports', $settings );
 

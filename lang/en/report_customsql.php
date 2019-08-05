@@ -145,6 +145,7 @@ $string['runablex'] = 'Run: {$a}';
 $string['runquery'] = 'Run query';
 $string['schedulednote'] = 'These queries are automatically run on the first day of each week or month, to report on the previous week or month. These links let you view the results that has already been accumulated.';
 $string['scheduledqueries'] = 'Scheduled queries';
+$string['settings'] = 'Ad-hoc database queries settings';
 $string['typeofresult'] = 'Type of result';
 $string['unknowndownloadfile'] = 'Unknown download file.';
 $string['usernotfound'] = 'User with the username \'{$a}\' does not exist';

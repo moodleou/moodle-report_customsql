@@ -33,7 +33,7 @@ function report_customsql_execute_query($sql, $params = null,
         $limitnum = null) {
     global $CFG, $DB;
   
-    $config = get_config('report_customsql');
+    $config = get_config('report_customsql_settings');
     if (!isset($config->max_records)) {
         throw new moodle_exception('errormissingconfig', 'report_customsql');
     }
@@ -107,7 +107,7 @@ function report_customsql_generate_csv($report, $timenow) {
 
     $sql = report_customsql_prepare_sql($report, $timenow);
 
-    $config = get_config('report_customsql');
+    $config = get_config('report_customsql_settings');
     if (!isset($config->max_records)) {
         throw new moodle_exception('errormissingconfig', 'report_customsql');
     }
