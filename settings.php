@@ -25,11 +25,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ( $hassiteconfig ){
+    $ADMIN->add('modules', new admin_category('customsql', new lang_string("pluginname", "report_customsql")));
     $settings = new admin_settingpage( 'report_customsql_settings', 
             get_string('settings', 'report_customsql') );
-
-    $ADMIN->add( 'reports', $settings );
-
+    $ADMIN->add('customsql', $settings);
     $setting = new admin_setting_configtext('report_customsql/max_records', get_string('max_records_title',
             'report_customsql'), get_string('max_records_desc', 'report_customsql'), 5000, PARAM_INT);
     $settings->add($setting);
