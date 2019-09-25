@@ -1,6 +1,23 @@
 # Change log for the Ad-hoc database queries report
 
 
+## Changes in 3.7
+
+* If a report has query parameters, they can now be set in the URL
+  (GET parameters) so you can bookmark a particular variant of a report.
+* There is a parameter you can add to the URL of a report, so it is
+  displayed with 'embedded' page layout, suitable for showing in an iframe.
+* Also, change the page layout used in the normal case to 'report'.
+* Query param values that are integers are now sent to the database as
+  integers, which can lead to queries being optimised better.
+* Fix an issue with showing the results of scheduled reports, when the
+  report only produces data sometimes.
+* Improve handling of 'pretty' column names.
+* Fix compatibility with the messaging API changes in Moodle 3.6.
+* Improve message default settings on install.
+* Move hard-coded English string 'Run report' to the language file.
+
+
 ## Changes in 3.6
 
 * New feature for columns that are links. If the SQL query returns two
