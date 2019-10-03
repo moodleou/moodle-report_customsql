@@ -27,7 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
+// Get settings.
+$config = get_config('report_customsql');
+
+//define('REPORT_CUSTOMSQL_MAX_RECORDS', 99999);
+define('REPORT_CUSTOMSQL_DEFAULT_RECORDS', $config->defaultrecords);
+define('REPORT_CUSTOMSQL_MAX_RECORDS', $config->maxrecords);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
 function report_customsql_execute_query($sql, $params = null,

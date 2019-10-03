@@ -17,14 +17,24 @@
 /**
  * Admin settings tree setup for the Custom SQL admin report.
  *
- * @package block_externaldashboard
+ * @package report_customsql
  * @copyright 2011 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$settings = null;
+if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_heading('report_customsql',
+            get_string('pluginname', 'report_customsql', null, true),
+            ''));
+    $settings->add(new admin_setting_configtext_with_maxlength('report_customsql/defaultrecords',
+            get_string('settings:defaultrecords', 'report_customsql'), '',
+            5000, PARAM_INT, null, 10));
+    $settings->add(new admin_setting_configtext_with_maxlength('report_customsql/maxrecords',
+            get_string('settings:maxrecords', 'report_customsql'), '',
+            99999, PARAM_INT, null, 10));
+}
 
 $ADMIN->add('reports', new admin_externalpage('report_customsql',
         get_string('pluginname', 'report_customsql'),

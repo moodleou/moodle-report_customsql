@@ -154,3 +154,5 @@ $string['weeklyheader'] = 'Weekly';
 $string['weeklyheader_help'] = 'These queries are automatically run on the first day of each week, to report on the previous week. These links let you view the results that has already been accumulated.';
 $string['whocanaccess'] = 'Who can access this query';
 $string['privacy:metadata'] = 'The Ad-hoc database queries plugin does not store any personal data.';
+$string['settings:defaultrecords'] = 'Default number of rows returned by a query';
+$string['settings:maxrecords'] = 'Maximum number of rows returned by a query';

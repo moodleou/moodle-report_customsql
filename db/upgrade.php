@@ -139,7 +139,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
         require_once($CFG->dirroot . '/report/customsql/locallib.php');
         $table = new xmldb_table('report_customsql_queries');
         $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED,
-                XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
+                XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_DEFAULT_RECORDS, 'queryparams');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
