@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('report_customsql',
-            get_string('pluginname', 'report_customsql', null, true),
+            get_string('settings:heading', 'report_customsql', null, true),
             ''));
     $settings->add(new admin_setting_configtext_with_maxlength('report_customsql/defaultrecords',
             get_string('settings:defaultrecords', 'report_customsql'), '',
