@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/../locallib.php');
-
+global $CFG;
+require_once($CFG->dirroot . '/report/customsql/locallib.php');
 
 /**
  * Unit tests for (parts of) the custom SQL report.
@@ -33,19 +33,70 @@ require_once(dirname(__FILE__) . '/../locallib.php');
  * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_customsql_test extends advanced_testcase {
-    public function test_get_week_starts_test() {
-        $this->assertEquals(array(
-                strtotime('00:00 7 November 2009'), strtotime('00:00 31 October 2009')),
-                report_customsql_get_week_starts(strtotime('12:36 10 November 2009')));
+class report_customsql_report_testcase extends advanced_testcase {
 
-        $this->assertEquals(array(
-                strtotime('00:00 7 November 2009'), strtotime('00:00 31 October 2009')),
-                report_customsql_get_week_starts(strtotime('00:00 7 November 2009')));
+    /**
+     * Data provider for test_get_week_starts
+     *
+     * @return array
+     */
+    public function get_week_starts_provider() {
+        return [
+            // Start weekday is Sunday.
+            [0, '12:36 11 November 2009', '00:00 8 November 2009', '00:00 1 November 2009'],
+            [0, '00:00 8 November 2009', '00:00 8 November 2009', '00:00 1 November 2009'],
+            [0, '23:59 14 November 2009', '00:00 8 November 2009', '00:00 1 November 2009'],
+            // Start weekday is Monday.
+            [1, '12:36 6 November 2009', '00:00 2 November 2009', '00:00 26 October 2009'],
+            [1, '00:00 2 November 2009', '00:00 2 November 2009', '00:00 26 October 2009'],
+            [1, '23:59 8 November 2009', '00:00 2 November 2009', '00:00 26 October 2009'],
+            // Start weekday is Saturday.
+            [6, '12:36 10 November 2009', '00:00 7 November 2009', '00:00 31 October 2009'],
+            [6, '00:00 7 November 2009', '00:00 7 November 2009', '00:00 31 October 2009'],
+            [6, '23:59 13 November 2009', '00:00 7 November 2009', '00:00 31 October 2009'],
+        ];
+    }
 
-        $this->assertEquals(array(
-                strtotime('00:00 7 November 2009'), strtotime('00:00 31 October 2009')),
-                report_customsql_get_week_starts(strtotime('23:59 13 November 2009')));
+    /**
+     * Tests plugin get_week_starts method
+     *
+     * @param int $startwday
+     * @param string $datestr
+     * @param string $currentweek
+     * @param string $lastweek
+     * @return void
+     *
+     * @dataProvider get_week_starts_provider
+     */
+    public function test_get_week_starts($startwday, $datestr, $currentweek, $lastweek) {
+        $this->resetAfterTest(true);
+
+        set_config('startwday', $startwday, 'report_customsql');
+
+        $expected = [strtotime($currentweek), strtotime($lastweek)];
+        $this->assertEquals($expected, report_customsql_get_week_starts(strtotime($datestr)));
+    }
+
+    /**
+     * Tests plugin get_week_starts method when using the calendar start of week default
+     *
+     * @param int $startwday
+     * @param string $datestr
+     * @param string $currentweek
+     * @param string $lastweek
+     * @return void
+     *
+     * @dataProvider get_week_starts_provider
+     */
+    public function test_get_week_starts_use_calendar_default($startwday, $datestr, $currentweek, $lastweek) {
+        $this->resetAfterTest(true);
+
+        // Setting this option to -1 will use the value from the site calendar.
+        set_config('startwday', -1, 'report_customsql');
+        set_config('calendar_startwday', $startwday);
+
+        $expected = [strtotime($currentweek), strtotime($lastweek)];
+        $this->assertEquals($expected, report_customsql_get_week_starts(strtotime($datestr)));
     }
 
     public function test_get_month_starts_test() {
