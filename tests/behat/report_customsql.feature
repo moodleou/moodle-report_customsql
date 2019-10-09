@@ -17,7 +17,8 @@ Feature: Ad-hoc database queries report
     Then I should see "Test query"
     And I should see "Display the Moodle internal version number."
     And I should see "This report has 1 rows."
-    And I should see "Download these results as CSV"
+    And I should see "Download these results as"
+    And the "Download these results as" select box should contain "Comma separated values (.csv)"
 
   Scenario: Edit an Ad-hoc database query
     Given the following custom sql report exists:

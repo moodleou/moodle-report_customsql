@@ -62,6 +62,7 @@ $string['description'] = 'Description';
 $string['displayname'] = 'Query name';
 $string['displaynamex'] = 'Query name: {$a}';
 $string['displaynamerequired'] = 'You must enter a query name';
+$string['downloadthisreportas'] = 'Download these results as';
 $string['downloadthisreportascsv'] = 'Download these results as CSV';
 $string['edit'] = 'Add/Edit';
 $string['editcategory'] = 'Update category';

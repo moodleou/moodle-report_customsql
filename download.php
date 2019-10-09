@@ -25,9 +25,11 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->libdir . '/dataformatlib.php');
 
 $id = required_param('id', PARAM_INT);
 $csvtimestamp = required_param('timestamp', PARAM_INT);
+$dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
@@ -41,9 +43,31 @@ if (!empty($report->capability)) {
 }
 
 list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);
-if (!is_readable($csvfilename)) {
+
+$handle = fopen($csvfilename, 'r');
+if ($handle === false) {
     print_error('unknowndownloadfile', 'report_customsql',
                 report_customsql_url('view.php?id=' . $id));
 }
 
-send_file($csvfilename, 'report.csv', 'default' , 0, false, true, 'text/csv; charset=UTF-8');
+$fields = fgetcsv($handle);
+
+$rows = new ArrayObject([]);
+while ($row = fgetcsv($handle)) {
+    $rows->append($row);
+}
+
+fclose($handle);
+
+$filename = clean_filename($report->displayname);
+
+download_as_dataformat($filename, $dataformat, $fields, $rows->getIterator(), function(array $row) use ($dataformat) {
+    // HTML export content will need escaping.
+    if (strcasecmp($dataformat, 'html') === 0) {
+        $row = array_map(function($cell) {
+            return s($cell);
+        }, $row);
+    }
+
+    return $row;
+});
