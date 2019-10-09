@@ -17,14 +17,27 @@
 /**
  * Admin settings tree setup for the Custom SQL admin report.
  *
- * @package block_externaldashboard
+ * @package report_customsql
  * @copyright 2011 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$settings = null;
+if ($ADMIN->fulltree) {
+    // Start of week, used for the day to run weekly reports.
+    $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    $days = array_map(function($day) {
+        return get_string($day, 'calendar');
+    }, $days);
+
+    $default = \core_calendar\type_factory::get_calendar_instance()->get_starting_weekday();
+
+    // Setting this option to -1 will use the value from the site calendar.
+    $options = [-1 => get_string('startofweek_default', 'report_customsql', $days[$default])] + $days;
+    $settings->add(new admin_setting_configselect('report_customsql/startwday', get_string('startofweek', 'report_customsql'),
+        null, -1, $options));
+}
 
 $ADMIN->add('reports', new admin_externalpage('report_customsql',
         get_string('pluginname', 'report_customsql'),

@@ -28,7 +28,6 @@ global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
 define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
-define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
 function report_customsql_execute_query($sql, $params = null,
         $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
@@ -503,7 +502,13 @@ function report_customsql_get_daily_time_starts($timenow, $at) {
 
 function report_customsql_get_week_starts($timenow) {
     $dateparts = getdate($timenow);
-    $daysafterweekstart = ($dateparts['wday'] - REPORT_CUSTOMSQL_START_OF_WEEK + 7) % 7;
+
+    // Get configured start of week value. If -1 then use the value from the site calendar.
+    $startofweek = get_config('report_customsql', 'startwday');
+    if ($startofweek == -1) {
+        $startofweek = \core_calendar\type_factory::get_calendar_instance()->get_starting_weekday();
+    }
+    $daysafterweekstart = ($dateparts['wday'] - $startofweek + 7) % 7;
 
     return array(
         mktime(0, 0, 0, $dateparts['mon'], $dateparts['mday'] - $daysafterweekstart,
