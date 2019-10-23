@@ -9,10 +9,6 @@ services:
 addons:
   firefox: "47.0.1"
   postgresql: "9.6"
-  apt:
-    packages:
-      - openjdk-8-jre-headless
-      - chromium-chromedriver
 
 cache:
   directories:
@@ -57,4 +53,4 @@ script:
   - moodle-plugin-ci mustache || true # report issues, but don't fail the build.
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit
-  - moodle-plugin-ci behat --profile chrome
+  - moodle-plugin-ci behat
