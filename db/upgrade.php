@@ -176,5 +176,11 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016011800, 'report', 'customsql');
     }
 
+    if ($oldversion < 2019111101) {
+        // For upgraded sites, set this setting to be backwards compatible.
+        set_config('startwday', '6', 'report_customsql');
+        upgrade_plugin_savepoint(true, 2019111101, 'report', 'customsql');
+    }
+
     return true;
 }

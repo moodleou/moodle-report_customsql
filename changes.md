@@ -1,5 +1,12 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 3.7
+
+* Report results can now be downloaded in any of data format that Moodle supports, not just CSV.
+* Admins can now set which day is considered the first of the week for weely reports.
+  This defaults to the Moodle setting for this for new installs. For existing installs,
+  it stays the same as before (Saturday) but you can change it.
+
 
 ## Changes in 3.7
 
