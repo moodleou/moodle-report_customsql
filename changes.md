@@ -1,6 +1,6 @@
 # Change log for the Ad-hoc database queries report
 
-## Changes in 3.7
+## Changes in 3.8
 
 * Report results can now be downloaded in any of data format that Moodle supports, not just CSV.
 * Admins can control the maximum possible limit for the number of rows a query can return.
