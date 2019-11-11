@@ -1,10 +1,10 @@
 language: php
 
-dist: bionic
+dist: xenial
 sudo: required
 
 services:
-  mysql
+  - mysql
 
 addons:
   firefox: "47.0.1"
@@ -21,20 +21,25 @@ cache:
 
 matrix:
   include:
+    - php: 7.3
+      env:
+        - MOODLE_BRANCH=master
+        - DB=pgsql
+
     - php: 7.2
       env:
-      - MOODLE_BRANCH=MOODLE_37_STABLE
-      - DB=pgsql
+        - MOODLE_BRANCH=MOODLE_37_STABLE
+        - DB=mysqli
 
     - php: 7.1
       env:
-      - MOODLE_BRANCH=MOODLE_36_STABLE
-      - DB=mysqli
+        - MOODLE_BRANCH=MOODLE_36_STABLE
+        - DB=pgsql
 
-    - php: 7.1
+    - php: 7.0
       env:
-      - MOODLE_BRANCH=MOODLE_35_STABLE
-      - DB=mysqli
+        - MOODLE_BRANCH=MOODLE_35_STABLE
+        - DB=mysqli
 
 before_install:
   - phpenv config-rm xdebug.ini
@@ -55,6 +60,6 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache || true # report issues, but don't fail the build.
-  - moodle-plugin-ci grunt
+  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" = 'master' ]
   - moodle-plugin-ci phpunit
-  - moodle-plugin-ci behat --profile chrome
+  - moodle-plugin-ci behat
