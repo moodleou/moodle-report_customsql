@@ -3,7 +3,8 @@
 ## Changes in 3.7
 
 * Report results can now be downloaded in any of data format that Moodle supports, not just CSV.
-* Admins can now set which day is considered the first of the week for weely reports.
+* Admins can control the maximum possible limit for the number of rows a query can return.
+* Admins can now set which day is considered the first of the week for weekly reports.
   This defaults to the Moodle setting for this for new installs. For existing installs,
   it stays the same as before (Saturday) but you can change it.
 

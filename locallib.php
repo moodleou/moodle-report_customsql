@@ -27,11 +27,14 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
+define('REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER', '-- ROW LIMIT EXCEEDED --');
 
-function report_customsql_execute_query($sql, $params = null,
-        $limitnum = REPORT_CUSTOMSQL_MAX_RECORDS) {
+function report_customsql_execute_query($sql, $params = null, $limitnum = null) {
     global $CFG, $DB;
+
+    if ($limitnum === null) {
+        $limitnum = get_config('report_customsql', 'querylimitdefault');
+    }
 
     $sql = preg_replace('/\bprefix_(?=\w+)/i', $CFG->prefix, $sql);
 
@@ -100,11 +103,13 @@ function report_customsql_generate_csv($report, $timenow) {
     $sql = report_customsql_prepare_sql($report, $timenow);
 
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
-    $querylimit  = !empty($report->querylimit) ? $report->querylimit : REPORT_CUSTOMSQL_MAX_RECORDS;
-    $rs = report_customsql_execute_query($sql, $queryparams, $querylimit);
+    $querylimit  = $report->querylimit ?? get_config('report_customsql', 'querylimitdefault');
+    // Query one extra row, so we can tell if we hit the limit.
+    $rs = report_customsql_execute_query($sql, $queryparams, $querylimit + 1);
 
     $csvfilenames = array();
     $csvtimestamp = null;
+    $count = 0;
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
             list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
@@ -129,15 +134,20 @@ function report_customsql_generate_csv($report, $timenow) {
             array_unshift($data, strftime('%Y-%m-%d', $timenow));
         }
         report_customsql_write_csv_row($handle, $data);
+        $count += 1;
     }
     $rs->close();
 
     if (!empty($handle)) {
+        if ($count > $querylimit) {
+            report_customsql_write_csv_row($handle, [REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER]);
+        }
+
         fclose($handle);
     }
 
     // Update the execution time in the DB.
-    $updaterecord = new stdClass;
+    $updaterecord = new stdClass();
     $updaterecord->id = $report->id;
     $updaterecord->lastrun = time();
     $updaterecord->lastexecutiontime = round((microtime(true) - $starttime) * 1000);

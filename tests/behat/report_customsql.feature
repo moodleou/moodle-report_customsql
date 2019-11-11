@@ -185,3 +185,17 @@ Feature: Ad-hoc database queries report
     And I should see "lastname: User"
     And I should see "moodle@example.com"
     And I should see "This report has 1 rows."
+
+  Scenario: Test reporting when a query exceeds the limit
+    Given the following config values are set as admin:
+      | querylimitdefault | 1 | report_customsql |
+    When I log in as "admin"
+    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    And I press "Add a new query"
+    And I set the following fields to these values:
+      | Query name  | Test query                                                                                   |
+      | Description | Query that tries to return 2 rows.                                                           |
+      | Query SQL   | SELECT * FROM {config_plugins} WHERE name = 'version' AND plugin IN ('mod_quiz', 'mod_wiki') |
+    And I press "Save changes"
+    Then I should see "Test query"
+    And I should see "This query reached the limit of 1 rows. Some rows may have been omitted from the end."

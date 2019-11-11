@@ -173,18 +173,24 @@ if (is_null($csvtimestamp)) {
         $table->id = 'report_customsql_results';
         list($table->head, $linkcolumns) = report_customsql_get_table_headers(fgetcsv($handle));
 
+        $rowlimitexceeded = false;
         while ($row = fgetcsv($handle)) {
-            $table->data[] = report_customsql_display_row($row, $linkcolumns);
-            $count += 1;
+            $data = report_customsql_display_row($row, $linkcolumns);
+            if (isset($data[0]) && $data[0] === REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER) {
+                $rowlimitexceeded = true;
+            } else {
+                $table->data[] = $data;
+                $count += 1;
+            }
         }
 
         fclose($handle);
         echo html_writer::table($table);
 
-        if ($count >= REPORT_CUSTOMSQL_MAX_RECORDS) {
+        if ($rowlimitexceeded) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
-                                                  REPORT_CUSTOMSQL_MAX_RECORDS),
-                                                  array('class' => 'admin_note'));
+                    $report->querylimit ?? get_config('report_customsql', 'querylimitdefault')),
+                    array('class' => 'admin_note'));
         } else {
             echo html_writer::tag('p', get_string('recordcount', 'report_customsql', $count),
                     array('class' => 'admin_note'));
