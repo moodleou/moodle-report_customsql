@@ -375,7 +375,7 @@ class report_customsql_report_testcase extends advanced_testcase {
      * @return void
      */
     public function test_report_customsql_email_report() {
-        global $DB;
+        global $CFG, $DB;
 
         $this->resetAfterTest(true);
 
@@ -400,9 +400,27 @@ class report_customsql_report_testcase extends advanced_testcase {
         $this->assertEquals(\core_user::get_support_user()->id, $message->useridfrom);
         $this->assertEquals($user->id, $message->useridto);
 
-        $expectedsubject = get_string('emailsubject', 'report_customsql',
+        $expectedsubject = get_string('emailsubjectnodata', 'report_customsql',
             report_customsql_plain_text_report_name($report));
         $this->assertEquals($expectedsubject, $message->subject);
+
+        // Now check subject if the report has one row.
+        $cvsfilename = $CFG->tempdir . '/res.cvs';
+        file_put_contents($cvsfilename, "Col1,Col2\r\nFrog,Toad");
+
+        report_customsql_email_report($report, $cvsfilename);
+        $messages = $sink->get_messages();
+        $message = end($messages);
+        $this->assertEquals('Query all users on this test [1 row]', $message->subject);
+
+        // And more rows.
+        $cvsfilename = $CFG->tempdir . '/res.cvs';
+        file_put_contents($cvsfilename, "Col1,Col2\r\nFrog,Tadpole\r\nCat,Kitten\r\nDog,Puppy");
+
+        report_customsql_email_report($report, $cvsfilename);
+        $messages = $sink->get_messages();
+        $message = end($messages);
+        $this->assertEquals('Query all users on this test [3 rows]', $message->subject);
 
         $sink->close();
     }
