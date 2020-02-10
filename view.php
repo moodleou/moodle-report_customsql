@@ -184,6 +184,12 @@ if (is_null($csvtimestamp)) {
             }
         }
 
+        // For scheduled reports that accumulate one row at a time,
+        // show most recent data first.
+        if ($report->runable != 'manual' && $report->singlerow) {
+            $table->data = array_reverse($table->data);
+        }
+
         fclose($handle);
         echo html_writer::table($table);
 

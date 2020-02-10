@@ -1,5 +1,10 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 3.9
+
+* Scheduled reports which accumulate one row at a time now display
+  with the most recent data at the top.
+
 ## Changes in 3.8
 
 * Report results can now be downloaded in any of data format that Moodle supports, not just CSV.
