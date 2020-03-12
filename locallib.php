@@ -42,6 +42,13 @@ function report_customsql_execute_query($sql, $params = null, $limitnum = null) 
         if (((string) (int) $value) === ((string) $value)) {
             $params[$name] = (int) $value;
         }
+        if (strpos($value, ',')) {
+            $pattern = "/(?!IN)(:$name)/i";
+            if (preg_match($pattern, $sql)) {
+                $sql = preg_replace($pattern, $value, $sql);
+                unset($params[$name]);
+            }
+        }
     }
 
     // Note: throws Exception if there is an error.
