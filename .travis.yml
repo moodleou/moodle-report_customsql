@@ -1,14 +1,14 @@
 language: php
 
+os: linux
 dist: xenial
-sudo: required
 
 services:
   - mysql
+  - postgresql
 
 addons:
   firefox: "47.0.1"
-  postgresql: "9.6"
   apt:
     packages:
       - openjdk-8-jre-headless
@@ -19,12 +19,23 @@ cache:
     - $HOME/.composer/cache
     - $HOME/.npm
 
-matrix:
+jobs:
   include:
     - php: 7.3
       env:
         - MOODLE_BRANCH=master
         - DB=pgsql
+
+    - php: 7.4
+      env:
+        - MOODLE_BRANCH=MOODLE_39_STABLE
+        - DB=mysqli
+
+    - php: 7.3
+      env:
+        - MOODLE_BRANCH=MOODLE_38_STABLE
+        - DB=pgsql
+        - CHECK_GRUNT=yes
 
     - php: 7.2
       env:
@@ -35,6 +46,7 @@ matrix:
       env:
         - MOODLE_BRANCH=MOODLE_36_STABLE
         - DB=pgsql
+        - NODE=8.9
 
     - php: 7.0
       env:
@@ -43,8 +55,17 @@ matrix:
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - nvm install 8.9
-  - nvm use 8.9
+
+  - if [ -z $CHECK_GRUNT ]; then
+      export CHECK_GRUNT=no;
+    fi
+
+  - if [ -z $NODE ]; then
+      export NODE=14;
+    fi
+  - nvm install $NODE
+  - nvm use $NODE
+
   - cd ../..
   - composer create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^2
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
@@ -60,6 +81,6 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache || true # report issues, but don't fail the build.
-  - moodle-plugin-ci grunt || [ "$MOODLE_BRANCH" = 'master' ]
+  - moodle-plugin-ci grunt || [ "$CHECK_GRUNT" = 'no' ]
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat

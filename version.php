@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019111101;
+$plugin->version   = 2020062800;
 $plugin->requires  = 2018051700;
 $plugin->component = 'report_customsql';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.8 for Moodle 3.5+';
+$plugin->release   = '3.9 for Moodle 3.5+';
 
 $plugin->outestssufficient = true;

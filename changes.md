@@ -4,6 +4,9 @@
 
 * Scheduled reports which accumulate one row at a time now display
   with the most recent data at the top.
+* When sending emails for scheduled reports, the number of rows in
+  the results is now added to the subject line.
+
 
 ## Changes in 3.8
 
