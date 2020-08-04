@@ -105,6 +105,13 @@ class report_customsql_edit_form extends moodleform {
         $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
                            get_string('onerow', 'report_customsql'));
 
+        $mform->addElement('checkbox', 'externalserviceallowed',
+            get_string('externalserviceallowed', 'report_customsql'),
+            get_string('externalservicedownloadallowed', 'report_customsql'));
+        $mform->addElement('select', 'externalserviceid', get_string('externalserviceid', 'report_customsql'),
+            report_customsql_externalservicesid_options());    
+        $mform->disabledIf('externalserviceid', 'externalserviceallowed', 'notchecked');
+
         $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
         $mform->setType('customdir', PARAM_PATH);
         $mform->disabledIf('customdir', 'runable', 'eq', 'manual');

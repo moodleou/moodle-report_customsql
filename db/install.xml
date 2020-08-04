@@ -18,6 +18,8 @@
         <FIELD NAME="lastexecutiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this report took to run last time it was executed, in milliseconds."/>
         <FIELD NAME="runable" TYPE="char" LENGTH="32" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" COMMENT="'manual', 'weekly' or 'monthly'"/>
         <FIELD NAME="singlerow" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Only meaningful to set this scheduled reports. Means the report can only return one row of data, and the report builds up a row at a time."/>
+        <FIELD NAME="externalserviceallowed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Report could be downloaded using webservice."/>
+        <FIELD NAME="externalserviceid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Binded webservice."/>
         <FIELD NAME="at" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false" COMMENT="The time for the daily report"/>
         <FIELD NAME="emailto" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="A comma separated list of usernames"/>
         <FIELD NAME="emailwhat" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false" COMMENT="A list of email options in a select menu"/>

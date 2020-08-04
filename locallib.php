@@ -258,6 +258,19 @@ function report_customsql_capability_options() {
     );
 }
 
+function report_customsql_externalservicesid_options() {
+    global $DB;
+    $options = ['' => get_string('all')];
+    $sql = "SELECT es.id as id, es.name as name
+            FROM {external_services} es, {external_services_functions} esf
+            WHERE esf.externalserviceid = es.id AND esf.functionname = ?
+            ORDER BY es.name";
+    foreach($DB->get_records_sql($sql, ['report_customsql_download']) as $record) {
+        $options[$record->id] = $record->name;
+    }
+    return $options;
+}
+
 function report_customsql_runable_options($type = null) {
     if ($type === 'manual') {
         return array('manual' => get_string('manual', 'report_customsql'));

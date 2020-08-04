@@ -36,10 +36,24 @@ if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
-require_login();
-$context = context_system::instance();
-if (!empty($report->capability)) {
-    require_capability($report->capability, $context);
+// webservices manages access by itself 
+if(WS_SERVER) {
+    if(empty($report->externalserviceallowed) || !empty($report->externalserviceid) 
+            && !$DB->record_exists('external_tokens', array(
+                'token' => required_param('wstoken', PARAM_ALPHANUM),
+                'externalserviceid' => $report->externalserviceid,
+    ))) {
+        throw new webservice_access_exception('You are not allowed to download this report using webservice');
+    }
+    if ($report->runable == 'manual') {
+        $csvtimestamp = report_customsql_generate_csv($report, time());
+    }
+} else {
+    require_login();
+    $context = context_system::instance();
+    if (!empty($report->capability)) {
+        require_capability($report->capability, $context);
+    }
 }
 
 list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);

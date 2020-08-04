@@ -36,6 +36,27 @@ function xmldb_report_customsql_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2020080500) {
+        // Add field to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        if ($dbman->table_exists($table)) {
+            // Define and add the field 'externalserviceallowed'.
+            $field = new xmldb_field('externalserviceallowed', XMLDB_TYPE_INTEGER, '1', null,
+                XMLDB_NOTNULL, null, 0, 'singlerow'); 
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+            // Define and add the field 'externalserviceid'.
+            $field = new xmldb_field('externalserviceid',  XMLDB_TYPE_INTEGER, '10', null, 
+                null, null, 0, 'externalserviceallowed');
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+
+        }
+        upgrade_plugin_savepoint(true, 2020080500, 'report', 'customsql');
+    }
+
     if ($oldversion < 2012011900) {
 
         // Add field to report_customsql_queries.

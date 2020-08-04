@@ -15,19 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php file for the Custom SQL admin report.
+ * Download the CSV version of a SQL report.
  *
- * @package   report_customsql
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    report_customsql
+ * @copyright  2020 Paweł Suwiński
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020080500;
-$plugin->requires  = 2018051700;
-$plugin->component = 'report_customsql';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.9 for Moodle 3.5+';
+$functions = array(
+    'report_customsql_download' => array(
+        'classname' => 'report_customsql_external',
+        'methodname' => 'download',
+        'description' => 'Download the CSV version of a SQL report',
+        'type' => 'read',
+        'capabilities' => '',
+        'services'      => '',
+    )
+);
 
-$plugin->outestssufficient = true;
