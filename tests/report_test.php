@@ -189,7 +189,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         // relative to $timestamp. (Acutally timestamp is yesterday.)
         $lastrun = $today;
         $timestamp = $lastrun - ($today - $yesterday);
-        $id = $this->create_a_database_row('daily', $currenthour, $lastrun, 'admin');
+        $id = $this->create_a_database_row('daily', $currenthour, $lastrun, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertFalse(report_customsql_is_daily_report_ready($report, $timestamp));
 
@@ -198,7 +198,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         // yesterday, and current time exactly the time the report should be run today.
         $lastrun = $yesterday;
         $timestamp = $today;
-        $id = $this->create_a_database_row('daily', $currenthour - 1, $lastrun, 'admin, s1');
+        $id = $this->create_a_database_row('daily', $currenthour - 1, $lastrun, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timestamp));
 
@@ -207,7 +207,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         // that made a difference, but it should not.
         $lastrun = $yesterday;
         $timestamp = $today;
-        $id = $this->create_a_database_row('daily', $currenthour, $lastrun, '');
+        $id = $this->create_a_database_row('daily', $currenthour, $lastrun, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timestamp));
 
@@ -216,7 +216,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         // yesterday.
         $lastrun = $yesterday;
         $timestamp = $today;
-        $id = $this->create_a_database_row('daily', $currenthour + 1, $lastrun, 's1');
+        $id = $this->create_a_database_row('daily', $currenthour + 1, $lastrun, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertFalse(report_customsql_is_daily_report_ready($report, $timestamp));
 
@@ -230,7 +230,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         list($oneam) = report_customsql_get_daily_time_starts($timenow, 1);
         list($elevenpm) = report_customsql_get_daily_time_starts($timenow, 23);
         $timenow = $elevenpm;
-        $id = $this->create_a_database_row('daily', 1, $oneam, 's1');
+        $id = $this->create_a_database_row('daily', 1, $oneam, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertFalse(report_customsql_is_daily_report_ready($report, $timenow));
 
@@ -241,7 +241,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         list($twoam) = report_customsql_get_daily_time_starts($timenow, 2);
         list($notused, $fouramyesterday) = report_customsql_get_daily_time_starts($timenow, 4);
         $timenow = $twoam;
-        $id = $this->create_a_database_row('daily', 2, $fouramyesterday, 's1');
+        $id = $this->create_a_database_row('daily', 2, $fouramyesterday, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timenow));
     }
@@ -381,7 +381,7 @@ class report_customsql_report_testcase extends advanced_testcase {
 
         $user = $this->getDataGenerator()->create_user();
 
-        $id = $this->create_a_database_row('daily', 2, 1, $user->username);
+        $id = $this->create_a_database_row('daily', 2, 1, $user->id);
         $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
 
         // Give our test user the capability to view the report.

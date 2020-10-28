@@ -570,7 +570,14 @@ function report_customsql_delete_old_temp_files($upto) {
     return $count;
 }
 
-function report_customsql_validate_users($userstring, $capability) {
+/**
+ * Check the list of userids are valid, and have permission to access the report.
+ *
+ * @param array $userids user ids.
+ * @param string $capability capability name.
+ * @return string|null null if all OK, else error message.
+ */
+function report_customsql_validate_users($userids, $capability) {
     global $DB;
     if (empty($userstring)) {
         return null;
@@ -580,19 +587,17 @@ function report_customsql_validate_users($userstring, $capability) {
     $a->capability = $capability;
     $a->whocanaccess = get_string('whocanaccess', 'report_customsql');
 
-    $usernames = preg_split("/[\s,;]+/", $userstring);
-    if ($usernames) {
-        foreach ($usernames as $username) {
-            // Cannot find the user in the database.
-            if (!$user = $DB->get_record('user', array('username' => $username))) {
-                return get_string('usernotfound', 'report_customsql', $username);
-            }
-            // User does not have the chosen access level.
-            $context = context_user::instance($user->id);
-            $a->username = $username;
-            if (!has_capability($capability, $context, $user)) {
-                return get_string('userhasnothiscapability', 'report_customsql', $a);
-            }
+    foreach ($userids as $userid) {
+        // Cannot find the user in the database.
+        if (!$user = $DB->get_record('user', ['id' => $userid])) {
+            return get_string('usernotfound', 'report_customsql', $userid);
+        }
+        // User does not have the chosen access level.
+        $context = context_user::instance($user->id);
+        $a->userid = $userid;
+        $a->name = fullname($user);
+        if (!has_capability($capability, $context, $user)) {
+            return get_string('userhasnothiscapability', 'report_customsql', $a);
         }
     }
     return null;
@@ -692,29 +697,14 @@ function report_customsql_email_report($report, $csvfilename = null) {
     }
 
     // Email all recipients.
-    $usernames = preg_split("/[\s,;]+/", $report->emailto);
-    foreach ($usernames as $username) {
-        $recipient = $DB->get_record('user', array('username' => $username), '*', MUST_EXIST);
+    $userids = preg_split("/[\s,]+/", $report->emailto);
+    foreach ($userids as $userid) {
+        $recipient = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
         $messageid = report_customsql_send_email_notification($recipient, $message);
         if (!$messageid) {
             mtrace(get_string('emailsentfailed', 'report_customsql', fullname($recipient)));
         }
     }
-}
-
-function report_customsql_get_list_of_users($str, $inputfield = 'username', $outputfield = 'id') {
-    global $DB;
-    if (!$userarray = preg_split("/[\s,;]+/", $str)) {
-        return null;
-    }
-    $users = array();
-    foreach ($userarray as $user) {
-        $users[$user] = $DB->get_field('user', $outputfield, array($inputfield => $user));
-    }
-    if (!$users) {
-        return null;
-    }
-    return implode(',', $users);
 }
 
 function report_customsql_get_ready_to_run_daily_reports($timenow) {

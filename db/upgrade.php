@@ -182,5 +182,50 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019111101, 'report', 'customsql');
     }
 
+    if ($oldversion < 2020102800) {
+        // Convert the contents of the emailto column from a list of usernames to a list of user ids.
+
+        // Transfer data from old columns into details.
+        // (There seem to be just a few thousand of these, so not too bad.)
+        $queries = $DB->get_records_select('report_customsql_queries', 'emailto <> ?', [''], 'id', 'id, emailto');
+        $total = count($queries);
+
+        if ($total > 0) {
+            // First get all the different usernames that appear.
+            $usernames = [];
+            foreach ($queries as $query) {
+                foreach (preg_split("/[\s,;]+/", $query->emailto) as $username) {
+                    $usernames[$username] = 1;
+                }
+            }
+
+            // Then get the corresponding user ids.
+            $userids = $DB->get_records_list('user', 'username', array_keys($usernames), '', 'username, id');
+
+            // Now  do the update.
+            $progressbar = new progress_bar('report_customsql_emailto_upgrade', 500, true);
+            $done = 0;
+            foreach ($queries as $query) {
+                $progressbar->update($done, $total,
+                        "Updating ad-hoc DB query email recipients - {$done}/{$total} (id = {$query->id}).");
+
+                $queryuserids = [];
+                foreach (preg_split("/[\s,;]+/", $query->emailto) as $username) {
+                    if (isset($userids[$username])) {
+                        $queryuserids[] = $userids[$username]->id;
+                    }
+                }
+                sort($queryuserids);
+
+                $DB->set_field('report_customsql_queries', 'emailto', implode(',', $queryuserids), ['id' => $query->id]);
+                $done += 1;
+            }
+            $progressbar->update($done, $total, "Updating ad-hoc DB query email recipients - {$done}/{$total}.");
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2020102800, 'report', 'customsql');
+    }
+
     return true;
 }
