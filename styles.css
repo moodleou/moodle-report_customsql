@@ -31,3 +31,8 @@
 .csql_category.csql_categoryhidden .csql_category_reports {
     display: none;
 }
+
+#page-admin-report-customsql-edit #id_querysql {
+    min-width: 100%;
+    font-family: "SF Mono", "Monaco", "Andale Mono", Consolas, "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+}

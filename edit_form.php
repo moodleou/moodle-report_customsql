@@ -55,9 +55,9 @@ class report_customsql_edit_form extends moodleform {
         $mform->setType('description', PARAM_RAW);
 
         $mform->addElement('textarea', 'querysql', get_string('querysql', 'report_customsql'),
-                           'rows="25" cols="50"');
+                ['rows' => '25', 'cols' => '80']);
         $mform->addRule('querysql', get_string('querysqlrequried', 'report_customsql'),
-                        'required', null, 'client');
+                'required', null, 'client');
         $mform->setType('querysql', PARAM_RAW);
 
         $mform->addElement('submit', 'verify', get_string('verifyqueryandupdate', 'report_customsql'));
