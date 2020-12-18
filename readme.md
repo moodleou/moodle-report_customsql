@@ -1,4 +1,4 @@
-# Ad-hoc database queries [![Build Status](https://travis-ci.com/moodleou/moodle-report_customsql.svg?branch=master)](https://travis-ci.com/moodleou/moodle-report_customsql)
+# Ad-hoc database queries
 
 This report plugin allows Administrators to set up arbitrary database queries
 to act as ad-hoc reports. Reports can be of two types, either run on demand,

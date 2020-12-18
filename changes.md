@@ -1,5 +1,13 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 4.0
+
+* Fix downloading for Moodle 3.9+.
+* When editing queries, the SQL field is now styled more prettily.
+* For scheduled reports, the list of users to email is now stored as a list of userids, rather than usernames.
+  (Configuration of existing reports is automatically updated on upgrade.)
+
+
 ## Changes in 3.9
 
 * Scheduled reports which accumulate one row at a time now display
