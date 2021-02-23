@@ -312,7 +312,7 @@ function report_customsql_log_view($id) {
 }
 
 /**
- * Returns all reports for a given type sorted by report 'displaname'.
+ * Returns all reports for a given type sorted by report 'displayname'.
  *
  * @param int $categoryid
  * @param string $type, type of report (manual, daily, weekly or monthly)
@@ -320,8 +320,10 @@ function report_customsql_log_view($id) {
  */
 function report_customsql_get_reports_for($categoryid, $type) {
     global $DB;
-    return $DB->get_records('report_customsql_queries',
-        array('runable' => $type, 'categoryid' => $categoryid), 'displayname');
+    $records = $DB->get_records('report_customsql_queries',
+        array('runable' => $type, 'categoryid' => $categoryid));
+
+    return report_customsql_sort_reports_by_displayname($records);
 }
 
 /**
@@ -815,4 +817,22 @@ function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename 
 function report_customsql_plain_text_report_name($report): string {
     return format_string($report->displayname, true,
             ['context' => context_system::instance()]);
+}
+
+/**
+ * Returns all reports for a given type sorted by report 'displayname'.
+ *
+ * @param array $records relevant rows from report_customsql_queries
+ * @return array
+ */
+function report_customsql_sort_reports_by_displayname(array $records): array {
+    $sortedrecords = [];
+
+    foreach ($records as $record) {
+        $sortedrecords[$record->displayname] = $record;
+    }
+
+    ksort($sortedrecords, SORT_NATURAL);
+
+    return $sortedrecords;
 }
