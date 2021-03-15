@@ -86,7 +86,14 @@ class run_reports extends \core\task\scheduled_task {
             try {
                 report_customsql_generate_csv($report, $timenow);
             } catch (\Exception $e) {
-                mtrace("... REPORT FAILED " . $e->getMessage());
+                $info = get_exception_info($e);
+                mtrace("... REPORT FAILED " . $info->message);
+                if (!empty($info->debuginfo)) {
+                    mtrace("\nDebug info: $info->debuginfo");
+                }
+                if (!empty($info->backtrace)) {
+                    mtrace("\nStack trace: " . format_backtrace($info->backtrace, true));
+                }
             }
         }
     }
