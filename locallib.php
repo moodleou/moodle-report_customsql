@@ -281,6 +281,7 @@ function report_customsql_daily_at_options() {
 function report_customsql_email_options() {
     return array('emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
             'emailresults' => get_string('emailresults', 'report_customsql'),
+            'emailattachment' => get_string('emailattachment', 'report_customsql'),
     );
 }
 
