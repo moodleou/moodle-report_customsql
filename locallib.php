@@ -110,6 +110,7 @@ function report_customsql_generate_csv($report, $timenow) {
     $csvfilenames = array();
     $csvtimestamp = null;
     $count = 0;
+    $file = null;
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
             list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
@@ -117,6 +118,19 @@ function report_customsql_generate_csv($report, $timenow) {
 
             if (!file_exists($csvfilename)) {
                 $handle = fopen($csvfilename, 'w');
+                $fs = get_file_storage();
+                $file = $fs->create_file_from_pathname(
+                    [
+                        'contextid' => context_system::instance()->id,
+                        'component' => 'report_customsql',
+                        'filearea' => 'admin_report_customsql',
+                        'itemid' => 0, 
+                        'filepath' => dirname($csvfilename) . '/',
+                        'filename' => basename($csvfilename),
+                    ], 
+                    $csvfilename
+                );
+
                 report_customsql_start_csv($handle, $row, $report);
             } else {
                 $handle = fopen($csvfilename, 'a');
