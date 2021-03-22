@@ -579,7 +579,23 @@ function report_customsql_delete_old_temp_files($upto) {
     }
     foreach ($files as $file) {
         if (basename($file) < $comparison) {
-            unlink($file);
+             $fs = get_file_storage();
+
+            $fileinfo = array(
+            'component' => 'report_customsql',
+            'filearea' => 'admin_report_customsql',
+                    'itemid' => 0,
+            'contextid' => context_system::instance()->id,
+            'filepath' => dirname($file) . '/',
+                    'filename' => basename($file));
+
+            $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+                                $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+
+            // Delete it if it exists
+                if ($file) {
+                    $file->delete();
+                }
             $count += 1;
         }
     }
