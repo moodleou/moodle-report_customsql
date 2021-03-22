@@ -712,6 +712,22 @@ function report_customsql_get_message($report, $csvfilename) {
     $message->fullmessagehtml   = $fullmessagehtml;
     $message->smallmessage      = null;
 
+    $fs = get_file_storage();
+
+    // Issue using GetFile to fetch the file
+    $file = $fs->get_file(
+        context_system::instance()->id,
+        'report_customsql',
+        'admin_report_customsql',
+        0,
+        dirname($csvfilename) . '/',
+        basename($csvfilename)
+    );
+
+    if($report->emailwhat === 'emailattachment'){
+        $message->attachment = $file;
+    }
+
     return $message;
 }
 
