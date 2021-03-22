@@ -793,6 +793,7 @@ function report_customsql_send_email_notification($recipient, $message) {
     $eventdata->fullmessageformat = $message->fullmessageformat;
     $eventdata->fullmessagehtml   = $message->fullmessagehtml;
     $eventdata->smallmessage      = $message->smallmessage;
+    $eventdata->attachment        = $message->attachment;
 
     return message_send($eventdata);
 }
