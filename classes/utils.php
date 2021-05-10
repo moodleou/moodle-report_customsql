@@ -14,20 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace report_customsql;
+
 /**
- * version.php file for the Custom SQL admin report.
+ * Static utility methods to support the report_customsql module.
  *
- * @package   report_customsql
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package report_customsql
+ * @copyright 2021 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2021051000;
-$plugin->requires  = 2020061500;
-$plugin->component = 'report_customsql';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '4.0 for Moodle 3.9+';
-
-$plugin->outestssufficient = true;
+class utils {
+    /**
+     * Return the current timestamp, or a fixed timestamp specified by an automated test.
+     *
+     * @return int The timestamp
+     */
+    public static function time(): int {
+        if ((defined('BEHAT_SITE_RUNNING') || PHPUNIT_TEST) &&
+                $time = get_config('report_customsql', 'behat_fixed_time')) {
+            return $time;
+        } else {
+            return time();
+        }
+    }
+}

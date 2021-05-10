@@ -6,6 +6,7 @@ Feature: Ad-hoc database queries report
 
   Scenario: Create an Ad-hoc database query
     When I log in as "admin"
+    And the Ad-hoc database queries thinks the time is "2021-05-10 18:00:00"
     And I navigate to "Reports > Ad-hoc database queries" in site administration
     And I press "Add a new query"
     And I set the following fields to these values:
@@ -19,13 +20,24 @@ Feature: Ad-hoc database queries report
     And I should see "This report has 1 rows."
     And I should see "Download these results as"
     And the "Download these results as" select box should contain "Comma separated values (.csv)"
+    And I follow "Edit query 'Test query'"
+    And I should see "Time created: Monday, 10 May 2021, 6:00 PM"
+    And I should see "Last modified: Monday, 10 May 2021, 6:00 PM"
+    And I should see "Modified by: Admin User"
 
   Scenario: Edit an Ad-hoc database query
-    Given the following custom sql report exists:
-      | name        | Test query                                    |
-      | description | Display the Moodle internal version number.   |
-      | querysql    | SELECT * FROM {config} WHERE name = 'version' |
+    Given the following "users" exist:
+      | username | firstname | lastname | email               |
+      | mamager1 | Manager   | 1        | manager@example.com |
+    And the following custom sql report exists:
+      | name         | Test query                                    |
+      | description  | Display the Moodle internal version number.   |
+      | querysql     | SELECT * FROM {config} WHERE name = 'version' |
+      | timecreated  | 1620640800                                    |
+      | timemodified | 1620640800                                    |
+      | usermodified | mamager1                                      |
     When I log in as "admin"
+    And the Ad-hoc database queries thinks the time is "2021-05-10 19:00:00"
     And I navigate to "Reports > Ad-hoc database queries" in site administration
     And I follow "Edit query 'Test query'"
     And the following fields match these values:
@@ -40,6 +52,10 @@ Feature: Ad-hoc database queries report
     Then I should see "Renamed query"
     And I should see "New description."
     And I should see "This report has 1 rows."
+    And I follow "Edit query 'Renamed query'"
+    And I should see "Time created: Monday, 10 May 2021, 6:00 PM"
+    And I should see "Last modified: Monday, 10 May 2021, 7:00 PM"
+    And I should see "Modified by: Admin User"
 
   Scenario: Delete an Ad-hoc database query
     Given the following custom sql report exists:
@@ -54,8 +70,8 @@ Feature: Ad-hoc database queries report
 
   Scenario: View an Ad-hoc database query that returns no data
     Given the following custom sql report exists:
-      | name        | Test query                               |
-      | querysql    | SELECT * FROM {config} WHERE name = '-1' |
+      | name     | Test query                               |
+      | querysql | SELECT * FROM {config} WHERE name = '-1' |
     When I log in as "admin"
     And I view the "Test query" custom sql report
     Then I should see "This query did not return any data."
@@ -78,9 +94,9 @@ Feature: Ad-hoc database queries report
     And I should see "No queries available"
     And I press "Add a new query"
     And I set the following fields to these values:
-      | Category    | Special reports                               |
-      | Query name  | Test query                                    |
-      | Query SQL   | SELECT * FROM {config} WHERE name = 'version' |
+      | Category   | Special reports                               |
+      | Query name | Test query                                    |
+      | Query SQL  | SELECT * FROM {config} WHERE name = 'version' |
     And I press "Save changes"
     And I follow "Ad-hoc database queries"
     And I follow "Special reports"
@@ -140,8 +156,8 @@ Feature: Ad-hoc database queries report
     And I navigate to "Reports > Ad-hoc database queries" in site administration
     And I press "Add a new query"
     And I set the following fields to these values:
-      | Query name  | Find user                                       |
-      | Query SQL   | SELECT * FROM {user} WHERE username = :username |
+      | Query name | Find user                                       |
+      | Query SQL  | SELECT * FROM {user} WHERE username = :username |
     And I press "Verify the Query SQL text and update the form"
     And I set the field "username" to "frog"
     And I press "Save changes"
@@ -157,8 +173,8 @@ Feature: Ad-hoc database queries report
 
   Scenario: Link directly to an Ad-hoc database query that has parameters
     Given the following custom sql report exists:
-      | name        | Find user                                       |
-      | querysql    | SELECT * FROM {user} WHERE username = :username |
+      | name     | Find user                                       |
+      | querysql | SELECT * FROM {user} WHERE username = :username |
     When I log in as "admin"
     And I view the "Find user" custom sql report with these URL parameters:
       | username | frog |
@@ -170,8 +186,8 @@ Feature: Ad-hoc database queries report
 
   Scenario: Link directly to an Ad-hoc database query giving some parameters
     Given the following custom sql report exists:
-      | name        | Find user                                                                  |
-      | querysql    | SELECT * FROM {user} WHERE firstname = :firstname AND lastname = :lastname |
+      | name     | Find user                                                                  |
+      | querysql | SELECT * FROM {user} WHERE firstname = :firstname AND lastname = :lastname |
     When I log in as "admin"
     And I view the "Find user" custom sql report with these URL parameters:
       | firstname | Admin |

@@ -53,6 +53,8 @@ class behat_report_customsql extends behat_base {
      * @param TableNode $data Supplied data
      */
     public function the_following_custom_sql_report_exists(TableNode $data) {
+        global $DB;
+
         $report = $data->getRowsHash();
 
         // Report name.
@@ -100,6 +102,23 @@ class behat_report_customsql extends behat_base {
         } else {
             $report['runable'] = 'manual';
         }
+
+        // Time modified.
+        if (!isset($report['timemodified'])) {
+            $report['timemodified'] = \report_customsql\utils::time();
+        }
+
+        // Time created.
+        if (!isset($report['timecreated'])) {
+            $report['timecreated'] = $report['timemodified'];
+        }
+
+        // User modified.
+        if (!isset($report['usermodified'])) {
+            $report['usermodified'] = 'admin';
+        }
+        $user = $DB->get_record('user', ['username' => $report['usermodified']], 'id', MUST_EXIST);
+        $report['usermodified'] = $user->id;
 
         $this->save_new_report($report);
     }
@@ -203,6 +222,20 @@ class behat_report_customsql extends behat_base {
 
         $this->getSession()->visit($this->locate_path('/report/customsql/view.php?' .
                 implode('&', $queryparams)));
+    }
+
+    /**
+     * Sets a fake time for the report_customsql
+     *
+     * @param string $time time in a format that strtotime will understand
+     * @Given /^the Ad-hoc database queries thinks the time is "(?P<strtotime_string>.+)"$/
+     */
+    public function adhoc_database_queries_thinks_the_time_is($time) {
+        $value = strtotime($time);
+        if ($value === false) {
+            throw new \Behat\Mink\Exception\ExpectationException('specified time is not valid', $this->getSession());
+        }
+        set_config('behat_fixed_time', $value, 'report_customsql');
     }
 
     /**

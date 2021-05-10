@@ -142,8 +142,26 @@ class report_customsql_edit_form extends moodleform {
     }
 
     public function set_data($currentvalues) {
+        global $DB, $OUTPUT;
+
         $currentvalues->emailto = explode(',', $currentvalues->emailto);
         parent::set_data($currentvalues);
+
+        // Add report information.
+        $mform = $this->_form;
+        $reportinfocontext = new stdClass();
+        $reportinfocontext->timecreated = $currentvalues->timecreated > 0 ? userdate($currentvalues->timecreated) : '';
+        $reportinfocontext->timemodified = $currentvalues->timemodified > 0 ? userdate($currentvalues->timemodified) : '';
+        $reportinfocontext->usermodified = '';
+        if ($currentvalues->usermodified > 0) {
+            $usermodified = $DB->get_record('user', ['id' => $currentvalues->usermodified]);
+            $reportinfocontext->usermodified = fullname($usermodified);
+        }
+        $reportinfo = $OUTPUT->render_from_template(
+            'report_customsql/form_report_information',
+            $reportinfocontext
+        );
+        $mform->addElement('html', $reportinfo);
     }
 
     public function validation($data, $files) {
