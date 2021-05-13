@@ -215,3 +215,11 @@ Feature: Ad-hoc database queries report
     And I press "Save changes"
     Then I should see "Test query"
     And I should see "This query reached the limit of 1 rows. Some rows may have been omitted from the end."
+
+  Scenario: View an Ad-hoc database query that returns data that confuses PHP CSV parsing
+    Given the following custom sql report exists:
+      | name     | Test query                            |
+      | querysql | SELECT '\' AS Backslash, ',' AS Comma |
+    When I log in as "admin"
+    And I view the "Test query" custom sql report
+    Then "\" row "Comma" column of "report_customsql_results" table should contain ","

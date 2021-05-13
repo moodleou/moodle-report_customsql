@@ -425,6 +425,17 @@ class report_customsql_report_testcase extends advanced_testcase {
         $sink->close();
     }
 
+    public function test_report_customsql_write_csv_row() {
+        global $CFG;
+        $this->resetAfterTest();
+
+        make_temp_directory('customsqltest');
+        $path = $CFG->tempdir . '/customsqltest/testoutput.csv';
+        $handle = fopen($path, 'w');
+        report_customsql_write_csv_row($handle, ['"\\"', '","']);
+        $this->assertEquals('"""\\""",""","""' . "\r\n", file_get_contents($path));
+    }
+
     /**
      * Create an entry in 'report_customsql_queries' table and return the id
      *
