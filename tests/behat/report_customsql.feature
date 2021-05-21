@@ -33,8 +33,8 @@ Feature: Ad-hoc database queries report
       | name         | Test query                                    |
       | description  | Display the Moodle internal version number.   |
       | querysql     | SELECT * FROM {config} WHERE name = 'version' |
-      | timecreated  | 1620640800                                    |
-      | timemodified | 1620640800                                    |
+      | timecreated  | 2021-05-10 18:00:00                           |
+      | timemodified | 2021-05-10 18:00:00                           |
       | usermodified | mamager1                                      |
     When I log in as "admin"
     And the Ad-hoc database queries thinks the time is "2021-05-10 19:00:00"

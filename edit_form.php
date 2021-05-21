@@ -155,7 +155,10 @@ class report_customsql_edit_form extends moodleform {
         $reportinfocontext->usermodified = '';
         if ($currentvalues->usermodified > 0) {
             $usermodified = $DB->get_record('user', ['id' => $currentvalues->usermodified]);
-            $reportinfocontext->usermodified = fullname($usermodified);
+            $reportinfocontext->usermodified = html_writer::link(
+                $url = new moodle_url('/user/profile.php', ['id' => $usermodified->id]),
+                fullname($usermodified)
+            );
         }
         $reportinfo = $OUTPUT->render_from_template(
             'report_customsql/form_report_information',
