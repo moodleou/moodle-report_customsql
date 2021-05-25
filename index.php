@@ -109,10 +109,9 @@ if (count($categories) >= 5) {
 
 if (has_capability('report/customsql:definequeries', $context)) {
     echo $OUTPUT->single_button(report_customsql_url('edit.php'),
-            get_string('addreport', 'report_customsql'));
+            get_string('addreport', 'report_customsql'), 'post', ['class' => 'mb-1']);
 }
 if (has_capability('report/customsql:managecategories', $context)) {
-    echo html_writer::empty_tag('br');
     echo $OUTPUT->single_button(report_customsql_url('manage.php'),
             get_string('managecategories', 'report_customsql'));
 }
