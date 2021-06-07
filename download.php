@@ -50,10 +50,10 @@ if ($handle === false) {
                 report_customsql_url('view.php?id=' . $id));
 }
 
-$fields = fgetcsv($handle);
+$fields = report_customsql_read_csv_row($handle);
 
 $rows = new ArrayObject([]);
-while ($row = fgetcsv($handle)) {
+while ($row = report_customsql_read_csv_row($handle)) {
     $rows->append($row);
 }
 

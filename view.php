@@ -171,15 +171,11 @@ if (is_null($csvtimestamp)) {
 
         $table = new html_table();
         $table->id = 'report_customsql_results';
-        list($table->head, $linkcolumns) = report_customsql_get_table_headers(fgetcsv($handle));
+        list($table->head, $linkcolumns) = report_customsql_get_table_headers(
+                report_customsql_read_csv_row($handle));
 
         $rowlimitexceeded = false;
-        $disablestupidphpescaping = '';
-        if (!check_php_version('7.4')) {
-            // This argument of fgetcsv cannot be unset in PHP < 7.4, so substitute a character which is unlikely to ever appear.
-            $disablestupidphpescaping = "\v";
-        }
-        while ($row = fgetcsv($handle, 0, ',', '"', $disablestupidphpescaping)) {
+        while ($row = report_customsql_read_csv_row($handle)) {
             $data = report_customsql_display_row($row, $linkcolumns);
             if (isset($data[0]) && $data[0] === REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER) {
                 $rowlimitexceeded = true;
