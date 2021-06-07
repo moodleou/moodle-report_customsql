@@ -142,7 +142,11 @@ class report_customsql_edit_form extends moodleform {
     }
 
     public function set_data($currentvalues) {
-        $currentvalues->emailto = explode(',', $currentvalues->emailto);
+        if ($currentvalues->emailto !== '') {
+            $currentvalues->emailto = explode(',', $currentvalues->emailto);
+        } else {
+            $currentvalues->emailto = [];
+        }
         parent::set_data($currentvalues);
     }
 
