@@ -229,9 +229,9 @@ class provider implements
      */
     protected static function you_or_somebody_else($userid, $user) {
         if ($userid == $user->id) {
-            return get_string('privacy_you', 'mod_bookingsystem');
+            return get_string('privacy_you', 'report_customsql');
         } else {
-            return get_string('privacy_somebodyelse', 'mod_bookingsystem');
+            return get_string('privacy_somebodyelse', 'report_customsql');
         }
     }
 }

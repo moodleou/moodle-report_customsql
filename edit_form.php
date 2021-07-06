@@ -120,10 +120,18 @@ class report_customsql_edit_form extends moodleform {
                 if (!$user) {
                     return false;
                 }
+
+                if (class_exists('\core_user\fields')) {
+                    $extrafields = \core_user\fields::for_identity(\context_system::instance(),
+                            false)->get_required_fields();
+                } else {
+                    $extrafields = get_extra_user_fields(context_system::instance());
+                }
+
                 return $OUTPUT->render_from_template(
                         'report_customsql/form-user-selector-suggestion',
                         \report_customsql\external\get_users::prepare_result_object(
-                                $user, get_extra_user_fields(context_system::instance()))
+                                $user, $extrafields)
                         );
             }
         ];

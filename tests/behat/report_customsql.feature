@@ -218,8 +218,8 @@ Feature: Ad-hoc database queries report
 
   Scenario: View an Ad-hoc database query that returns data that confuses PHP CSV parsing
     Given the following custom sql report exists:
-      | name     | Test query                            |
-      | querysql | SELECT '\' AS Backslash, ',' AS Comma |
+      | name     | Test query                                    |
+      | querysql | SELECT CHR(92) AS Backslash, CHR(44) AS Comma |
     When I log in as "admin"
     And I view the "Test query" custom sql report
     Then "\" row "Comma" column of "report_customsql_results" table should contain ","
