@@ -1,5 +1,16 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 4.1
+
+* We now track when each query was created and last modified, along with the user who modified it.
+  (With the necessary Privacy API bits.)
+* Fix the sort-order of reports on the index page.
+* Fix the bug with list of email recipients being saved wrongly.
+* Fix a bug when the value in a cell ended in a backslash.
+* Minor styling fix.
+* Updates to make everything work with Moodle 3.11.
+
+
 ## Changes in 4.0
 
 * Fix downloading for Moodle 3.9+.
