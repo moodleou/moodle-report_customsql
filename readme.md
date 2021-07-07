@@ -33,8 +33,8 @@ See http://docs.moodle.org/en/Custom_SQL_queries_report for more information.
 
 ## Acknowledgements
 
-Creted by the Open University (http://www.open.ac.uk/). There have been contributions
-but many others who can be seen in the git log.
+This plugin was created by the Open University (http://www.open.ac.uk/), but now
+has contributions from many others, as can be seen in the git log. Thanks all.
 
 
 ## Installation and set-up
