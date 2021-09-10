@@ -450,6 +450,34 @@ function report_customsql_time_note($report, $tag) {
     return html_writer::tag($tag, $note, array('class' => 'admin_note'));
 }
 
+/**
+ * Output the standard action icons (edit, delete and back to list) for a report.
+ *
+ * @param stdClass $report the report.
+ * @param context $context context to use for permission checks.
+ */
+function display_report_actions(stdClass $report, context $context): void {
+    global $OUTPUT;
+
+    if (has_capability('report/customsql:definequeries', $context)) {
+        echo html_writer::tag('p',
+                $OUTPUT->action_link(
+                        new moodle_url(report_customsql_url('edit.php'), ['id' => $report->id]),
+                        $OUTPUT->pix_icon('t/edit', '') . ' ' .
+                        get_string('editreportx', 'report_customsql', format_string($report->displayname))));
+        echo html_writer::tag('p',
+                $OUTPUT->action_link(
+                        new moodle_url(report_customsql_url('delete.php'), ['id' => $report->id]),
+                        $OUTPUT->pix_icon('t/delete', '') . ' ' .
+                        get_string('deletereportx', 'report_customsql', format_string($report->displayname))));
+    }
+
+    echo html_writer::tag('p',
+            $OUTPUT->action_link(
+                    new moodle_url(report_customsql_url('index.php')),
+                    $OUTPUT->pix_icon('t/left', '') .
+                    get_string('backtoreportlist', 'report_customsql')));
+}
 
 function report_customsql_pretify_column_names($row, $querysql) {
     $colnames = [];

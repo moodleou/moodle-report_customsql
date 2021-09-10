@@ -109,6 +109,8 @@ if ($report->runable == 'manual') {
             }
             $mform->display();
 
+            display_report_actions($report, $context);
+
             echo $OUTPUT->footer();
             die;
         }
@@ -207,51 +209,36 @@ if (is_null($csvtimestamp)) {
 
         echo $OUTPUT->download_dataformat_selector(get_string('downloadthisreportas', 'report_customsql'),
             new moodle_url(report_customsql_url('download.php')), 'dataformat', ['id' => $id, 'timestamp' => $csvtimestamp]);
-
-        $archivetimes = report_customsql_get_archive_times($report);
-        if (count($archivetimes) > 1) {
-            echo $OUTPUT->heading(get_string('archivedversions', 'report_customsql'), 3).
-                 html_writer::start_tag('ul');
-            foreach ($archivetimes as $time) {
-                $formattedtime = userdate($time, get_string('strftimedate'));
-                echo html_writer::start_tag('li');
-                if ($time == $csvtimestamp) {
-                    echo html_writer::tag('b', $formattedtime);
-                } else {
-                    echo html_writer::tag('a', $formattedtime,
-                                array('href' => new moodle_url(report_customsql_url('view.php'),
-                                array('id' => $id, 'timestamp' => $time))));
-                }
-                echo '</li>';
-            }
-            echo html_writer::end_tag('ul');
-        }
     }
 }
 
 if (!empty($queryparams)) {
-    echo html_writer::tag('p', html_writer::link(
-            new moodle_url(report_customsql_url('view.php'), array('id' => $id)),
-            get_string('changetheparameters', 'report_customsql')));
+    echo html_writer::tag('p',
+            $OUTPUT->action_link(
+                    new moodle_url(report_customsql_url('view.php'), ['id' => $id]),
+                    $OUTPUT->pix_icon('t/editstring', '') . ' ' .
+                    get_string('changetheparameters', 'report_customsql')));
 }
 
-if (has_capability('report/customsql:definequeries', $context)) {
-    $imgedit = $OUTPUT->pix_icon('t/edit', get_string('edit'));
-    $imgdelete = $OUTPUT->pix_icon('t/delete', get_string('delete'));
-    echo html_writer::start_tag('p').
-         $OUTPUT->action_link(new moodle_url(report_customsql_url('edit.php'),
-                 array('id' => $id)), $imgedit.' '.
-                 get_string('editreportx', 'report_customsql', format_string($report->displayname))).
-         html_writer::end_tag('p').
-         html_writer::start_tag('p').
-         $OUTPUT->action_link(new moodle_url(report_customsql_url('delete.php'), ['id' => $id]),
-                 $imgdelete . ' ' . get_string('deletereportx', 'report_customsql', format_string($report->displayname))) .
-         html_writer::end_tag('p');
+display_report_actions($report, $context);
+
+$archivetimes = report_customsql_get_archive_times($report);
+if (count($archivetimes) > 1) {
+    echo $OUTPUT->heading(get_string('archivedversions', 'report_customsql'), 3).
+            html_writer::start_tag('ul');
+    foreach ($archivetimes as $time) {
+        $formattedtime = userdate($time, get_string('strftimedate'));
+        echo html_writer::start_tag('li');
+        if ($time == $csvtimestamp) {
+            echo html_writer::tag('b', $formattedtime);
+        } else {
+            echo html_writer::tag('a', $formattedtime,
+                    array('href' => new moodle_url(report_customsql_url('view.php'),
+                            array('id' => $id, 'timestamp' => $time))));
+        }
+        echo '</li>';
+    }
+    echo html_writer::end_tag('ul');
 }
 
-$imglarrow = $OUTPUT->pix_icon('t/left', '');
-echo html_writer::start_tag('p').
-     $OUTPUT->action_link(new moodle_url(report_customsql_url('index.php')), $imglarrow.
-             get_string('backtoreportlist', 'report_customsql')).
-     html_writer::end_tag('p').
-     $OUTPUT->footer();
+echo $OUTPUT->footer();
