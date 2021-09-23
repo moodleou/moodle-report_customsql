@@ -246,10 +246,10 @@ class report_customsql_edit_form extends moodleform {
                     $rs->close();
                 } catch (dml_exception $e) {
                     $errors['querysql'] = get_string('queryfailed', 'report_customsql',
-                    $e->getMessage() . ' ' . $e->debuginfo);
+                            s($e->getMessage() . ' ' . $e->debuginfo));
                 } catch (Exception $e) {
                     $errors['querysql'] = get_string('queryfailed', 'report_customsql',
-                                                     $e->getMessage());
+                            s($e->getMessage()));
                 }
             }
         }
@@ -266,12 +266,12 @@ class report_customsql_edit_form extends moodleform {
             // The path either needs to be a writable directory ...
             if (is_dir($path) ) {
                 if (!is_writable($path)) {
-                    $errors['customdir'] = get_string('customdirnotwritable', 'report_customsql', $path);
+                    $errors['customdir'] = get_string('customdirnotwritable', 'report_customsql', s($path));
                 }
 
             } else if (substr($path, -1) == DIRECTORY_SEPARATOR) {
                 // ... and it must exist...
-                $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', $path);
+                $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($path));
 
             } else {
 
@@ -279,16 +279,16 @@ class report_customsql_edit_form extends moodleform {
                 $dir = dirname($path);
 
                 if (!is_dir($dir)) {
-                    $errors['customdir'] = get_string('customdirnotadirectory', 'report_customsql', $dir);
+                    $errors['customdir'] = get_string('customdirnotadirectory', 'report_customsql', s($dir));
                 } else {
 
                     if (file_exists($path)) {
                         if (!is_writable($path)) {
-                            $errors['customdir'] = get_string('filenotwritable', 'report_customsql', $path);
+                            $errors['customdir'] = get_string('filenotwritable', 'report_customsql', s($path));
                         }
                     } else {
                         if (!is_writable($dir)) {
-                            $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', $dir);
+                            $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($dir));
                         }
                     }
                 }

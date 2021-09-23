@@ -647,7 +647,7 @@ function report_customsql_validate_users($userids, $capability) {
         // User does not have the chosen access level.
         $context = context_user::instance($user->id);
         $a->userid = $userid;
-        $a->name = fullname($user);
+        $a->name = s(fullname($user));
         if (!has_capability($capability, $context, $user)) {
             return get_string('userhasnothiscapability', 'report_customsql', $a);
         }
