@@ -45,7 +45,8 @@ class report_customsql_edit_form extends moodleform {
         $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
         $mform->setDefault('categoryid', $catdefault);
 
-        $mform->addElement('text', 'displayname', get_string('displayname', 'report_customsql'));
+        $mform->addElement('text', 'displayname',
+                get_string('displayname', 'report_customsql'), ['size' => 80]);
         $mform->addRule('displayname', get_string('displaynamerequired', 'report_customsql'),
                         'required', null, 'client');
         $mform->setType('displayname', PARAM_TEXT);
