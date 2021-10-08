@@ -24,6 +24,7 @@
 
 $string['addcategory'] = 'Add a new category';
 $string['addcategorydesc'] = 'To change a report\'s category, you must edit that report. Here you can edit category texts, delete a category or add a new category.';
+$string['addingareport'] = 'Adding an ad-hoc database query';
 $string['addreport'] = 'Add a new query';
 $string['addreportcategory'] = 'Add a new category for reports';
 $string['anyonewhocanveiwthisreport'] = 'Anyone who can view this report (report/customsql:view)';
@@ -35,6 +36,7 @@ $string['automaticallyweekly'] = 'Scheduled, on the first day of each week';
 $string['availablereports'] = 'On-demand queries';
 $string['availableto'] = 'Available to {$a}.';
 $string['backtoreportlist'] = 'Back to the list of queries';
+$string['backtocategory'] = 'Back to category \'{$a}\'';
 $string['category'] = 'Category';
 $string['categorycontent'] = '({$a->manual} on-demand, {$a->daily} daily, {$a->weekly} weekly, {$a->monthly} monthly)';
 $string['categoryexists'] = 'Category names must be unique, this name already exists';
@@ -172,6 +174,7 @@ $string['runablex'] = 'Run: {$a}';
 $string['runquery'] = 'Run query';
 $string['schedulednote'] = 'These queries are automatically run on the first day of each week or month, to report on the previous week or month. These links let you view the results that has already been accumulated.';
 $string['scheduledqueries'] = 'Scheduled queries';
+$string['showonlythiscategory'] = 'Show only {$a}';
 $string['startofweek'] = 'Day to run weekly reports';
 $string['startofweek_default'] = 'Use site calendar start of week ({$a})';
 $string['startofweek_desc'] = 'This is the day which should be considered the first day of the week, for weekly scheduled reports.';

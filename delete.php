@@ -27,6 +27,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 admin_externalpage_setup('report_customsql', '', ['id' => $id],
         '/report/customsql/delete.php');
@@ -38,13 +39,25 @@ if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
+if ($returnurl) {
+    $returnurl = new moodle_url($returnurl);
+} else {
+    $returnurl = report_customsql_url('category.php', ['id' => $report->categoryid]);
+}
+
 if (optional_param('confirm', false, PARAM_BOOL)) {
     $ok = $DB->delete_records('report_customsql_queries', array('id' => $id));
     if (!$ok) {
         print_error('errordeletingreport', 'report_customsql', report_customsql_url('index.php'));
     }
     report_customsql_log_delete($id);
-    redirect(report_customsql_url('index.php'));
+
+    // We can not return to the view report page because the report is deleted.
+    if (strpos($returnurl, 'report/customsql/view.php?id=' . $id)) {
+        redirect(report_customsql_url('category.php', ['id' => $report->categoryid]));
+    } else {
+        redirect($returnurl);
+    }
 }
 
 $runnableoptions = report_customsql_runable_options();
@@ -61,9 +74,9 @@ echo $OUTPUT->header().
                       $runnableoptions[$report->runable])).
 
      $OUTPUT->confirm(get_string('deleteareyousure', 'report_customsql'),
-                      new single_button(new moodle_url(report_customsql_url('delete.php'),
-                                        array('id' => $id, 'confirm' => 1)), get_string('yes')),
-                      new single_button(new moodle_url(report_customsql_url('index.php')),
-                                        get_string('no'))).
+                      new single_button(report_customsql_url('delete.php',
+                                        ['id' => $id, 'confirm' => 1, 'returnurl' => $returnurl->out_as_local_url(false)]),
+                                        get_string('yes')),
+                      new single_button($returnurl, get_string('no'))).
 
      $OUTPUT->footer();

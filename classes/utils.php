@@ -25,6 +25,8 @@ namespace report_customsql;
  */
 
 class utils {
+
+
     /**
      * Return the current timestamp, or a fixed timestamp specified by an automated test.
      *
@@ -38,4 +40,41 @@ class utils {
             return time();
         }
     }
+
+    /**
+     * Group the queries by category Id.
+     *
+     * @param array $queries Queries need to be grouped.
+     * @return array Pre-loaded Categories.
+     */
+    public static function group_queries_by_category($queries) {
+        $grouppedqueries = [];
+        foreach ($queries as $query) {
+            if (isset($grouppedqueries[$query->categoryid])) {
+                $grouppedqueries[$query->categoryid][] = $query;
+            } else {
+                $grouppedqueries[$query->categoryid] = [$query];
+            }
+        }
+
+        return $grouppedqueries;
+    }
+
+    public function get_queries_data($queries) {
+
+    }
+
+    /**
+     * Get queries for each type.
+     *
+     * @param array $queries Array of queries.
+     * @param string $type Type to filter.
+     * @return array All queries of type.
+     */
+    public static function get_number_of_report_by_type(array $queries, string $type) {
+        return array_filter($queries, function($query) use ($type) {
+            return $query->runable == $type;
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+
 }

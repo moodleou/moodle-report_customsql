@@ -110,6 +110,25 @@ Feature: Ad-hoc database queries report
     And I should not see "Expand all"
     And I should see "Collapse all"
 
+  Scenario: View a category and add an ad-hoc database query inside a category
+    Given the custom sql report category "Category 1" exists:
+    And the custom sql report category "Category 2" exists:
+    When I log in as "admin"
+    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    And I follow "Show only Category 2"
+    Then I should see "Category 2"
+    And I should see "No queries available"
+    And I press "Add a new query"
+    And the field "Category" matches value "Category 2"
+    And I set the following fields to these values:
+      | Query name | Test query                                    |
+      | Query SQL  | SELECT * FROM {config} WHERE name = 'version' |
+    And I press "Save changes"
+    And I should see "Test query"
+    And I should see "Category 2" in the "div#page-navbar" "css_element"
+    And I follow "Back to category 'Category 2'"
+    And I should see "Test query"
+
   Scenario: Delete an empty Ad-hoc database queries category
     Given the custom sql report category "Special reports" exists:
     When I log in as "admin"

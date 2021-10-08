@@ -15,22 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Custom SQL report.
- *
- * Users with the report/customsql:definequeries capability can enter custom
- * SQL SELECT statements. If they have report/customsql:managecategories
- * capability can create custom categories for the sql reports.
- * Other users with the moodle/site:viewreports capability
- * can see the list of available queries and run them. Reports are displayed as
- * a table. Every data value is a string, and field names come from the database
- * results set.
- *
- * This page shows the list of categorised queries, with edit icons, an add new button
- * if you have the report/customsql:definequeries capability, and a manage categories button
- * ff you have report/customsql:managecategories capability
+ * This page shows the list of queries in a category, with edit icons, an add new button
+ * if you have the report/customsql:definequeries capability
  *
  * @package report_customsql
- * @copyright 2009 The Open University
+ * @copyright 2021 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,13 +32,16 @@ admin_externalpage_setup('report_customsql');
 $context = context_system::instance();
 require_capability('report/customsql:view', $context);
 
-$categories = $DB->get_records('report_customsql_categories', null, 'name ASC');
-$queries = $DB->get_records('report_customsql_queries');
-$showcat = optional_param('showcat', 0, PARAM_INT);
-$hidecat = optional_param('hidecat', 0, PARAM_INT);
-$returnurl = report_customsql_url('index.php');
+$categoryid = required_param('id', PARAM_INT);
+$record = $DB->get_record('report_customsql_categories', ['id' => $categoryid], '*', MUST_EXIST);
+$queries = $DB->get_records('report_customsql_queries', ['categoryid' => $categoryid]);
 
-$widget = new \report_customsql\output\index_page($categories, $queries, $context, $returnurl, $showcat, $hidecat);
+$category = new \report_customsql\local\category($record);
+$category->load_queries_data($queries);
+$widget = new \report_customsql\output\category($category, $context);
+
+$PAGE->set_title(format_string($category->get_name()));
+$PAGE->navbar->add(format_string($category->get_name()));
 $output = $PAGE->get_renderer('report_customsql');
 
 echo $OUTPUT->header();

@@ -38,11 +38,16 @@ class report_customsql_edit_form extends moodleform {
         global $CFG;
 
         $mform = $this->_form;
+        $customdata = $this->_customdata;
 
         $categoryoptions = report_customsql_category_options();
         $mform->addElement('select', 'categoryid', get_string('category', 'report_customsql'),
                 $categoryoptions);
-        $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
+        if ($customdata['forcecategoryid'] && array_key_exists($customdata['forcecategoryid'], $categoryoptions)) {
+            $catdefault = $customdata['forcecategoryid'];
+        } else {
+            $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
+        }
         $mform->setDefault('categoryid', $catdefault);
 
         $mform->addElement('text', 'displayname',
@@ -65,9 +70,9 @@ class report_customsql_edit_form extends moodleform {
         $mform->registerNoSubmitButton('verify');
 
         $hasparameters = 0;
-        if (count($this->_customdata)) {
+        if ($customdata['queryparams']) {
             $mform->addElement('static', 'params', '', get_string('queryparams', 'report_customsql'));
-            foreach ($this->_customdata as $queryparam => $formparam) {
+            foreach ($customdata['queryparams'] as $queryparam => $formparam) {
                 $type = report_customsql_get_element_type($queryparam);
                 $mform->addElement($type, $formparam, $queryparam);
                 if ($type == 'text') {

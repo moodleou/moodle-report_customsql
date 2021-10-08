@@ -2,7 +2,8 @@
     font-size: 0.8em;
     color: #c10031;
 }
-.reportcounts {
+.reportcounts,
+body.path-admin-report-customsql a.view-category {
     font-weight: normal;
     font-size: 0.65em;
 }

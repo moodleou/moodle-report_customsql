@@ -59,8 +59,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('deletecategoryareyousure', 'report_customsql'));
 echo html_writer::tag('p', get_string('categorynamex', 'report_customsql', $category->name ));
 echo $OUTPUT->confirm(get_string('deletecategoryyesno', 'report_customsql'),
-             new single_button(new moodle_url(report_customsql_url('categorydelete.php'),
-                     array('id' => $id, 'confirm' => 1, 'sesskey' => sesskey())), get_string('yes')),
-                     new single_button(new moodle_url(report_customsql_url('index.php')),
-                             get_string('no')));
+             new single_button(report_customsql_url('categorydelete.php',
+                     ['id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]), get_string('yes')),
+                     new single_button(report_customsql_url('index.php'), get_string('no')));
 echo $OUTPUT->footer();
