@@ -34,4 +34,26 @@ $functions = [
         'type' => 'read',
         'ajax' => true,
     ],
+    'report_customsql_get_query_result' => [
+        'classname' => 'report_customsql\external\get_query_result',
+        'methodname' => 'execute',
+        'description' => 'Use to access the results of a custom query.',
+        'capabilities' => 'report/customsql:definequeries',
+        'type' => 'read',
+        'ajax' => true,
+    ],
+];
+
+$services = [
+    'Report customSQL get query result service' => [
+        'functions' => [
+            'report_customsql_get_query_result'
+        ],
+        'requiredcapability' => '',
+        'restrictedusers' => 0,
+        'enabled' => 1,
+        'shortname' => 'ad_hoc_query',
+        'downloadfiles' => 0,
+        'uploadfiles'  => 0
+    ]
 ];

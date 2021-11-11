@@ -89,6 +89,7 @@ $string['errordeletingreport'] = 'Error deleting a query.';
 $string['errorinsertingreport'] = 'Error inserting a query.';
 $string['errorupdatingreport'] = 'Error updating a query.';
 $string['invalidreportid'] = 'Invalid query id {$a}.';
+$string['invalidqueryparams'] = 'Invalid or misformed query parameters.';
 $string['lastexecuted'] = 'This query was last run on {$a->lastrun}. It took {$a->lastexecutiontime}s to run.';
 $string['messageprovider:notification'] = 'Ad-hoc database query notifications';
 $string['managecategories'] = 'Manage report categories';

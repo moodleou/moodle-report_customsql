@@ -28,6 +28,8 @@ global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
 define('REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER', '-- ROW LIMIT EXCEEDED --');
+define('REPORT_CUSTOMSQL_TOKEN_VALID_DURATION', 3600);
+define('REPORT_CUSTOMSQL_DEFAULT_DATAFORMAT', 'csv');
 
 function report_customsql_execute_query($sql, $params = null, $limitnum = null) {
     global $CFG, $DB;
@@ -57,6 +59,29 @@ function report_customsql_prepare_sql($report, $timenow) {
     }
     $sql = report_customsql_substitute_user_token($sql, $USER->id);
     return $sql;
+}
+
+/**
+ * Merge parameters provided into the report queryparams and return the result.
+ *
+ * @param string $reportparams Serialized string of params set in the report.
+ * @param array $params The params to be merged in.
+ *
+ * @return string returnparams Serialized string of params.
+ */
+function report_customsql_merge_query_params(string $reportparams, array $params): string {
+    $returnparams = '';
+    if ($reportparams !== '') {
+        $returnparams = [];
+        $reportparams = unserialize($reportparams);
+        foreach ($reportparams as $name => $value) {
+            if (isset($params[$name])) {
+                $returnparams[$name] = $params[$name];
+            }
+        }
+        $returnparams = serialize($returnparams);
+    }
+    return $returnparams;
 }
 
 /**

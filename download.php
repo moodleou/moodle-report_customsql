@@ -33,7 +33,7 @@ $dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
-    print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
+    throw new \moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
 require_login();
@@ -46,8 +46,8 @@ list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);
 
 $handle = fopen($csvfilename, 'r');
 if ($handle === false) {
-    print_error('unknowndownloadfile', 'report_customsql',
-                report_customsql_url('view.php?id=' . $id));
+    throw new \moodle_exception('unknowndownloadfile', 'report_customsql',
+            report_customsql_url('view.php?id=' . $id));
 }
 
 $fields = report_customsql_read_csv_row($handle);

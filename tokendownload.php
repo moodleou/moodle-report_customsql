@@ -15,19 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * version.php file for the Custom SQL admin report.
+ * Script to download the repot via the webservice token.
  *
- * @package   report_customsql
- * @copyright 2015 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    report_customaql
+ * @copyright  2021 Catalyst IT
+ * @author     Jason den Dulk <jasondendulk@catalyst-au.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+define('NO_MOODLE_COOKIES', true);
+require_once(__DIR__ . '/../../config.php');
 
-$plugin->version   = 2021111203;
-$plugin->requires  = 2020061500;
-$plugin->component = 'report_customsql';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '4.1 for Moodle 3.9+';
+$token = required_param('token', PARAM_ALPHANUM);
+require_user_key_login('report_customsql', null, $token);
 
-$plugin->outestssufficient = true;
+require(__DIR__. '/download.php');
