@@ -28,7 +28,9 @@ require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/dataformatlib.php');
 
 $id = required_param('id', PARAM_INT);
-$csvtimestamp = required_param('timestamp', PARAM_INT);
+if (!isset($csvtimestamp)) {
+    $csvtimestamp = required_param('timestamp', PARAM_INT);
+}
 $dataformat = optional_param('dataformat', '', PARAM_ALPHA);
 
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));

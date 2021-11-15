@@ -47,11 +47,13 @@ class get_query_result extends \external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function execute(string $id, string $queryparams, string $dataformat): array {
+    public static function execute(int $id, string $queryparams, string $dataformat, int $tokenexpiry = 3600): array {
         global $CFG, $DB, $USER;
 
-        $params = self::validate_parameters(self::execute_parameters(),
-                ['id' => $id, 'queryparams' => $queryparams, 'dataformat' => $dataformat]);
+        $params = self::validate_parameters(
+            self::execute_parameters(),
+            compact('id', 'queryparams', 'dataformat', 'tokenexpiry')
+        );
         $context = \context_system::instance();
         self::validate_context($context);
 
@@ -59,22 +61,22 @@ class get_query_result extends \external_api {
         if (!$report) {
             throw new \moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
         }
-        $queryparams = json_decode($params['queryparams'], true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \moodle_exception('invalidqueryparams', 'report_customsql');
-        }
 
         if ($report->capability != '') {
             require_capability($report->capability, $context);
         }
 
-        $report->queryparams = report_customsql_merge_query_params($report->queryparams, $queryparams);
-        $csvtimestamp = \report_customsql_generate_csv($report, time());
+        $usertokenexpiry = time();
+        if ($tokenexpiry === null) {
+            $usertokenexpiry += REPORT_CUSTOMSQL_TOKEN_VALID_DURATION;
+        } else {
+            $usertokenexpiry += $tokenexpiry;
+        }
 
-        $token = get_user_key('report_customsql', $USER->id, null, null, time() + REPORT_CUSTOMSQL_TOKEN_VALID_DURATION);
+        $token = get_user_key('report_customsql', $USER->id, $id, null, $usertokenexpiry);
         $urlparams = [
-            'id' => urlencode($id),
-            'timestamp' => urlencode($csvtimestamp),
+            'id' => $id,
+            'queryparams' => $queryparams,
             'token' => $token,
             'dataformat' => $dataformat,
         ];
@@ -92,7 +94,9 @@ class get_query_result extends \external_api {
                 'id' => new \external_value(PARAM_INT, 'ID of query'),
                 'queryparams' => new \external_value(PARAM_RAW, 'Query params in JSON format'),
                 'dataformat' => new \external_value(PARAM_RAW, 'The data format', VALUE_DEFAULT,
-                                                     REPORT_CUSTOMSQL_DEFAULT_DATAFORMAT),
+                                                    REPORT_CUSTOMSQL_DEFAULT_DATAFORMAT),
+                'tokenexpiry' => new \external_value(PARAM_INT, 'Expiry of the token in seconds', VALUE_DEFAULT,
+                                                     3600, NULL_ALLOWED),
         ]);
     }
 

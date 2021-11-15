@@ -25,8 +25,29 @@
 
 define('NO_MOODLE_COOKIES', true);
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/locallib.php');
 
+$id = required_param('id', PARAM_INT);
 $token = required_param('token', PARAM_ALPHANUM);
-require_user_key_login('report_customsql', null, $token);
+$queryparams = optional_param('queryparams', '', PARAM_RAW);
+require_user_key_login('report_customsql', $id, $token);
+
+$report = $DB->get_record('report_customsql_queries', ['id' => $id]);
+if (!$report) {
+    throw new \moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
+}
+
+$context = context_system::instance();
+if ($report->capability != '') {
+    require_capability($report->capability, $context);
+}
+
+$queryparams = json_decode($queryparams, true);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    throw new \moodle_exception('invalidqueryparams', 'report_customsql');
+}
+
+$report->queryparams = report_customsql_merge_query_params($report->queryparams, $queryparams);
+$csvtimestamp = \report_customsql_generate_csv($report, time());
 
 require(__DIR__. '/download.php');
