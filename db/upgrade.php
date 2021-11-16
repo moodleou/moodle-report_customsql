@@ -259,5 +259,18 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021051000, 'report', 'customsql');
     }
 
+    if ($oldversion < 2021111600) {
+        // Define index usermodified to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        // Conditionally launch add key usermodified.
+        if (!$table->getKey('usermodified')) {
+            $key = new xmldb_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+            $dbman->add_key($table, $key);
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2021111600, 'report', 'customsql');
+    }
+
     return true;
 }
