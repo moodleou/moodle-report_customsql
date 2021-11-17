@@ -42,12 +42,14 @@ if ($report->capability != '') {
     require_capability($report->capability, $context);
 }
 
-$queryparams = json_decode($queryparams, true);
-if (json_last_error() !== JSON_ERROR_NONE) {
-    throw new \moodle_exception('invalidqueryparams', 'report_customsql');
+if (!empty($queryparams)) {
+    $queryparams = json_decode($queryparams, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        throw new \moodle_exception('invalidqueryparams', 'report_customsql');
+    }
+    $report->queryparams = report_customsql_merge_query_params($report->queryparams, $queryparams);
 }
 
-$report->queryparams = report_customsql_merge_query_params($report->queryparams, $queryparams);
 $csvtimestamp = \report_customsql_generate_csv($report, time());
 
 require(__DIR__. '/download.php');

@@ -47,7 +47,7 @@ class get_query_result extends \external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function execute(int $id, string $queryparams, string $dataformat, int $tokenexpiry = 3600): array {
+    public static function execute(int $id, string $queryparams = '', string $dataformat, int $tokenexpiry = 3600): array {
         global $CFG, $DB, $USER;
 
         $params = self::validate_parameters(
@@ -76,10 +76,12 @@ class get_query_result extends \external_api {
         $token = get_user_key('report_customsql', $USER->id, $id, null, $usertokenexpiry);
         $urlparams = [
             'id' => $id,
-            'queryparams' => $queryparams,
             'token' => $token,
             'dataformat' => $dataformat,
         ];
+        if (!empty($queryparams)) {
+            $urlparams['queryparams'] = $queryparams;
+        }
         $returnurl = new \moodle_url('/report/customsql/tokendownload.php', $urlparams);
         return ['url' => $returnurl->out(false)];
     }
@@ -92,7 +94,7 @@ class get_query_result extends \external_api {
     public static function execute_parameters(): \external_function_parameters {
         return new \external_function_parameters([
                 'id' => new \external_value(PARAM_INT, 'ID of query'),
-                'queryparams' => new \external_value(PARAM_RAW, 'Query params in JSON format'),
+                'queryparams' => new \external_value(PARAM_RAW, 'Query params in JSON format', VALUE_DEFAULT, '', NULL_ALLOWED),
                 'dataformat' => new \external_value(PARAM_RAW, 'The data format', VALUE_DEFAULT,
                                                     REPORT_CUSTOMSQL_DEFAULT_DATAFORMAT),
                 'tokenexpiry' => new \external_value(PARAM_INT, 'Expiry of the token in seconds', VALUE_DEFAULT,
