@@ -17,7 +17,6 @@
  * JavaScript module to work with the auto-complete of users.
  *
  * @module     report_customsql/userselector
- * @package    report_customsql
  * @copyright  2020 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

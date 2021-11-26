@@ -60,7 +60,7 @@ define(['jquery'], function($) {
         /**
          * Event handler for expanding or collapsing one section.
          *
-         * @param {Event} DOM event.
+         * @param {Event} e DOM event.
          */
         expandCollapseAll: function(e) {
             if ($('.csql_categoryshown').length === 0) {

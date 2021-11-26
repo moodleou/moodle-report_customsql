@@ -35,5 +35,6 @@ body.path-admin-report-customsql a.view-category {
 
 #page-admin-report-customsql-edit #id_querysql {
     min-width: 100%;
-    font-family: "SF Mono", "Monaco", "Andale Mono", Consolas, "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+    font-family: monospace;
+    line-height: 1.4;
 }
