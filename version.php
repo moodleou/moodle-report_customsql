@@ -28,6 +28,6 @@ $plugin->version   = 2021111600;
 $plugin->requires  = 2020061500;
 $plugin->component = 'report_customsql';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '4.1 for Moodle 3.9+';
+$plugin->release   = '4.2 for Moodle 3.9+';
 
 $plugin->outestssufficient = true;

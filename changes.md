@@ -1,5 +1,17 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 4.2
+
+* ...
+* Better navigation when there are a lot of reports. There is now a separate page for each category,
+  as well as the main index page.
+* When editing queries, the input box for the report name is bigger.
+* Actions (e.g. edit) for reports are now shown on the parameters page, and are shown before the list
+  of preview report runs, under scheduled reports, which is more convenient. 
+* Fixed a bug with the display of validation messages on the edit form.
+* Added a missing index in the database.
+
+
 ## Changes in 4.1
 
 * We now track when each query was created and last modified, along with the user who modified it.
