@@ -211,8 +211,14 @@ if (is_null($csvtimestamp)) {
 
         echo report_customsql_time_note($report, 'p');
 
+        $urlparams = [];
+        if (!empty($paramvalues)) {
+            $urlparams = $paramvalues;
+        }
+        $urlparams['timestamp'] = $csvtimestamp;
+        $downloadurl = new moodle_url('/pluginfile.php/1/report_customsql/download/' . $id, $urlparams);
         echo $OUTPUT->download_dataformat_selector(get_string('downloadthisreportas', 'report_customsql'),
-            report_customsql_url('download.php'), 'dataformat', ['id' => $id, 'timestamp' => $csvtimestamp]);
+            $downloadurl->out(), 'dataformat', $urlparams);
     }
 }
 
