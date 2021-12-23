@@ -256,6 +256,30 @@ function report_customsql_url($relativeurl, $params = []) {
     return new moodle_url('/report/customsql/' . $relativeurl, $params);
 }
 
+/**
+ * Create the download url for the report.
+ *
+ * @param int $reportid The reportid.
+ * @param array $params Parameters for the url.
+ *
+ * @return moodle_url The download url.
+ */
+function report_customsql_downloadurl($reportid, $params = []) {
+    $downloadurl = moodle_url::make_pluginfile_url(
+        context_system::instance()->id,
+        'report_customsql',
+        'download',
+        $reportid,
+        null,
+        null
+    );
+    // Add the params to the url.
+    // Used to pass values for the arbitrary number of params in the sql report.
+    $downloadurl->params($params);
+
+    return $downloadurl;
+}
+
 function report_customsql_capability_options() {
     return array(
         'report/customsql:view' => get_string('anyonewhocanveiwthisreport', 'report_customsql'),

@@ -26,7 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * File download support for customsql.
+ * Called by pluginfile, to download user generated reports via selected dataformat.
+ * Generated reports can also be downloaded via webservice/pluginfile.
+ *
+ * Example url for download:
+ * /pluginfile/<contextid>/report_customsql/download/<reportid>/?dataformat=csv&parameter1=value1&parameter2=value2
+ * Example url for download via WS:
+ * /webservice/pluginfile/<contextid>/report_customsql/download/<reportid>/?token=<wstoken>&dataformat=csv&parameter1=value1&parameter2=value2
  *
  * Exits if the required permissions are not satisfied.
  *
