@@ -425,6 +425,46 @@ class report_customsql_report_testcase extends advanced_testcase {
         $sink->close();
     }
 
+    /**
+     * Test plugin downloading of reports.
+     *
+     * @return void
+     */
+    public function test_report_custom_sql_download_report_url() {
+        global $CFG, $DB;
+
+        $this->resetAfterTest(true);
+
+        $user = $this->getDataGenerator()->create_user();
+
+        $id = $this->create_a_database_row('daily', 2, 1, $user->id);
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
+
+        // Give our test user the capability to view the report.
+        $userrole = $DB->get_record('role', ['shortname' => 'user']);
+        role_change_permission($userrole->id, context_system::instance(), $report->capability, CAP_ALLOW);
+
+        // Test download url with the required dataformat param.
+        $urlparams = [
+            'dataformat' => 'csv'
+        ];
+        $baseurl = "https://www.example.com/moodle/pluginfile.php";
+        $path = "/1/report_customsql/download/";
+
+        $url = report_customsql_downloadurl($report->id, $urlparams);
+        $expected = "{$baseurl}{$path}{$report->id}?dataformat=csv";
+        $this->assertEquals($expected, $url->out(false));
+
+        // Add some custom parameters to the params.
+        $timenow = time();
+        $urlparams['timestamp'] = $timenow;
+        $urlparams['foo'] = 'bar';
+
+        $url = report_customsql_downloadurl($report->id, $urlparams);
+        $expected = "{$baseurl}{$path}{$report->id}?dataformat=csv&timestamp={$timenow}&foo=bar";
+        $this->assertEquals($expected, $url->out(false));
+    }
+
     public function test_report_customsql_write_csv_row() {
         global $CFG;
         $this->resetAfterTest();

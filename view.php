@@ -216,9 +216,9 @@ if (is_null($csvtimestamp)) {
             $urlparams = $paramvalues;
         }
         $urlparams['timestamp'] = $csvtimestamp;
-        $downloadurl = new moodle_url('/pluginfile.php/1/report_customsql/download/' . $id, $urlparams);
+        $downloadurl = report_customsql_downloadurl($id, $urlparams);
         echo $OUTPUT->download_dataformat_selector(get_string('downloadthisreportas', 'report_customsql'),
-            $downloadurl->out(), 'dataformat', $urlparams);
+            $downloadurl, 'dataformat', $urlparams);
     }
 }
 
