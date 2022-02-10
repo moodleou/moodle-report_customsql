@@ -43,8 +43,8 @@ admin_externalpage_setup('report_customsql');
 $context = context_system::instance();
 require_capability('report/customsql:view', $context);
 
-$categories = $DB->get_records('report_customsql_categories', null, 'name ASC');
-$queries = $DB->get_records('report_customsql_queries');
+$categories = $DB->get_records('report_customsql_categories', null, 'name, id');
+$queries = $DB->get_records('report_customsql_queries', null, 'displayname, id');
 $showcat = optional_param('showcat', 0, PARAM_INT);
 $hidecat = optional_param('hidecat', 0, PARAM_INT);
 $returnurl = report_customsql_url('index.php');

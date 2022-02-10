@@ -34,7 +34,7 @@ require_capability('report/customsql:view', $context);
 
 $categoryid = required_param('id', PARAM_INT);
 $record = $DB->get_record('report_customsql_categories', ['id' => $categoryid], '*', MUST_EXIST);
-$queries = $DB->get_records('report_customsql_queries', ['categoryid' => $categoryid]);
+$queries = $DB->get_records('report_customsql_queries', ['categoryid' => $categoryid], 'displayname, id');
 
 $category = new \report_customsql\local\category($record);
 $category->load_queries_data($queries);
