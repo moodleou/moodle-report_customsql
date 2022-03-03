@@ -1,4 +1,4 @@
-@ou @ou_vle @report @report_customsql
+@ou @ou_vle @report @report_customsql @javascript
 Feature: Ad-hoc database queries report
   As an administrator
   In order to understand what is going on in my Moodle site
@@ -238,7 +238,7 @@ Feature: Ad-hoc database queries report
   Scenario: View an Ad-hoc database query that returns data that confuses PHP CSV parsing
     Given the following custom sql report exists:
       | name     | Test query                                    |
-      | querysql | SELECT CHR(92) AS Backslash, CHR(44) AS Comma |
+      | querysql | SELECT CHAR(92) AS Backslash, CHAR(44) AS Comma |
     When I log in as "admin"
     And I view the "Test query" custom sql report
     Then "\" row "Comma" column of "report_customsql_results" table should contain ","
