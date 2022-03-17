@@ -56,7 +56,7 @@ if (!empty($returnurl)) {
 if ($id) {
     $report = $DB->get_record('report_customsql_queries', array('id' => $id));
     if (!$report) {
-        print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
+        throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
     }
     $reportquerysql = $report->querysql;
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
@@ -128,7 +128,7 @@ if ($newreport = $mform->get_data()) {
         }
         $ok = $DB->update_record('report_customsql_queries', $newreport);
         if (!$ok) {
-            print_error('errorupdatingreport', 'report_customsql',
+            throw new moodle_exception('errorupdatingreport', 'report_customsql',
                         report_customsql_url('edit.php?id=' . $id));
         }
 
@@ -136,7 +136,7 @@ if ($newreport = $mform->get_data()) {
         $newreport->timecreated = $newreport->timemodified;
         $id = $DB->insert_record('report_customsql_queries', $newreport);
         if (!$id) {
-            print_error('errorinsertingreport', 'report_customsql',
+            throw new moodle_exception('errorinsertingreport', 'report_customsql',
                         report_customsql_url('edit.php'));
         }
     }

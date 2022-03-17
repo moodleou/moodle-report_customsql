@@ -105,7 +105,7 @@ jobs:
         run: moodle-plugin-ci mustache
 
       - name: grunt
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch != 'master' }}
         run: moodle-plugin-ci grunt
 
       - name: phpunit

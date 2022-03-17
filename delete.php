@@ -36,7 +36,7 @@ require_capability('report/customsql:definequeries', $context);
 
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
-    print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
+    throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
 if ($returnurl) {
@@ -48,7 +48,7 @@ if ($returnurl) {
 if (optional_param('confirm', false, PARAM_BOOL)) {
     $ok = $DB->delete_records('report_customsql_queries', array('id' => $id));
     if (!$ok) {
-        print_error('errordeletingreport', 'report_customsql', report_customsql_url('index.php'));
+        throw new moodle_exception('errordeletingreport', 'report_customsql', report_customsql_url('index.php'));
     }
     report_customsql_log_delete($id);
 

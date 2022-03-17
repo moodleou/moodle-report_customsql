@@ -31,7 +31,7 @@ $id = required_param('id', PARAM_INT);
 $urlparams = ['id' => $id];
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
-    print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
+    throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
 $category = $DB->get_record('report_customsql_categories', ['id' => $report->categoryid], '*', MUST_EXIST);
@@ -125,7 +125,7 @@ if ($report->runable == 'manual') {
         // Get the updated execution times.
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
     } catch (Exception $e) {
-        print_error('queryfailed', 'report_customsql', report_customsql_url('index.php'),
+        throw new moodle_exception('queryfailed', 'report_customsql', report_customsql_url('index.php'),
                     $e->getMessage());
     }
 } else {

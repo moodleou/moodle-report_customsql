@@ -23,8 +23,6 @@
  */
 
 namespace report_customsql\task;
-defined('MOODLE_INTERNAL') || die();
-
 
 /**
  * A scheduled task for Report Custom SQL, to run the scheduled reports.

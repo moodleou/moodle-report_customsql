@@ -21,7 +21,6 @@
  * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -33,7 +32,7 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
  * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_customsql_report_testcase extends advanced_testcase {
+class report_test extends advanced_testcase {
 
     /**
      * Data provider for test_get_week_starts
@@ -186,7 +185,7 @@ class report_customsql_report_testcase extends advanced_testcase {
         // Test entry 1.
         // This report is supposed to run at the current hour (wehenver this test is run).
         // The last run time recorded in the database is acutally tomorrow(!)
-        // relative to $timestamp. (Acutally timestamp is yesterday.)
+        // relative to $timestamp. (Acutally timestamp is yesterday).
         $lastrun = $today;
         $timestamp = $lastrun - ($today - $yesterday);
         $id = $this->create_a_database_row('daily', $currenthour, $lastrun, null);

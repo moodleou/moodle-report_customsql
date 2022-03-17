@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @copyright 2020 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class get_users_testcase extends \externallib_advanced_testcase {
+class external_get_users_test extends \externallib_advanced_testcase {
 
     protected function setup_users(): array {
         global $DB, $USER;
