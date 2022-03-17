@@ -1,5 +1,9 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 4.3
+
+* This version works with Moodle 4.0.
+
 ## Changes in 4.2
 
 * ...

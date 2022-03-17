@@ -23,7 +23,6 @@
  */
 
 namespace report_customsql\event;
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Event generated when a query is edited.

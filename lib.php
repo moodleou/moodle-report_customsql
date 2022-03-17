@@ -23,8 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Called by pluginfile, to download user generated reports via selected dataformat.
  * Generated reports can also be downloaded via webservice/pluginfile.

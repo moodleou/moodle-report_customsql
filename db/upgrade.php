@@ -22,9 +22,6 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Upgrade code for report_customsql.
  *
@@ -186,7 +183,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
         // Convert the contents of the emailto column from a list of usernames to a list of user ids.
 
         // Transfer data from old columns into details.
-        // (There seem to be just a few thousand of these, so not too bad.)
+        // (There seem to be just a few thousand of these, so not too bad).
         $queries = $DB->get_records_select('report_customsql_queries', 'emailto <> ?', [''], 'id', 'id, emailto');
         $total = count($queries);
 

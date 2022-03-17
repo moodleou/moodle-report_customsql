@@ -98,7 +98,7 @@ Feature: Ad-hoc database queries report
       | Query name | Test query                                    |
       | Query SQL  | SELECT * FROM {config} WHERE name = 'version' |
     And I press "Save changes"
-    And I follow "Ad-hoc database queries"
+    And I navigate to "Reports > Ad-hoc database queries" in site administration
     And I follow "Special reports"
     # Also test expand/collapse while we are here.
     Then I should see "Test query"
