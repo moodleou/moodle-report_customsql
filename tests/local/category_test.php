@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+namespace report_customsql\local;
 
-use report_customsql\local\category;
+defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/report/customsql/locallib.php');
@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
  * @copyright 2021 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_customsql_local_category_testcase extends advanced_testcase {
+class _category_test extends \advanced_testcase {
     /**
      * Test create category.
      */

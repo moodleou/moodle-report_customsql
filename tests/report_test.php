@@ -14,13 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Unit tests for (parts of) the custom SQL report.
- *
- * @package report_customsql
- * @copyright 2009 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace report_customsql;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -29,17 +24,18 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
 /**
  * Unit tests for (parts of) the custom SQL report.
  *
+ * @package report_customsql
  * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_test extends advanced_testcase {
+class report_test extends \advanced_testcase {
 
     /**
      * Data provider for test_get_week_starts
      *
      * @return array
      */
-    public function get_week_starts_provider() {
+    public function get_week_starts_provider(): array {
         return [
             // Start weekday is Sunday.
             [0, '12:36 11 November 2009', '00:00 8 November 2009', '00:00 1 November 2009'],
@@ -63,12 +59,12 @@ class report_test extends advanced_testcase {
      * @param string $datestr
      * @param string $currentweek
      * @param string $lastweek
-     * @return void
      *
      * @dataProvider get_week_starts_provider
      */
-    public function test_get_week_starts($startwday, $datestr, $currentweek, $lastweek) {
-        $this->resetAfterTest(true);
+    public function test_get_week_starts(
+            int $startwday, string $datestr, string $currentweek, string $lastweek): void {
+        $this->resetAfterTest();
 
         set_config('startwday', $startwday, 'report_customsql');
 
@@ -87,8 +83,9 @@ class report_test extends advanced_testcase {
      *
      * @dataProvider get_week_starts_provider
      */
-    public function test_get_week_starts_use_calendar_default($startwday, $datestr, $currentweek, $lastweek) {
-        $this->resetAfterTest(true);
+    public function test_get_week_starts_use_calendar_default(
+            int $startwday, string $datestr, string $currentweek, string $lastweek): void {
+        $this->resetAfterTest();
 
         // Setting this option to -1 will use the value from the site calendar.
         set_config('startwday', -1, 'report_customsql');
@@ -98,7 +95,7 @@ class report_test extends advanced_testcase {
         $this->assertEquals($expected, report_customsql_get_week_starts(strtotime($datestr)));
     }
 
-    public function test_get_month_starts_test() {
+    public function test_get_month_starts_test(): void {
         $this->assertEquals(array(
                 strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')),
                 report_customsql_get_month_starts(strtotime('12:36 10 November 2009')));
@@ -112,7 +109,7 @@ class report_test extends advanced_testcase {
                 report_customsql_get_month_starts(strtotime('23:59 29 November 2009')));
     }
 
-    public function test_report_customsql_get_element_type() {
+    public function test_report_customsql_get_element_type(): void {
         $this->assertEquals('date_time_selector', report_customsql_get_element_type('start_date'));
         $this->assertEquals('date_time_selector', report_customsql_get_element_type('startdate'));
         $this->assertEquals('date_time_selector', report_customsql_get_element_type('date_closed'));
@@ -123,13 +120,13 @@ class report_test extends advanced_testcase {
         $this->assertEquals('text', report_customsql_get_element_type('mandated'));
     }
 
-    public function test_report_customsql_substitute_user_token() {
+    public function test_report_customsql_substitute_user_token(): void {
         $this->assertEquals('SELECT COUNT(*) FROM oh_quiz_attempts WHERE user = 123',
                 report_customsql_substitute_user_token('SELECT COUNT(*) FROM oh_quiz_attempts '.
                         'WHERE user = %%USERID%%', 123));
     }
 
-    public function test_report_customsql_capability_options() {
+    public function test_report_customsql_capability_options(): void {
         $capoptions = array(
                 'report/customsql:view' => get_string('anyonewhocanveiwthisreport', 'report_customsql'),
                 'moodle/site:viewreports' => get_string('userswhocanviewsitereports', 'report_customsql'),
@@ -138,7 +135,7 @@ class report_test extends advanced_testcase {
 
     }
 
-    public function test_report_customsql_runable_options() {
+    public function test_report_customsql_runable_options(): void {
         $options = array('manual'  => get_string('manual', 'report_customsql'),
                          'daily'   => get_string('automaticallydaily', 'report_customsql'),
                          'weekly'  => get_string('automaticallyweekly', 'report_customsql'),
@@ -147,7 +144,7 @@ class report_test extends advanced_testcase {
         $this->assertEquals($options, report_customsql_runable_options());
     }
 
-    public function test_report_customsql_daily_at_options() {
+    public function test_report_customsql_daily_at_options(): void {
         $time = array();
         for ($h = 0; $h < 24; $h++) {
             $hour = ($h < 10) ? "0$h" : $h;
@@ -156,23 +153,23 @@ class report_test extends advanced_testcase {
         $this->assertEquals($time, report_customsql_daily_at_options());
     }
 
-    public function test_report_customsql_email_options() {
+    public function test_report_customsql_email_options(): void {
         $options = array('emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
                 'emailresults' => get_string('emailresults', 'report_customsql'));
         $this->assertEquals($options, report_customsql_email_options());
     }
 
-    public function test_report_customsql_bad_words_list() {
+    public function test_report_customsql_bad_words_list(): void {
         $options = array('ALTER', 'CREATE', 'DELETE', 'DROP', 'GRANT', 'INSERT', 'INTO', 'TRUNCATE', 'UPDATE');
         $this->assertEquals($options, report_customsql_bad_words_list());
     }
 
-    public function test_report_customsql_contains_bad_word() {
+    public function test_report_customsql_contains_bad_word(): void {
         $string = 'DELETE * FROM prefix_user u WHERE u.id  > 0';
         $this->assertEquals(1, report_customsql_contains_bad_word($string));
     }
 
-    public function test_report_customsql_get_ready_to_run_daily_reports() {
+    public function test_report_customsql_get_ready_to_run_daily_reports(): void {
         global $DB;
         $this->resetAfterTest(true);
 
@@ -180,7 +177,7 @@ class report_test extends advanced_testcase {
         $dateparts = getdate($timenow);
         $currenthour = $dateparts['hours'];
 
-        list($today, $yesterday) = report_customsql_get_daily_time_starts($timenow, $currenthour);
+        [$today, $yesterday] = report_customsql_get_daily_time_starts($timenow, $currenthour);
 
         // Test entry 1.
         // This report is supposed to run at the current hour (wehenver this test is run).
@@ -226,8 +223,8 @@ class report_test extends advanced_testcase {
         // Report should run at 1:00am. We need to make sure that it does not get
         // run late in the day, say at 11pm. (This might be the case if we
         // had a 20-hour cut-off or something.
-        list($oneam) = report_customsql_get_daily_time_starts($timenow, 1);
-        list($elevenpm) = report_customsql_get_daily_time_starts($timenow, 23);
+        [$oneam] = report_customsql_get_daily_time_starts($timenow, 1);
+        [$elevenpm] = report_customsql_get_daily_time_starts($timenow, 23);
         $timenow = $elevenpm;
         $id = $this->create_a_database_row('daily', 1, $oneam, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
@@ -237,22 +234,22 @@ class report_test extends advanced_testcase {
         // Suppose that yesterday, cron got delayed, so this report that should
         // run at 02:00 was acutally run at 04:00. Now today, the report should
         // run at 02:00 again, to catch up.
-        list($twoam) = report_customsql_get_daily_time_starts($timenow, 2);
-        list($notused, $fouramyesterday) = report_customsql_get_daily_time_starts($timenow, 4);
+        [$twoam] = report_customsql_get_daily_time_starts($timenow, 2);
+        [, $fouramyesterday] = report_customsql_get_daily_time_starts($timenow, 4);
         $timenow = $twoam;
         $id = $this->create_a_database_row('daily', 2, $fouramyesterday, null);
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timenow));
     }
 
-    public function test_report_customsql_is_integer() {
+    public function test_report_customsql_is_integer(): void {
         $this->assertTrue(report_customsql_is_integer(1));
         $this->assertTrue(report_customsql_is_integer('1'));
         $this->assertFalse(report_customsql_is_integer('frog'));
         $this->assertFalse(report_customsql_is_integer('2013-10-07'));
     }
 
-    public function test_report_customsql_get_table_headers() {
+    public function test_report_customsql_get_table_headers(): void {
         $rawheaders = [
                 'String date',
                 'Date date',
@@ -265,7 +262,7 @@ class report_test extends advanced_testcase {
                 'HTML should be escaped',
         ];
 
-        list($headers, $linkcolumns) = report_customsql_get_table_headers($rawheaders);
+        [$headers, $linkcolumns] = report_customsql_get_table_headers($rawheaders);
 
         $this->assertEquals([
                 'String date',
@@ -278,8 +275,8 @@ class report_test extends advanced_testcase {
         $this->assertEquals([3 => 4, 4 => -1, 5 => 7, 7 => -1], $linkcolumns);
     }
 
-    public function test_report_customsql_pretify_column_names() {
-        $row = new stdClass();
+    public function test_report_customsql_pretify_column_names(): void {
+        $row = new \stdClass();
         $row->column = 1;
         $row->column_url = 2;
         $row->column_3 = 3;
@@ -289,8 +286,8 @@ class report_test extends advanced_testcase {
 
     }
 
-    public function test_report_customsql_pretify_column_names_multi_line() {
-        $row = new stdClass();
+    public function test_report_customsql_pretify_column_names_multi_line(): void {
+        $row = new \stdClass();
         $row->column = 1;
         $row->column_url = 2;
         $row->column_3 = 3;
@@ -304,8 +301,8 @@ class report_test extends advanced_testcase {
 
     }
 
-    public function test_report_customsql_pretify_column_names_same_name_diff_capitialisation() {
-        $row = new stdClass();
+    public function test_report_customsql_pretify_column_names_same_name_diff_capitialisation(): void {
+        $row = new \stdClass();
         $row->course = 'B747-19B';
         $query = "SELECT t.course AS Course
                     FROM table";
@@ -314,8 +311,8 @@ class report_test extends advanced_testcase {
 
     }
 
-    public function test_report_customsql_pretify_column_names_issue() {
-        $row = new stdClass();
+    public function test_report_customsql_pretify_column_names_issue(): void {
+        $row = new \stdClass();
         $row->website = 'B747-19B';
         $row->website_link_url = '%%WWWROOT%%/course/view.php%%Q%%id=123';
         $row->subpage = 'Self-referential nightmare';
@@ -344,15 +341,15 @@ class report_test extends advanced_testcase {
 
     }
 
-    public function test_report_customsql_display_row() {
+    public function test_report_customsql_display_row(): void {
         $rawdata = [
                 'Not a date',
                 '2018-11-22 00:00:00+00',
-                'http://example.com/1',
+                'https://example.com/1',
                 'This is a link',
-                'http://example.com/2',
+                'https://example.com/2',
                 'Non-link, invalid URL',
-                'http://example.com/3',
+                'https://example.com/3',
                 'Not a URL',
                 '<b>Raw HTML</b>',
         ];
@@ -361,10 +358,10 @@ class report_test extends advanced_testcase {
         $this->assertEquals([
                 'Not a date',
                 '2018-11-22 00:00:00+00',
-                '<a href="http://example.com/1">http://example.com/1</a>',
-                '<a href="http://example.com/2">This is a link</a>',
+                '<a href="https://example.com/1">https://example.com/1</a>',
+                '<a href="https://example.com/2">This is a link</a>',
                 'Non-link, invalid URL',
-                '<a href="http://example.com/3">http://example.com/3</a>',
+                '<a href="https://example.com/3">https://example.com/3</a>',
                 '&lt;b&gt;Raw HTML&lt;/b&gt;'], report_customsql_display_row($rawdata, $linkcolumns));
     }
 
@@ -373,7 +370,7 @@ class report_test extends advanced_testcase {
      *
      * @return void
      */
-    public function test_report_customsql_email_report() {
+    public function test_report_customsql_email_report(): void {
         global $CFG, $DB;
 
         $this->resetAfterTest(true);
@@ -385,7 +382,7 @@ class report_test extends advanced_testcase {
 
         // Give our test user the capability to view the report.
         $userrole = $DB->get_record('role', ['shortname' => 'user']);
-        role_change_permission($userrole->id, context_system::instance(), $report->capability, CAP_ALLOW);
+        role_change_permission($userrole->id, \context_system::instance(), $report->capability, CAP_ALLOW);
 
         // Send the report, catch everything sent through message_send API.
         $sink = $this->redirectMessages();
@@ -429,8 +426,8 @@ class report_test extends advanced_testcase {
      *
      * @return void
      */
-    public function test_report_custom_sql_download_report_url() {
-        global $CFG, $DB;
+    public function test_report_custom_sql_download_report_url(): void {
+        global $DB;
 
         $this->resetAfterTest(true);
 
@@ -441,7 +438,7 @@ class report_test extends advanced_testcase {
 
         // Give our test user the capability to view the report.
         $userrole = $DB->get_record('role', ['shortname' => 'user']);
-        role_change_permission($userrole->id, context_system::instance(), $report->capability, CAP_ALLOW);
+        role_change_permission($userrole->id, \context_system::instance(), $report->capability, CAP_ALLOW);
 
         // Test download url with the required dataformat param.
         $urlparams = [
@@ -451,7 +448,7 @@ class report_test extends advanced_testcase {
         $path = "/1/report_customsql/download/";
 
         $url = report_customsql_downloadurl($report->id, $urlparams);
-        $expected = "{$baseurl}{$path}{$report->id}?dataformat=csv";
+        $expected = "$baseurl$path$report->id?dataformat=csv";
         $this->assertEquals($expected, $url->out(false));
 
         // Add some custom parameters to the params.
@@ -460,11 +457,11 @@ class report_test extends advanced_testcase {
         $urlparams['foo'] = 'bar';
 
         $url = report_customsql_downloadurl($report->id, $urlparams);
-        $expected = "{$baseurl}{$path}{$report->id}?dataformat=csv&timestamp={$timenow}&foo=bar";
+        $expected = "$baseurl$path$report->id?dataformat=csv&timestamp=$timenow&foo=bar";
         $this->assertEquals($expected, $url->out(false));
     }
 
-    public function test_report_customsql_write_csv_row() {
+    public function test_report_customsql_write_csv_row(): void {
         global $CFG;
         $this->resetAfterTest();
 
@@ -481,13 +478,13 @@ class report_test extends advanced_testcase {
      * @param string $runable
      * @param string $at
      * @param int $lastrun
-     * @param string $emailto
+     * @param string|null $emailto
      *
      * @return int the new query id.
      */
-    private function create_a_database_row($runable, $at, $lastrun, $emailto) {
+    private function create_a_database_row(string $runable, string $at, int $lastrun, ?string $emailto): int {
         global $DB;
-        $report = new stdClass();
+        $report = new \stdClass();
         $report->displayname = 'all users on this test';
         $report->description = 'test description';
         $report->querysql = 'SELECT * FROM {report_customsql_queries} WHERE lastrun > 0';

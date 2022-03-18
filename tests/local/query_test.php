@@ -14,13 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+namespace report_customsql\local;
 
-use report_customsql\local\query;
+defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/report/customsql/locallib.php');
-
 
 /**
  * Tests for the report_customsql\local\query.
@@ -29,7 +28,7 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
  * @copyright 2021 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_customsql_local_query_testcase extends advanced_testcase {
+class query_test extends \advanced_testcase {
     /**
      * Test create query.
      */
@@ -56,7 +55,7 @@ class report_customsql_local_query_testcase extends advanced_testcase {
               $query->get_time_note());
         $this->assertEquals('Only administrators (moodle/site:config)', $query->get_capability_string());
         // Admin user should have capability to edit and view queries.
-        $this->assertEquals(true, $query->can_edit(context_system::instance()));
-        $this->assertEquals(true, $query->can_view(context_system::instance()));
+        $this->assertEquals(true, $query->can_edit(\context_system::instance()));
+        $this->assertEquals(true, $query->can_view(\context_system::instance()));
     }
 }

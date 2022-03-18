@@ -1,12 +1,9 @@
 # Change log for the Ad-hoc database queries report
 
-## Changes in 4.3
-
-* This version works with Moodle 4.0.
-
 ## Changes in 4.2
 
-* ...
+* This version works with Moodle 4.0.
+* There is now an option to fetch query results via webservice/pluginfile.php, once the permissions are set up right.
 * Better navigation when there are a lot of reports. There is now a separate page for each category,
   as well as the main index page.
 * When editing queries, the input box for the report name is bigger.
