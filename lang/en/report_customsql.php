@@ -73,6 +73,7 @@ $string['editingareport'] = 'Editing an ad-hoc database query';
 $string['editreportx'] = 'Edit query \'{$a}\'';
 $string['emailnumberofrows'] = 'Just the number of rows and the link';
 $string['emailresults'] = 'Put the results in the email body';
+$string['emailattachment'] = 'Attach CSV to email body';
 $string['emailink'] = 'To access the report, click this link: {$a}';
 $string['emailrow'] = 'The report returned {$a} row.';
 $string['emailrows'] = 'The report returned {$a} rows.';

@@ -110,6 +110,7 @@ function report_customsql_generate_csv($report, $timenow) {
     $csvfilenames = array();
     $csvtimestamp = null;
     $count = 0;
+    $file = null;
     foreach ($rs as $row) {
         if (!$csvtimestamp) {
             list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $timenow);
@@ -117,6 +118,19 @@ function report_customsql_generate_csv($report, $timenow) {
 
             if (!file_exists($csvfilename)) {
                 $handle = fopen($csvfilename, 'w');
+                $fs = get_file_storage();
+                $file = $fs->create_file_from_pathname(
+                    [
+                        'contextid' => context_system::instance()->id,
+                        'component' => 'report_customsql',
+                        'filearea' => 'admin_report_customsql',
+                        'itemid' => 0,
+                        'filepath' => dirname($csvfilename) . '/',
+                        'filename' => basename($csvfilename),
+                    ],
+                    $csvfilename
+                );
+
                 report_customsql_start_csv($handle, $row, $report);
             } else {
                 $handle = fopen($csvfilename, 'a');
@@ -616,7 +630,23 @@ function report_customsql_delete_old_temp_files($upto) {
     }
     foreach ($files as $file) {
         if (basename($file) < $comparison) {
-            unlink($file);
+            $fs = get_file_storage();
+
+            $fileinfo = array(
+                'component' => 'report_customsql',
+                'filearea' => 'admin_report_customsql',
+                'itemid' => 0,
+                'contextid' => context_system::instance()->id,
+                'filepath' => dirname($file) . '/',
+                'filename' => basename($file));
+
+            $file = $fs->get_file($fileinfo['contextid'], $fileinfo['component'], $fileinfo['filearea'],
+                $fileinfo['itemid'], $fileinfo['filepath'], $fileinfo['filename']);
+
+            // Delete it if it exists
+            if ($file) {
+                $file->delete();
+            }
             $count += 1;
         }
     }
@@ -733,6 +763,22 @@ function report_customsql_get_message($report, $csvfilename) {
     $message->fullmessagehtml   = $fullmessagehtml;
     $message->smallmessage      = null;
 
+    $fs = get_file_storage();
+
+    // Issue using GetFile to fetch the file
+    $file = $fs->get_file(
+        context_system::instance()->id,
+        'report_customsql',
+        'admin_report_customsql',
+        0,
+        dirname($csvfilename) . '/',
+        basename($csvfilename)
+    );
+
+    if($report->emailwhat === 'emailattachment'){
+        $message->attachment = $file;
+    }
+
     return $message;
 }
 
@@ -798,6 +844,7 @@ function report_customsql_send_email_notification($recipient, $message) {
     $eventdata->fullmessageformat = $message->fullmessageformat;
     $eventdata->fullmessagehtml   = $message->fullmessagehtml;
     $eventdata->smallmessage      = $message->smallmessage;
+    $eventdata->attachment        = $message->attachment;
 
     return message_send($eventdata);
 }
