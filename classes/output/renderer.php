@@ -40,27 +40,29 @@ class renderer extends plugin_renderer_base {
      * @return string HTML for report actions.
      */
     public function render_report_actions(stdClass $report, stdClass $category, context $context):string {
+        $editaction = null;
+        $deleteaction = null;
         if (has_capability('report/customsql:definequeries', $context)) {
             $reporturl = report_customsql_url('view.php', ['id' => $report->id]);
             $editaction = $this->action_link(
-                report_customsql_url('edit.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
-                $this->pix_icon('t/edit', '') . ' ' .
-                get_string('editreportx', 'report_customsql', format_string($report->displayname)));
+                    report_customsql_url('edit.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
+                    $this->pix_icon('t/edit', '') . ' ' .
+                    get_string('editreportx', 'report_customsql', format_string($report->displayname)));
             $deleteaction = $this->action_link(
-                report_customsql_url('delete.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
-                $this->pix_icon('t/delete', '') . ' ' .
-                get_string('deletereportx', 'report_customsql', format_string($report->displayname)));
+                    report_customsql_url('delete.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
+                    $this->pix_icon('t/delete', '') . ' ' .
+                    get_string('deletereportx', 'report_customsql', format_string($report->displayname)));
         }
 
         $backtocategoryaction = $this->action_link(
-            report_customsql_url('category.php', ['id' => $category->id]),
-            $this->pix_icon('t/left', '') .
-            get_string('backtocategory', 'report_customsql', $category->name));
+                report_customsql_url('category.php', ['id' => $category->id]),
+                $this->pix_icon('t/left', '') .
+                get_string('backtocategory', 'report_customsql', $category->name));
 
         $context = [
-            'editaction' => $editaction,
-            'deleteaction' => $deleteaction,
-            'backtocategoryaction' => $backtocategoryaction
+                'editaction' => $editaction,
+                'deleteaction' => $deleteaction,
+                'backtocategoryaction' => $backtocategoryaction
         ];
 
         return $this->render_from_template('report_customsql/query_actions', $context);
