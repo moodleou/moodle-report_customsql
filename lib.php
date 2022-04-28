@@ -44,7 +44,7 @@
  * @return bool false if file not found, does not return if found - just send the file
  */
 function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
-    global $CFG, $DB;
+    global $DB;
 
     require_once(dirname(__FILE__) . '/locallib.php');
 
@@ -61,7 +61,7 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
 
     $report = $DB->get_record('report_customsql_queries', array('id' => $id));
     if (!$report) {
-        throw new \moodle_exception('invalidreportid', 'report_customsql',
+        throw new moodle_exception('invalidreportid', 'report_customsql',
                 report_customsql_url('index.php'), $id);
     }
 
@@ -89,13 +89,13 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
         if ($report->runable !== 'manual') {
             $runtime = $report->lastrun;
         }
-        $csvtimestamp = \report_customsql_generate_csv($report, $runtime);
+        $csvtimestamp = report_customsql_generate_csv($report, $runtime);
     }
     list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);
 
     $handle = fopen($csvfilename, 'r');
     if ($handle === false) {
-        throw new \moodle_exception('unknowndownloadfile', 'report_customsql',
+        throw new moodle_exception('unknowndownloadfile', 'report_customsql',
                 report_customsql_url('view.php?id=' . $id));
     }
 
@@ -109,6 +109,9 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
     fclose($handle);
 
     $filename = clean_filename($report->displayname);
+    // Also strip commas. clean_filename does not remove ,s, but they
+    // can stop downloads from working in some browsers.
+    $filename = str_replace(',', '', $filename);
 
     \core\dataformat::download_data($filename, $dataformat, $fields, $rows->getIterator(), function(array $row) use ($dataformat) {
         // HTML export content will need escaping.
