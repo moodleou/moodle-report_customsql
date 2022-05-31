@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+define('NO_OUTPUT_BUFFERING', true);
+
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_form.php');
@@ -58,6 +60,9 @@ if (!empty($report->capability)) {
 }
 
 report_customsql_log_view($id);
+
+// We don't want slow reports blocking the session in other tabs.
+\core\session\manager::write_close();
 
 if ($report->runable == 'manual') {
 
