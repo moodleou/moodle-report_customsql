@@ -1,0 +1,8 @@
+{
+    "name": "moodleou-report/customsql",
+    "description": "A Moodle report plugin that lets you easily create simple reports that can be expressed as a single SQL query",
+    "type": "moodle-report",
+    "require": {
+        "composer/installers": "^2.1"
+    }
+}
