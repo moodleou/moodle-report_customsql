@@ -96,7 +96,15 @@ function report_customsql_get_element_type($name) {
     return 'text';
 }
 
-function report_customsql_generate_csv($report, $timenow) {
+/**
+ * Generate customsql csv file.
+ *
+ * @param stdclass $report - report record from customsql table.
+ * @param int $timetimenow - unix timestamp - usually "now()"
+ * @param bool $returnheaderwhenempty - if true will return a csv with the header row.
+ * @return void
+ */
+function report_customsql_generate_csv($report, $timenow, $returnheaderwhenempty = false) {
     global $DB;
     $starttime = microtime(true);
 
@@ -104,6 +112,14 @@ function report_customsql_generate_csv($report, $timenow) {
 
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
     $querylimit  = $report->querylimit ?? get_config('report_customsql', 'querylimitdefault');
+    if ($returnheaderwhenempty) {
+        // We want the export to always generate a CSV file so we modify the query slightly
+        // to generate an extra "null" values row, so we can get the column names,
+        // then we ignore rows that contain null records in every row when generating the csv.
+        $sql = "SELECT subq.*
+                  FROM (SELECT 1) as ignoreme
+                  LEFT JOIN ($sql) as subq on true";
+    }
     // Query one extra row, so we can tell if we hit the limit.
     $rs = report_customsql_execute_query($sql, $queryparams, $querylimit + 1);
 
@@ -124,6 +140,15 @@ function report_customsql_generate_csv($report, $timenow) {
         }
 
         $data = get_object_vars($row);
+
+        if ($returnheaderwhenempty) {
+            // Ignore a row if it is full of null values.
+            $values = array_unique(array_values($data));
+            if (empty($values) || (count($values) === 1 && $values[0] === null)) {
+                // This is a row with all null values - ignore it.
+                continue;
+            }
+        }
         foreach ($data as $name => $value) {
             if (report_customsql_get_element_type($name) == 'date_time_selector' &&
                     report_customsql_is_integer($value) && $value > 0) {
