@@ -99,10 +99,9 @@ function report_customsql_get_element_type($name) {
 /**
  * Generate customsql csv file.
  *
- * @param stdclass $report - report record from customsql table.
- * @param int $timetimenow - unix timestamp - usually "now()"
- * @param bool $returnheaderwhenempty - if true will return a csv with the header row.
- * @return void
+ * @param stdclass $report report record from customsql table.
+ * @param int $timetimenow unix timestamp - usually "now()"
+ * @param bool $returnheaderwhenempty if true, a CSV file with headers will always be generated, even if there are no results.
  */
 function report_customsql_generate_csv($report, $timenow, $returnheaderwhenempty = false) {
     global $DB;
@@ -141,13 +140,9 @@ function report_customsql_generate_csv($report, $timenow, $returnheaderwhenempty
 
         $data = get_object_vars($row);
 
-        if ($returnheaderwhenempty) {
-            // Ignore a row if it is full of null values.
-            $values = array_unique(array_values($data));
-            if (empty($values) || (count($values) === 1 && $values[0] === null)) {
-                // This is a row with all null values - ignore it.
-                continue;
-            }
+        if ($returnheaderwhenempty && array_unique(array_values($data)) === [null]) {
+            // This is a row with all null values - ignore it.
+            continue;
         }
         foreach ($data as $name => $value) {
             if (report_customsql_get_element_type($name) == 'date_time_selector' &&
