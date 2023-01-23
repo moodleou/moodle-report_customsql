@@ -691,6 +691,11 @@ function report_customsql_get_message($report, $csvfilename) {
     }
     fclose($handle);
 
+    if ($report->singlerow) {
+        // For reports which build up a row at a time, only include the last few rows.
+        $table->data = array_slice($table->data, -5);
+    }
+
     // Construct subject.
     if ($countrows == 0) {
         $subject = get_string('emailsubjectnodata', 'report_customsql',

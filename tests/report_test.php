@@ -409,14 +409,27 @@ class report_test extends \advanced_testcase {
         $message = end($messages);
         $this->assertEquals('Query all users on this test [1 row]', $message->subject);
 
-        // And more rows.
-        $cvsfilename = $CFG->tempdir . '/res.cvs';
+        // Now put 3 rows in the results file.
         file_put_contents($cvsfilename, "Col1,Col2\r\nFrog,Tadpole\r\nCat,Kitten\r\nDog,Puppy");
 
         report_customsql_email_report($report, $cvsfilename);
         $messages = $sink->get_messages();
         $message = end($messages);
         $this->assertEquals('Query all users on this test [3 rows]', $message->subject);
+
+        // Now put 6 rows in the results file, and pretend this is a one-row-at-a-time report.
+        // Verify only the most recent 5 rows included in the email.
+        $report->singlerow = true;
+        $report->emailwhat = 'emailresults';
+        file_put_contents($cvsfilename, "Col1,Col2\r\nRow1,1\r\nRow2,2\r\nRow3,3\r\nRow4,4\r\nRow5,5\r\nRow6,6");
+
+        report_customsql_email_report($report, $cvsfilename);
+        $messages = $sink->get_messages();
+        $message = end($messages);
+        $this->assertEquals('Query all users on this test [6 rows]', $message->subject);
+        $this->assertStringNotContainsString('Row1', $message->fullmessagehtml);
+        $this->assertStringContainsString('Row2', $message->fullmessagehtml);
+        $this->assertStringContainsString('Row6', $message->fullmessagehtml);
 
         $sink->close();
     }
