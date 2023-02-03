@@ -376,6 +376,7 @@ class report_test extends \advanced_testcase {
         $this->resetAfterTest(true);
 
         $user = $this->getDataGenerator()->create_user();
+        $server = preg_replace('/^https?:\/\//', '', $CFG->wwwroot, 1);
 
         $id = $this->create_a_database_row('daily', 2, 1, $user->id);
         $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
@@ -396,9 +397,7 @@ class report_test extends \advanced_testcase {
         $this->assertEquals(\core_user::get_support_user()->id, $message->useridfrom);
         $this->assertEquals($user->id, $message->useridto);
 
-        $expectedsubject = get_string('emailsubjectnodata', 'report_customsql',
-            report_customsql_plain_text_report_name($report));
-        $this->assertEquals($expectedsubject, $message->subject);
+        $this->assertEquals("Query all users on this test [no results] [$server]", $message->subject);
 
         // Now check subject if the report has one row.
         $cvsfilename = $CFG->tempdir . '/res.cvs';
@@ -407,7 +406,7 @@ class report_test extends \advanced_testcase {
         report_customsql_email_report($report, $cvsfilename);
         $messages = $sink->get_messages();
         $message = end($messages);
-        $this->assertEquals('Query all users on this test [1 row]', $message->subject);
+        $this->assertEquals("Query all users on this test [1 row] [$server]", $message->subject);
 
         // Now put 3 rows in the results file.
         file_put_contents($cvsfilename, "Col1,Col2\r\nFrog,Tadpole\r\nCat,Kitten\r\nDog,Puppy");
@@ -415,7 +414,7 @@ class report_test extends \advanced_testcase {
         report_customsql_email_report($report, $cvsfilename);
         $messages = $sink->get_messages();
         $message = end($messages);
-        $this->assertEquals('Query all users on this test [3 rows]', $message->subject);
+        $this->assertEquals("Query all users on this test [3 rows] [$server]", $message->subject);
 
         // Now put 6 rows in the results file, and pretend this is a one-row-at-a-time report.
         // Verify only the most recent 5 rows included in the email.
@@ -426,7 +425,7 @@ class report_test extends \advanced_testcase {
         report_customsql_email_report($report, $cvsfilename);
         $messages = $sink->get_messages();
         $message = end($messages);
-        $this->assertEquals('Query all users on this test [6 rows]', $message->subject);
+        $this->assertEquals("Query all users on this test [6 rows] [$server]", $message->subject);
         $this->assertStringNotContainsString('Row1', $message->fullmessagehtml);
         $this->assertStringContainsString('Row2', $message->fullmessagehtml);
         $this->assertStringContainsString('Row6', $message->fullmessagehtml);

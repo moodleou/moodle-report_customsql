@@ -659,8 +659,7 @@ function report_customsql_validate_users($userids, $capability) {
 
 function report_customsql_get_message_no_data($report) {
     // Construct subject.
-    $subject = get_string('emailsubjectnodata', 'report_customsql',
-            report_customsql_plain_text_report_name($report));
+    $subject = report_customsql_email_subject(0, $report);
     $url = new moodle_url('/report/customsql/view.php', array('id' => $report->id));
     $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, array('href' => $url)));
     $fullmessage = html_writer::tag('p', get_string('nodatareturned', 'report_customsql') . ' ' . $link);
@@ -697,16 +696,7 @@ function report_customsql_get_message($report, $csvfilename) {
     }
 
     // Construct subject.
-    if ($countrows == 0) {
-        $subject = get_string('emailsubjectnodata', 'report_customsql',
-                report_customsql_plain_text_report_name($report));
-    } else if ($countrows == 1) {
-        $subject = get_string('emailsubject1row', 'report_customsql',
-                report_customsql_plain_text_report_name($report));
-    } else {
-        $subject = get_string('emailsubjectxrows', 'report_customsql',
-                ['name' => report_customsql_plain_text_report_name($report), 'rows' => $countrows]);
-    }
+    $subject = report_customsql_email_subject($countrows, $report);
 
     // Construct message without the table.
     $fullmessage = '';
@@ -739,6 +729,30 @@ function report_customsql_get_message($report, $csvfilename) {
     $message->smallmessage      = null;
 
     return $message;
+}
+
+/**
+ * Get email subject for the report.
+ *
+ * @param int $countrows number of rows in the report
+ * @param stdClass $report report settings from the database.
+ * @return string the text for email subject
+ */
+function report_customsql_email_subject(int $countrows, stdClass $report): string {
+    global $CFG;
+    $server = preg_replace('/^https?:\/\//', '', $CFG->wwwroot, 1);
+
+    switch ($countrows) {
+        case 0:
+            return get_string('emailsubjectnodata', 'report_customsql',
+                    ['name' => report_customsql_plain_text_report_name($report), 'env' => $server]);
+        case 1:
+            return get_string('emailsubject1row', 'report_customsql',
+                    ['name' => report_customsql_plain_text_report_name($report), 'env' => $server]);
+        default:
+            return get_string('emailsubjectxrows', 'report_customsql',
+                    ['name' => report_customsql_plain_text_report_name($report), 'rows' => $countrows, 'env' => $server]);
+    }
 }
 
 function report_customsql_email_report($report, $csvfilename = null) {
