@@ -131,7 +131,7 @@ function report_customsql_generate_csv($report, $timenow) {
             }
         }
         if ($report->singlerow) {
-            array_unshift($data, strftime('%Y-%m-%d', $timenow));
+            array_unshift($data, \core_date::strftime('%Y-%m-%d', $timenow));
         }
         report_customsql_write_csv_row($handle, $data);
         $count += 1;
@@ -201,7 +201,7 @@ function report_customsql_temp_cvs_name($reportid, $timestamp) {
     global $CFG;
     $path = 'admin_report_customsql/temp/'.$reportid;
     make_upload_directory($path);
-    return array($CFG->dataroot.'/'.$path.'/'.strftime('%Y%m%d-%H%M%S', $timestamp).'.csv',
+    return array($CFG->dataroot.'/'.$path.'/'.\core_date::strftime('%Y%m%d-%H%M%S', $timestamp).'.csv',
                  $timestamp);
 }
 
@@ -209,7 +209,7 @@ function report_customsql_scheduled_cvs_name($reportid, $timestart) {
     global $CFG;
     $path = 'admin_report_customsql/'.$reportid;
     make_upload_directory($path);
-    return array($CFG->dataroot.'/'.$path.'/'.strftime('%Y%m%d-%H%M%S', $timestart).'.csv',
+    return array($CFG->dataroot.'/'.$path.'/'.\core_date::strftime('%Y%m%d-%H%M%S', $timestart).'.csv',
                  $timestart);
 }
 
@@ -608,7 +608,7 @@ function report_customsql_delete_old_temp_files($upto) {
     global $CFG;
 
     $count = 0;
-    $comparison = strftime('%Y%m%d-%H%M%S', $upto).'csv';
+    $comparison = \core_date::strftime('%Y%m%d-%H%M%S', $upto).'csv';
 
     $files = glob($CFG->dataroot.'/admin_report_customsql/temp/*/*.csv');
     if (empty($files)) {
