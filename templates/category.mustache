@@ -47,8 +47,10 @@
     }
 }}
 
+<h2>{{#str}}pluginname, report_customsql{{/str}}</h2>
+
 <div class="csql_category csql_category{{#expandable}}{{show}}{{/expandable}}">
-    <h2>
+    <h3>
         {{#expandable}}
             <a href="{{linkref}}" class="categoryname">{{name}}</a>
         {{/expandable}}
@@ -68,21 +70,21 @@
         {{#showonlythislink}}
             <a href="{{url}}" class="view-category">{{#str}}showonlythiscategory, report_customsql, {{name}}{{/str}}</a>
         {{/showonlythislink}}
-    </h2>
+    </h3>
     <div class="csql_category_reports">
         {{#querygroups}}
             {{#type}}
-                <h3>
+                <h4>
                     {{title}}
                     {{{helpicon}}}
-                </h3>
+                </h4>
             {{/type}}
             {{#queries}}
                 {{{categoryqueryitem}}}
             {{/queries}}
         {{/querygroups}}
         {{^querygroups}}
-            <h3>{{#str}}availablereports, report_customsql{{/str}}</h3>
+            <h4>{{#str}}availablereports, report_customsql{{/str}}</h4>
             <p>{{#str}}noreportsavailable, report_customsql{{/str}}</p>
         {{/querygroups}}
     </div>
