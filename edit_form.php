@@ -158,7 +158,7 @@ class report_customsql_edit_form extends moodleform {
     public function set_data($currentvalues) {
         global $DB, $OUTPUT;
 
-        $currentvalues->emailto = explode(',', $currentvalues->emailto);
+        $currentvalues->emailto = explode(',', $currentvalues->emailto ?? '');
         parent::set_data($currentvalues);
 
         // Add report information.
