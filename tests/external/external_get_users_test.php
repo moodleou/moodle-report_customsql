@@ -31,6 +31,7 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @category  external
  * @copyright 2020 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
 class external_get_users_test extends \externallib_advanced_testcase {
 
