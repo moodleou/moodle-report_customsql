@@ -16,6 +16,7 @@
 
 /**
  * Script to delete a particular custom SQL category, with confirmation.
+ *
  * This will only work if the category has no queries assigned to it.
  *
  * @package report_customsql
@@ -28,40 +29,37 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
+
+// Start the page.
+admin_externalpage_setup('report_customsql', '', ['id' => $id],
+        '/report/customsql/categorydelete.php');
+$context = context_system::instance();
+require_capability('report/customsql:managecategories', $context);
+
 $category = $DB->get_record('report_customsql_categories', array('id' => $id));
 if (!$category) {
-    print_error('invalidreportid', 'report_customsql', report_customsql_url('manage.php'), $id);
+    throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('manage.php'), $id);
 }
-
-require_login();
-$context = context_system::instance();
-$PAGE->set_url(new moodle_url('/report/customsql/categorydelete.php'));
-$PAGE->set_context($context);
-require_capability('report/customsql:managecategories', $context);
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
     require_sesskey();
     if (!$queries = $DB->get_records('report_customsql_queries', array('categoryid' => $id))) {
         $ok = $DB->delete_records('report_customsql_categories', array('id' => $id));
         if (!$ok) {
-            print_error('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
+            throw new moodle_exception('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
         }
         report_customsql_log_delete($id);
     } else {
-        print_error('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
+        throw new moodle_exception('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
     }
     redirect(report_customsql_url('manage.php'));
 }
-
-// Start the page.
-admin_externalpage_setup('report_customsql');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('deletecategoryareyousure', 'report_customsql'));
 echo html_writer::tag('p', get_string('categorynamex', 'report_customsql', $category->name ));
 echo $OUTPUT->confirm(get_string('deletecategoryyesno', 'report_customsql'),
-             new single_button(new moodle_url(report_customsql_url('categorydelete.php'),
-                     array('id' => $id, 'confirm' => 1, 'sesskey' => sesskey())), get_string('yes')),
-                     new single_button(new moodle_url(report_customsql_url('index.php')),
-                             get_string('no')));
+             new single_button(report_customsql_url('categorydelete.php',
+                     ['id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]), get_string('yes')),
+                     new single_button(report_customsql_url('index.php'), get_string('no')));
 echo $OUTPUT->footer();

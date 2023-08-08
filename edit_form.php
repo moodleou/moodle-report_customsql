@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
@@ -36,29 +38,41 @@ class report_customsql_edit_form extends moodleform {
         global $CFG;
 
         $mform = $this->_form;
+        $customdata = $this->_customdata;
 
-        $mform->addElement('text', 'displayname', get_string('displayname', 'report_customsql'));
+        $categoryoptions = report_customsql_category_options();
+        $mform->addElement('select', 'categoryid', get_string('category', 'report_customsql'),
+                $categoryoptions);
+        if ($customdata['forcecategoryid'] && array_key_exists($customdata['forcecategoryid'], $categoryoptions)) {
+            $catdefault = $customdata['forcecategoryid'];
+        } else {
+            $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
+        }
+        $mform->setDefault('categoryid', $catdefault);
+
+        $mform->addElement('text', 'displayname',
+                get_string('displayname', 'report_customsql'), ['size' => 80]);
         $mform->addRule('displayname', get_string('displaynamerequired', 'report_customsql'),
                         'required', null, 'client');
-        $mform->setType('displayname', PARAM_MULTILANG);
+        $mform->setType('displayname', PARAM_TEXT);
 
         $mform->addElement('editor', 'description',
                 get_string('description', 'report_customsql'));
         $mform->setType('description', PARAM_RAW);
 
         $mform->addElement('textarea', 'querysql', get_string('querysql', 'report_customsql'),
-                           'rows="25" cols="50"');
+                ['rows' => '25', 'cols' => '80']);
         $mform->addRule('querysql', get_string('querysqlrequried', 'report_customsql'),
-                        'required', null, 'client');
+                'required', null, 'client');
         $mform->setType('querysql', PARAM_RAW);
 
         $mform->addElement('submit', 'verify', get_string('verifyqueryandupdate', 'report_customsql'));
         $mform->registerNoSubmitButton('verify');
 
         $hasparameters = 0;
-        if (count($this->_customdata)) {
+        if ($customdata['queryparams']) {
             $mform->addElement('static', 'params', '', get_string('queryparams', 'report_customsql'));
-            foreach ($this->_customdata as $queryparam => $formparam) {
+            foreach ($customdata['queryparams'] as $queryparam => $formparam) {
                 $type = report_customsql_get_element_type($queryparam);
                 $mform->addElement($type, $formparam, $queryparam);
                 if ($type == 'text') {
@@ -80,7 +94,7 @@ class report_customsql_edit_form extends moodleform {
 
         $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
         $mform->setType('querylimit', PARAM_INT);
-        $mform->setDefault('querylimit', REPORT_CUSTOMSQL_MAX_RECORDS);
+        $mform->setDefault('querylimit', get_config('report_customsql', 'querylimitdefault'));
         $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
                         'numeric', null, 'client');
 
@@ -97,27 +111,75 @@ class report_customsql_edit_form extends moodleform {
         $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
                            get_string('onerow', 'report_customsql'));
 
-        $mform->addElement('text', 'emailto', get_string('emailto', 'report_customsql'), 'size = 70');
         $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
+        $mform->setType('customdir', PARAM_PATH);
+        $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
+        $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
+
+        $options = [
+            'ajax' => 'report_customsql/userselector', // Bit of a hack, but the service seems to do what we want.
+            'multiple' => true,
+            'valuehtmlcallback' => function($userid) {
+                global $DB, $OUTPUT;
+
+                $user = $DB->get_record('user', ['id' => (int) $userid], '*', IGNORE_MISSING);
+                if (!$user) {
+                    return false;
+                }
+
+                if (class_exists('\core_user\fields')) {
+                    $extrafields = \core_user\fields::for_identity(\context_system::instance(),
+                            false)->get_required_fields();
+                } else {
+                    $extrafields = get_extra_user_fields(context_system::instance());
+                }
+
+                return $OUTPUT->render_from_template(
+                        'report_customsql/form-user-selector-suggestion',
+                        \report_customsql\external\get_users::prepare_result_object(
+                                $user, $extrafields)
+                        );
+            }
+        ];
+        $mform->addElement('autocomplete', 'emailto', get_string('emailto', 'report_customsql'), [], $options);
+        $mform->setType('emailto', PARAM_RAW);
+
         $mform->addElement('select', 'emailwhat', get_string('emailwhat', 'report_customsql'),
                 report_customsql_email_options());
+
         $mform->disabledIf('singlerow', 'runable', 'eq', 'manual');
         $mform->disabledIf('at', 'runable', 'ne', 'daily');
         $mform->disabledIf('emailto', 'runable', 'eq', 'manual');
         $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
         $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
-        $mform->setType('emailto', PARAM_RAW);
-        $mform->setType('customdir', PARAM_PATH);
-        $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
-
-        // Add new category selection.
-        $categoryoptions = report_customsql_category_options();
-        $mform->addElement('select', 'categoryid', get_string('selectcategory', 'report_customsql'),
-                $categoryoptions);
-        $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
-        $mform->setDefault('categoryid', $catdefault);
 
         $this->add_action_buttons();
+    }
+
+    public function set_data($currentvalues) {
+        global $DB, $OUTPUT;
+
+        $currentvalues->emailto = explode(',', $currentvalues->emailto);
+        parent::set_data($currentvalues);
+
+        // Add report information.
+        $mform = $this->_form;
+        $reportinfocontext = new stdClass();
+        $reportinfocontext->timecreated = $currentvalues->timecreated > 0 ? userdate($currentvalues->timecreated) : '';
+        $reportinfocontext->timemodified = $currentvalues->timemodified > 0 ? userdate($currentvalues->timemodified) : '';
+        $reportinfocontext->usermodified = '';
+        if ($currentvalues->usermodified > 0) {
+            $usermodified = $DB->get_record('user', ['id' => $currentvalues->usermodified]);
+            $reportinfocontext->usermodified = html_writer::link(
+                $url = new moodle_url('/user/profile.php', ['id' => $usermodified->id]),
+                fullname($usermodified)
+            );
+        }
+        $reportinfo = $OUTPUT->render_from_template(
+            'report_customsql/form_report_information',
+            $reportinfocontext
+        );
+        $mform->addElement('html', $reportinfo);
     }
 
     public function validation($data, $files) {
@@ -155,20 +217,18 @@ class report_customsql_edit_form extends moodleform {
             $sql = report_customsql_prepare_sql($report, time());
 
             // Check for required query parameters if there are any.
-            $queryparams = array();
-            foreach (report_customsql_get_query_placeholders($sql) as $queryparam) {
-                $queryparam = substr($queryparam, 1);
-                $formparam = 'queryparam' . $queryparam;
+            $paramvalues = [];
+            foreach (report_customsql_get_query_placeholders_and_field_names($sql) as $queryparam => $formparam) {
                 if (!isset($data[$formparam])) {
                     $errors['params'] = get_string('queryparamschanged', 'report_customsql');
                     break;
                 }
-                $queryparams[$queryparam] = $data[$formparam];
+                $paramvalues[$queryparam] = $data[$formparam];
             }
 
             if (!isset($errors['params'])) {
                 try {
-                    $rs = report_customsql_execute_query($sql, $queryparams, 2);
+                    $rs = report_customsql_execute_query($sql, $paramvalues, 2);
 
                     if (!empty($data['singlerow'])) {
                         // Count rows for Moodle 2 as all Moodle 1.9 useful and more performant
@@ -193,17 +253,53 @@ class report_customsql_edit_form extends moodleform {
                     $rs->close();
                 } catch (dml_exception $e) {
                     $errors['querysql'] = get_string('queryfailed', 'report_customsql',
-                    $e->getMessage() . ' ' . $e->debuginfo);
+                            s($e->getMessage() . ' ' . $e->debuginfo));
                 } catch (Exception $e) {
                     $errors['querysql'] = get_string('queryfailed', 'report_customsql',
-                                                     $e->getMessage());
+                            s($e->getMessage()));
                 }
             }
         }
 
-        // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
-        if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
-            $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
+        // Check querylimit is in range.
+        $maxlimit = get_config('report_customsql', 'querylimitmaximum');
+        if (empty($data['querylimit']) || $data['querylimit'] > $maxlimit) {
+            $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', $maxlimit);
+        }
+
+        if (!empty($data['customdir'])) {
+            $path = $data['customdir'];
+
+            // The path either needs to be a writable directory ...
+            if (is_dir($path) ) {
+                if (!is_writable($path)) {
+                    $errors['customdir'] = get_string('customdirnotwritable', 'report_customsql', s($path));
+                }
+
+            } else if (substr($path, -1) == DIRECTORY_SEPARATOR) {
+                // ... and it must exist...
+                $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($path));
+
+            } else {
+
+                // ... or be a path to a writable file, or a new file in a writable directory.
+                $dir = dirname($path);
+
+                if (!is_dir($dir)) {
+                    $errors['customdir'] = get_string('customdirnotadirectory', 'report_customsql', s($dir));
+                } else {
+
+                    if (file_exists($path)) {
+                        if (!is_writable($path)) {
+                            $errors['customdir'] = get_string('filenotwritable', 'report_customsql', s($path));
+                        }
+                    } else {
+                        if (!is_writable($dir)) {
+                            $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($dir));
+                        }
+                    }
+                }
+            }
         }
 
         // Check that the custom directory is writable and a directory, if provided.
@@ -218,5 +314,4 @@ class report_customsql_edit_form extends moodleform {
 
         return $errors;
     }
-
 }

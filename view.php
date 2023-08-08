@@ -22,19 +22,38 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+define('NO_OUTPUT_BUFFERING', true);
+
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_form.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/validateurlsyntax.php');
 
 $id = required_param('id', PARAM_INT);
+$urlparams = ['id' => $id];
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
-    print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
+    throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
-require_login();
+$category = $DB->get_record('report_customsql_categories', ['id' => $report->categoryid], '*', MUST_EXIST);
+
+$embed = optional_param('embed', 0, PARAM_BOOL);
+$urlparams['embed'] = $embed;
+
+// Setup the page.
+admin_externalpage_setup('report_customsql', '', $urlparams,
+        '/report/customsql/view.php', ['pagelayout' => 'report']);
+$PAGE->set_title(format_string($report->displayname));
+$PAGE->navbar->add(format_string($category->name), report_customsql_url('category.php', ['id' => $report->categoryid]));
+$PAGE->navbar->add(format_string($report->displayname));
+
+if ($embed) {
+    $PAGE->set_pagelayout('embedded');
+}
+
+$output = $PAGE->get_renderer('report_customsql');
+
 $context = context_system::instance();
 if (!empty($report->capability)) {
     require_capability($report->capability, $context);
@@ -42,54 +61,64 @@ if (!empty($report->capability)) {
 
 report_customsql_log_view($id);
 
+// We don't want slow reports blocking the session in other tabs.
+\core\session\manager::write_close();
+
 if ($report->runable == 'manual') {
 
     // Allow query parameters to be entered.
     if (!empty($report->queryparams)) {
+        $queryparams = report_customsql_get_query_placeholders_and_field_names($report->querysql);
 
-        $queryparams = array();
-        foreach (report_customsql_get_query_placeholders($report->querysql) as $queryparam) {
-            $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
+        // Get any query param values that are given in the URL.
+        $paramvalues = [];
+        foreach ($queryparams as $queryparam => $notused) {
+            $value = optional_param($queryparam, null, PARAM_RAW);
+            if ($value !== null && $value !== '') {
+                $paramvalues[$queryparam] = $value;
+            }
         }
 
-        $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
-        $PAGE->set_context($context);
-        $PAGE->set_title($report->displayname);
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
+        $formdefaults = [];
+        if ($report->queryparams) {
+            foreach (unserialize($report->queryparams) as $queryparam => $defaultvalue) {
+                $formdefaults[$queryparams[$queryparam]] = $defaultvalue;
+            }
+        }
+        foreach ($paramvalues as $queryparam => $value) {
+            $formdefaults[$queryparams[$queryparam]] = $value;
+        }
+        $mform->set_data($formdefaults);
 
         if ($mform->is_cancelled()) {
             redirect(report_customsql_url('index.php'));
         }
 
-        if ($newreport = $mform->get_data()) {
+        if (($newreport = $mform->get_data()) || count($paramvalues) == count($queryparams)) {
 
             // Pick up named parameters into serialised array.
-            if ($queryparams) {
+            if ($newreport) {
                 foreach ($queryparams as $queryparam => $formparam) {
-                    $queryparams[$queryparam] = $newreport->{$formparam};
-                    unset($newreport->{$formparam});
+                    $paramvalues[$queryparam] = $newreport->{$formparam};
                 }
-                $report->queryparams = serialize($queryparams);
             }
+            $report->queryparams = serialize($paramvalues);
+
         } else {
 
-            admin_externalpage_setup('report_customsql');
-            $PAGE->set_title($report->displayname);
-            $PAGE->navbar->add($report->displayname);
+            admin_externalpage_setup('report_customsql', '', $urlparams,
+                    '/report/customsql/view.php');
+            $PAGE->set_title(format_string($report->displayname));
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($report->displayname));
             if (!html_is_blank($report->description)) {
                 echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
             }
-
-            $report->description = strip_tags($report->description);
-            $queryparams = unserialize($report->queryparams);
-            foreach ($queryparams as $param => $value) {
-                $report->{'queryparam'.$param} = $value;
-            }
-            $mform->set_data($report);
             $mform->display();
+
+            echo $output->render_report_actions($report, $category, $context);
 
             echo $OUTPUT->footer();
             die;
@@ -101,17 +130,23 @@ if ($report->runable == 'manual') {
         // Get the updated execution times.
         $report = $DB->get_record('report_customsql_queries', array('id' => $id));
     } catch (Exception $e) {
-        print_error('queryfailed', 'report_customsql', report_customsql_url('index.php'),
+        throw new moodle_exception('queryfailed', 'report_customsql', report_customsql_url('index.php'),
                     $e->getMessage());
     }
 } else {
-    $csvtimestamp = optional_param('timestamp', time(), PARAM_INT);
+    // Runs on schedule.
+    $csvtimestamp = optional_param('timestamp', null, PARAM_INT);
+    if ($csvtimestamp === null) {
+        $archivetimes = report_customsql_get_archive_times($report);
+        $csvtimestamp = array_shift($archivetimes);
+    }
+    if ($csvtimestamp === null) {
+        $csvtimestamp = time();
+    }
+    $urlparams['timestamp'] = $csvtimestamp;
 }
 
-// Start the page.
-admin_externalpage_setup('report_customsql');
-$PAGE->set_title($report->displayname);
-$PAGE->navbar->add($report->displayname);
+// Output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($report->displayname));
 
@@ -119,8 +154,8 @@ if (!html_is_blank($report->description)) {
     echo html_writer::tag('p', format_text($report->description, FORMAT_HTML));
 }
 
-if (!empty($queryparams)) {
-    foreach ($queryparams as $name => $value) {
+if (!empty($paramvalues)) {
+    foreach ($paramvalues as $name => $value) {
         if (report_customsql_get_element_type($name) == 'date_time_selector') {
             $value = userdate($value, '%F %T');
         }
@@ -142,91 +177,83 @@ if (is_null($csvtimestamp)) {
 
         if ($report->runable != 'manual' && !$report->singlerow) {
             echo $OUTPUT->heading(get_string('reportfor', 'report_customsql',
-                                         userdate($csvtimestamp, get_string('strftimedate'))), 3);
+                    userdate($csvtimestamp, get_string('strftimedate'))), 3);
         }
 
         $table = new html_table();
-        $table->head = fgetcsv($handle);
+        $table->id = 'report_customsql_results';
+        list($table->head, $linkcolumns) = report_customsql_get_table_headers(
+                report_customsql_read_csv_row($handle));
 
-        while ($row = fgetcsv($handle)) {
-            $rowdata = array();
-            foreach ($row as $value) {
-                if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
-                    $rowdata[] = '<a href="' . $value . '">' . $value . '</a>';
-                } else {
-                    $rowdata[] = $value;
-                }
+        $rowlimitexceeded = false;
+        while ($row = report_customsql_read_csv_row($handle)) {
+            $data = report_customsql_display_row($row, $linkcolumns);
+            if (isset($data[0]) && $data[0] === REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER) {
+                $rowlimitexceeded = true;
+            } else {
+                $table->data[] = $data;
+                $count += 1;
             }
-            $table->data[] = $rowdata;
-            $count += 1;
+        }
+
+        // For scheduled reports that accumulate one row at a time,
+        // show most recent data first.
+        if ($report->runable != 'manual' && $report->singlerow) {
+            $table->data = array_reverse($table->data);
         }
 
         fclose($handle);
         echo html_writer::table($table);
 
-        if ($count >= REPORT_CUSTOMSQL_MAX_RECORDS) {
+        if ($rowlimitexceeded) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
-                                                  REPORT_CUSTOMSQL_MAX_RECORDS),
-                                                  array('class' => 'admin_note'));
+                    $report->querylimit ?? get_config('report_customsql', 'querylimitdefault')),
+                    array('class' => 'admin_note'));
+        } else {
+            echo html_writer::tag('p', get_string('recordcount', 'report_customsql', $count),
+                    array('class' => 'admin_note'));
         }
-        echo report_customsql_time_note($report, 'p').
-             html_writer::start_tag('p').
-             html_writer::tag('a', get_string('downloadthisreportascsv', 'report_customsql'),
-                              array('href' => new moodle_url(report_customsql_url('download.php'),
-                              array('id' => $id, 'timestamp' => $csvtimestamp)))).
-             html_writer::end_tag('p');
 
-        $archivetimes = report_customsql_get_archive_times($report);
-        if (count($archivetimes) > 1) {
-            echo $OUTPUT->heading(get_string('archivedversions', 'report_customsql'), 3).
-                 html_writer::start_tag('ul');
-            foreach ($archivetimes as $time) {
-                $formattedtime = userdate($time, get_string('strftimedate'));
-                echo html_writer::start_tag('li');
-                if ($time == $csvtimestamp) {
-                    echo html_writer::tag('b', $formattedtime);
-                } else {
-                    echo html_writer::tag('a', $formattedtime,
-                                array('href' => new moodle_url(report_customsql_url('view.php'),
-                                array('id' => $id, 'timestamp' => $time))));
-                }
-                echo '</li>';
-            }
-            echo html_writer::end_tag('ul');
+        echo report_customsql_time_note($report, 'p');
+
+        $urlparams = [];
+        if (!empty($paramvalues)) {
+            $urlparams = $paramvalues;
         }
+        $urlparams['timestamp'] = $csvtimestamp;
+        $downloadurl = report_customsql_downloadurl($id, $urlparams);
+        echo $OUTPUT->download_dataformat_selector(get_string('downloadthisreportas', 'report_customsql'),
+            $downloadurl, 'dataformat', $urlparams);
     }
 }
 
 if (!empty($queryparams)) {
-    echo html_writer::tag('p', html_writer::link(
-            new moodle_url(report_customsql_url('view.php'), array('id' => $id)),
-            get_string('changetheparameters', 'report_customsql')));
+    echo html_writer::tag('p',
+            $OUTPUT->action_link(
+                    report_customsql_url('view.php', ['id' => $id]),
+                    $OUTPUT->pix_icon('t/editstring', '') . ' ' .
+                    get_string('changetheparameters', 'report_customsql')));
 }
 
-if (has_capability('report/customsql:definequeries', $context)) {
-    $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'),
-                                'class' => 'iconsmall',
-                                'alt' => get_string('edit')));
-    $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'),
-                                  'class' => 'iconsmall',
-                                  'alt' => get_string('delete')));
-    echo html_writer::start_tag('p').
-         $OUTPUT->action_link(new moodle_url(report_customsql_url('edit.php'),
-                                             array('id' => $id)), $imgedit.' '.
-                                             get_string('editthisreport', 'report_customsql')).
-         html_writer::end_tag('p').
-         html_writer::start_tag('p').
-         $OUTPUT->action_link(new moodle_url(report_customsql_url('delete.php'),
-                                             array('id' => $id)), $imgdelete.' '.
-                                             get_string('deletethisreport', 'report_customsql')).
-         html_writer::end_tag('p');
+echo $output->render_report_actions($report, $category, $context);
+
+$archivetimes = report_customsql_get_archive_times($report);
+if (count($archivetimes) > 1) {
+    echo $OUTPUT->heading(get_string('archivedversions', 'report_customsql'), 3).
+            html_writer::start_tag('ul');
+    foreach ($archivetimes as $time) {
+        $formattedtime = userdate($time, get_string('strftimedate'));
+        echo html_writer::start_tag('li');
+        if ($time == $csvtimestamp) {
+            echo html_writer::tag('b', $formattedtime);
+        } else {
+            echo html_writer::tag('a', $formattedtime,
+                    array('href' => report_customsql_url('view.php',
+                            ['id' => $id, 'timestamp' => $time])));
+        }
+        echo '</li>';
+    }
+    echo html_writer::end_tag('ul');
 }
 
-$imglarrow = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/collapsed_rtl'),
-                              'class' => 'iconsmall',
-                              'alt' => ''));
-echo html_writer::start_tag('p').
-     $OUTPUT->action_link(new moodle_url(report_customsql_url('index.php')), $imglarrow.
-                                         get_string('backtoreportlist', 'report_customsql')).
-     html_writer::end_tag('p').
-     $OUTPUT->footer();
+echo $OUTPUT->footer();

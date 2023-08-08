@@ -32,14 +32,9 @@ require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/categoryadd_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
 $context = context_system::instance();
-$PAGE->set_url(new moodle_url('/report/customsql/addcategory.php'));
-$PAGE->set_context($context);
-
+admin_externalpage_setup('report_customsql', '', null, '/report/customsql/addcategory.php');
 require_capability('report/customsql:managecategories', $context);
-
-admin_externalpage_setup('report_customsql');
 
 $relativeurl = 'addcategory.php';
 
@@ -67,7 +62,7 @@ if ($mform->is_cancelled()) {
 
 if ($data = $mform->get_data()) {
     if ($isadding) {
-        $DB->insert_record('report_customsql_categories', $data, true);
+        $DB->insert_record('report_customsql_categories', $data);
     } else {
         $updrec = new stdClass();
         $updrec->id = $data->id;

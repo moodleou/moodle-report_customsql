@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
@@ -33,9 +35,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  */
 class report_customsql_view_form extends moodleform {
     public function definition() {
-        global $CFG;
-
-        $mform =& $this->_form;
+        $mform = $this->_form;
 
         $mform->addElement('header', 'heading', get_string('queryparameters', 'report_customsql'));
 
@@ -47,6 +47,6 @@ class report_customsql_view_form extends moodleform {
             }
         }
 
-        $this->add_action_buttons(true, 'Run report');
+        $this->add_action_buttons(true, get_string('runquery', 'report_customsql'));
     }
 }
