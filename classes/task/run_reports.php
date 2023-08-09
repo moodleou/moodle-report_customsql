@@ -15,14 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A scheduled task for Report Custom SQL.
+ * A scheduled task for Report Custom SQL, to run the scheduled reports.
  *
  * @package report_customsql
  * @copyright 2015 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace report_customsql\task;
 
+/**
+ * A scheduled task for Report Custom SQL, to run the scheduled reports.
+ *
+ * @copyright 2015 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class run_reports extends \core\task\scheduled_task {
 
     /**
@@ -73,11 +80,18 @@ class run_reports extends \core\task\scheduled_task {
         $reportstorun = array_merge($dailyreportstorun, $scheduledreportstorun);
 
         foreach ($reportstorun as $report) {
-            mtrace("... Running report " . strip_tags($report->displayname));
+            mtrace("... Running report " . report_customsql_plain_text_report_name($report));
             try {
                 report_customsql_generate_csv($report, $timenow);
             } catch (\Exception $e) {
-                mtrace("... REPORT FAILED " . $e->getMessage());
+                $info = get_exception_info($e);
+                mtrace("... REPORT FAILED " . $info->message);
+                if (!empty($info->debuginfo)) {
+                    mtrace("\nDebug info: $info->debuginfo");
+                }
+                if (!empty($info->backtrace)) {
+                    mtrace("\nStack trace: " . format_backtrace($info->backtrace, true));
+                }
             }
         }
     }

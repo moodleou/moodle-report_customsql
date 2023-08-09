@@ -15,18 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Database upgrades.
+ * Upgrade code for report_customsql.
  *
  * @package report_customsql
  * @copyright 2015 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
+ * Upgrade code for report_customsql.
+ *
  * @param string $oldversion the version we are upgrading from.
+ * @return bool true on success.
  */
 function xmldb_report_customsql_upgrade($oldversion) {
     global $CFG, $DB;
@@ -78,7 +78,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
         require_once($CFG->dirroot . '/report/customsql/locallib.php');
         $table = new xmldb_table('report_customsql_queries');
         $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED,
-                XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
+                XMLDB_NOTNULL, null, 5000, 'queryparams');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -136,7 +136,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
         require_once($CFG->dirroot . '/report/customsql/locallib.php');
         $table = new xmldb_table('report_customsql_queries');
         $field = new xmldb_field('querylimit', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED,
-                XMLDB_NOTNULL, null, REPORT_CUSTOMSQL_MAX_RECORDS, 'queryparams');
+                XMLDB_NOTNULL, null, 5000, 'queryparams');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
@@ -160,19 +160,113 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015062900, 'report', 'customsql');
     }
 
-    if ($oldversion < 2015101300) {
+    if ($oldversion < 2016011800) {
 
         // Define field customdir to be added to report_customsql_queries.
         $table = new xmldb_table('report_customsql_queries');
         $field = new xmldb_field('customdir', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'categoryid');
 
-        // Conditionally launch add field customdir.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016011800, 'report', 'customsql');
+    }
+
+    if ($oldversion < 2019111101) {
+        // For upgraded sites, set this setting to be backwards compatible.
+        set_config('startwday', '6', 'report_customsql');
+        upgrade_plugin_savepoint(true, 2019111101, 'report', 'customsql');
+    }
+
+    if ($oldversion < 2020102800) {
+        // Convert the contents of the emailto column from a list of usernames to a list of user ids.
+
+        // Transfer data from old columns into details.
+        // (There seem to be just a few thousand of these, so not too bad).
+        $queries = $DB->get_records_select('report_customsql_queries', 'emailto <> ?', [''], 'id', 'id, emailto');
+        $total = count($queries);
+
+        if ($total > 0) {
+            // First get all the different usernames that appear.
+            $usernames = [];
+            foreach ($queries as $query) {
+                foreach (preg_split("/[\s,;]+/", $query->emailto) as $username) {
+                    $usernames[$username] = 1;
+                }
+            }
+
+            // Then get the corresponding user ids.
+            $userids = $DB->get_records_list('user', 'username', array_keys($usernames), '', 'username, id');
+
+            // Now  do the update.
+            $progressbar = new progress_bar('report_customsql_emailto_upgrade', 500, true);
+            $done = 0;
+            foreach ($queries as $query) {
+                $progressbar->update($done, $total,
+                        "Updating ad-hoc DB query email recipients - {$done}/{$total} (id = {$query->id}).");
+
+                $queryuserids = [];
+                foreach (preg_split("/[\s,;]+/", $query->emailto) as $username) {
+                    if (isset($userids[$username])) {
+                        $queryuserids[] = $userids[$username]->id;
+                    }
+                }
+                sort($queryuserids);
+
+                $DB->set_field('report_customsql_queries', 'emailto', implode(',', $queryuserids), ['id' => $query->id]);
+                $done += 1;
+            }
+            $progressbar->update($done, $total, "Updating ad-hoc DB query email recipients - {$done}/{$total}.");
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2020102800, 'report', 'customsql');
+    }
+
+    if ($oldversion < 2021051000) {
+        // Define field usermodified to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'customdir');
+
+        // Conditionally launch add field usermodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field timecreated to be added to report_customsql_queries.
+        $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', null,
+                XMLDB_NOTNULL, null, '0', 'usermodified');
+
+        // Conditionally launch add field timecreated.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field timemodified to be added to report_customsql_queries.
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null,
+                XMLDB_NOTNULL, null, '0', 'timecreated');
+
+        // Conditionally launch add field timemodified.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         // Customsql savepoint reached.
-        upgrade_plugin_savepoint(true, 2015101300, 'report', 'customsql');
+        upgrade_plugin_savepoint(true, 2021051000, 'report', 'customsql');
+    }
+
+    if ($oldversion < 2021111600) {
+        // Define index usermodified to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        // Conditionally launch add key usermodified.
+        if (!$table->getKey('usermodified')) {
+            $key = new xmldb_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+            $dbman->add_key($table, $key);
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2021111600, 'report', 'customsql');
     }
 
     return true;

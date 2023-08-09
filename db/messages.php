@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $messageproviders = array(
-    // Notify users on the list who can view repot custimsql.
+    // Messages informing users that a certain report has run, for reports set to do that.
     'notification' => array(
-        'capability' => 'report/customsql:view'
+        'capability' => 'report/customsql:view',
     ),
 );
