@@ -89,7 +89,7 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
         if ($report->runable !== 'manual') {
             $runtime = $report->lastrun;
         }
-        $csvtimestamp = report_customsql_generate_csv($report, $runtime);
+        $csvtimestamp = report_customsql_generate_csv($report, $runtime, true);
     }
     list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);
 

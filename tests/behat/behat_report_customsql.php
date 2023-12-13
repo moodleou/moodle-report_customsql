@@ -30,7 +30,7 @@ require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
 use Behat\Gherkin\Node\PyStringNode as PyStringNode;
 use Behat\Gherkin\Node\TableNode;
-
+use Behat\Mink\Exception\ExpectationException;
 
 /**
  * Behat steps for the the custom SQL report.
@@ -246,6 +246,29 @@ class behat_report_customsql extends behat_base {
             throw new \Behat\Mink\Exception\ExpectationException('specified time is not valid', $this->getSession());
         }
         set_config('behat_fixed_time', $value, 'report_customsql');
+    }
+
+    /**
+     * Simulates downloading an empty report to ensure it shows table headers.
+     *
+     * For example:
+     * When downloading the empty custom sql report "Frog" it contains the headers "frogname,freddy"
+     *
+     * @Then /^downloading custom sql report "(?P<REPORT_NAME>[^"]*)" returns a file with headers "([^"]*)"$/
+     * @param string $reportname the name of the report to go to.
+     * @param string $headers the headers that shuold be returned.
+     */
+    public function downloading_custom_sql_report_x_returns_a_file_with_headers(string $reportname, string $headers) {
+        $report = $this->get_report_by_name($reportname);
+        $url = new \moodle_url('/pluginfile.php/1/report_customsql/download/' . $report->id, ['dataformat' => 'csv']);
+
+        $session = $this->getSession()->getCookie('MoodleSession');
+        $filecontent = trim(download_file_content($url, ['Cookie' => 'MoodleSession=' . $session]));
+        $filecontent = core_text::trim_utf8_bom($filecontent);
+        if ($filecontent != $headers) {
+            throw new ExpectationException(
+                    "File headers: $filecontent did not match expected: $headers", $this->getSession());
+        }
     }
 
     /**
