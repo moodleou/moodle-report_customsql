@@ -76,6 +76,13 @@ Feature: Ad-hoc database queries report
     And I view the "Test query" custom sql report
     Then I should see "This query did not return any data."
 
+  Scenario: Download an Ad-hoc database query that returns no data but includes headers
+    Given the following custom sql report exists:
+      | name     | Test query                               |
+      | querysql | SELECT * FROM {config} WHERE name = '-1' |
+    When I log in as "admin"
+    Then downloading custom sql report "Test query" returns a file with headers "id,name,value"
+
   Scenario: Create an Ad-hoc database queries category
     When I log in as "admin"
     And I navigate to "Reports > Ad-hoc database queries" in site administration

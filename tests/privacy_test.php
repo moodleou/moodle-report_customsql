@@ -81,7 +81,7 @@ class privacy_test extends \core_privacy\tests\provider_testcase {
         $subcontext = [
             get_string('privacy:metadata:reportcustomsqlqueries', 'report_customsql')
         ];
-        $data = $writer->get_data($subcontext);
+        $data = (array)$writer->get_data($subcontext);
         $this->assertEquals('Report of user 1', reset($data)['displayname']);
     }
 

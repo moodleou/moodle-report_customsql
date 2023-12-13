@@ -61,6 +61,7 @@ $string['deletecategoryx'] = 'Delete category \'{$a}\'';
 $string['deletecategoryyesno'] = '<p>Are you really sure you want to delete this category? </p>';
 $string['deletereportx'] = 'Delete query \'{$a}\'';
 $string['description'] = 'Description';
+$string['directorynotwritable'] = 'The directory you provided is not writable.';
 $string['displayname'] = 'Query name';
 $string['displaynamex'] = 'Query name: {$a}';
 $string['displaynamerequired'] = 'You must enter a query name';

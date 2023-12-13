@@ -269,5 +269,21 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021111600, 'report', 'customsql');
     }
 
+    if ($oldversion < 2022031801) {
+
+        // Changing nullability of field name on table report_customsql_categories to not null.
+        // Changing the default of field name on table report_customsql_categories to drop it.
+        $table = new xmldb_table('report_customsql_categories');
+        $field = new xmldb_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch change of nullability for field name.
+        $dbman->change_field_notnull($table, $field);
+        // Launch change of default for field name.
+        $dbman->change_field_default($table, $field);
+
+        // Report savepoint reached.
+        upgrade_plugin_savepoint(true, 2022031801, 'report', 'customsql');
+    }
+
     return true;
 }

@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
  * @copyright 2021 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class _category_test extends \advanced_testcase {
+class category_test extends \advanced_testcase {
     /**
      * Test create category.
      */
