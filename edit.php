@@ -54,12 +54,12 @@ if (!empty($returnurl)) {
 
 // Are we editing an existing report, or creating a new one.
 if ($id) {
-    $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+    $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
     if (!$report) {
         throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
     }
     $reportquerysql = $report->querysql;
-    $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : array();
+    $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : [];
     foreach ($queryparams as $param => $value) {
         $report->{'queryparam'.$param} = $value;
     }
@@ -161,7 +161,7 @@ if ($id) {
 }
 
 if ($report) {
-    $report->description = array('text' => $report->description, 'format' => $report->descriptionformat);
+    $report->description = ['text' => $report->description, 'format' => $report->descriptionformat];
     $mform->set_data($report);
 }
 

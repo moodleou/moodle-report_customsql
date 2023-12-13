@@ -31,7 +31,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
 $urlparams = ['id' => $id];
-$report = $DB->get_record('report_customsql_queries', array('id' => $id));
+$report = $DB->get_record('report_customsql_queries', ['id' => $id]);
 if (!$report) {
     throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
@@ -128,7 +128,7 @@ if ($report->runable == 'manual') {
     try {
         $csvtimestamp = report_customsql_generate_csv($report, time());
         // Get the updated execution times.
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
     } catch (Exception $e) {
         throw new moodle_exception('queryfailed', 'report_customsql', report_customsql_url('index.php'),
                     $e->getMessage());
@@ -137,11 +137,7 @@ if ($report->runable == 'manual') {
     // Runs on schedule.
     $csvtimestamp = optional_param('timestamp', null, PARAM_INT);
     if ($csvtimestamp === null) {
-        $archivetimes = report_customsql_get_archive_times($report);
-        $csvtimestamp = array_shift($archivetimes);
-    }
-    if ($csvtimestamp === null) {
-        $csvtimestamp = time();
+        [$csvtimestamp] = report_customsql_get_starts($report, time());
     }
     $urlparams['timestamp'] = $csvtimestamp;
 }
@@ -160,8 +156,8 @@ if (!empty($paramvalues)) {
             $value = userdate($value, '%F %T');
         }
         echo html_writer::tag('p', get_string('parametervalue', 'report_customsql',
-                array('name' => html_writer::tag('b', str_replace('_', ' ', $name)),
-                'value' => s($value))));
+                ['name' => html_writer::tag('b', str_replace('_', ' ', $name)),
+                'value' => s($value)]));
     }
 }
 
@@ -171,13 +167,17 @@ if (is_null($csvtimestamp)) {
 } else {
     list($csvfilename, $csvtimestamp) = report_customsql_csv_filename($report, $csvtimestamp);
     if (!is_readable($csvfilename)) {
-        echo html_writer::tag('p', get_string('notrunyet', 'report_customsql'));
+        if (empty($report->lastrun) || $csvtimestamp > $report->lastrun) {
+            echo html_writer::tag('p', get_string('notrunyet', 'report_customsql'));
+        } else {
+            echo html_writer::tag('p', get_string('notanyresults', 'report_customsql', userdate($csvtimestamp)));
+        }
     } else {
         $handle = fopen($csvfilename, 'r');
 
         if ($report->runable != 'manual' && !$report->singlerow) {
             echo $OUTPUT->heading(get_string('reportfor', 'report_customsql',
-                    userdate($csvtimestamp, get_string('strftimedate'))), 3);
+                    userdate($csvtimestamp)), 3);
         }
 
         $table = new html_table();
@@ -208,10 +208,10 @@ if (is_null($csvtimestamp)) {
         if ($rowlimitexceeded) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
                     $report->querylimit ?? get_config('report_customsql', 'querylimitdefault')),
-                    array('class' => 'admin_note'));
+                    ['class' => 'admin_note']);
         } else {
             echo html_writer::tag('p', get_string('recordcount', 'report_customsql', $count),
-                    array('class' => 'admin_note'));
+                    ['class' => 'admin_note']);
         }
 
         echo report_customsql_time_note($report, 'p');
@@ -237,23 +237,29 @@ if (!empty($queryparams)) {
 
 echo $output->render_report_actions($report, $category, $context);
 
-$archivetimes = report_customsql_get_archive_times($report);
-if (count($archivetimes) > 1) {
-    echo $OUTPUT->heading(get_string('archivedversions', 'report_customsql'), 3).
-            html_writer::start_tag('ul');
-    foreach ($archivetimes as $time) {
-        $formattedtime = userdate($time, get_string('strftimedate'));
-        echo html_writer::start_tag('li');
-        if ($time == $csvtimestamp) {
-            echo html_writer::tag('b', $formattedtime);
-        } else {
-            echo html_writer::tag('a', $formattedtime,
-                    array('href' => report_customsql_url('view.php',
-                            ['id' => $id, 'timestamp' => $time])));
+if ($report->runable != 'manual') {
+    echo $OUTPUT->heading(get_string('archivedversions', 'report_customsql'), 3);
+
+    $archivetimes = report_customsql_get_archive_times($report);
+    if (!$archivetimes) {
+        echo html_writer::tag('p', get_string('notrunyet', 'report_customsql'));
+
+    } else {
+        echo html_writer::start_tag('ul');
+        foreach ($archivetimes as $time) {
+            $formattedtime = userdate($time);
+            echo html_writer::start_tag('li');
+            if ($time == $csvtimestamp) {
+                echo html_writer::tag('b', $formattedtime);
+            } else {
+                echo html_writer::tag('a', $formattedtime,
+                        ['href' => report_customsql_url('view.php',
+                                ['id' => $id, 'timestamp' => $time])]);
+            }
+            echo '</li>';
         }
-        echo '</li>';
+        echo html_writer::end_tag('ul');
     }
-    echo html_writer::end_tag('ul');
 }
 
 echo $OUTPUT->footer();

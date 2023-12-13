@@ -98,7 +98,7 @@ class report_customsql_edit_form extends moodleform {
         $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
                         'numeric', null, 'client');
 
-        $runat = array();
+        $runat = [];
         if ($hasparameters) {
             $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options('manual'));
         } else {
@@ -139,7 +139,7 @@ class report_customsql_edit_form extends moodleform {
                         \report_customsql\external\get_users::prepare_result_object(
                                 $user, $extrafields)
                         );
-            }
+            },
         ];
         $mform->addElement('autocomplete', 'emailto', get_string('emailto', 'report_customsql'), [], $options);
         $mform->setType('emailto', PARAM_RAW);
@@ -158,7 +158,7 @@ class report_customsql_edit_form extends moodleform {
     public function set_data($currentvalues) {
         global $DB, $OUTPUT;
 
-        $currentvalues->emailto = explode(',', $currentvalues->emailto);
+        $currentvalues->emailto = explode(',', $currentvalues->emailto ?? '');
         parent::set_data($currentvalues);
 
         // Add report information.

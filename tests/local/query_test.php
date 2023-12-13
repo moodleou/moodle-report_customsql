@@ -27,12 +27,13 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
  * @package   report_customsql
  * @copyright 2021 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers \report_customsql\local\query
  */
 class query_test extends \advanced_testcase {
     /**
      * Test create query.
      */
-    public function test_create_query() {
+    public function test_create_query(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -41,7 +42,7 @@ class query_test extends \advanced_testcase {
             'displayname' => 'Query 1',
             'runable' => 'daily',
             'capability' => 'moodle/site:config',
-            'lastrun' => 0
+            'lastrun' => 0,
         ];
 
         $query = new query($fakerecord);

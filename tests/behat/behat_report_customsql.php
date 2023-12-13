@@ -159,6 +159,11 @@ class behat_report_customsql extends behat_base {
         $this->save_new_report($report);
     }
 
+    /**
+     * Helper used by other methods to save a report.
+     *
+     * @param array $report the report to save.
+     */
     protected function save_new_report(array $report) {
         global $CFG, $DB;
 

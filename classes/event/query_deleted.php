@@ -49,9 +49,4 @@ class query_deleted extends \core\event\base {
     public function get_url() {
         return new \moodle_url('/report/customsql/index.php');
     }
-
-    public function get_legacy_logdata() {
-        $url = '../report/customsql/index.php';
-        return array(0, "report_customsql", 'delete query', $url, $this->objectid, $this->contextinstanceid);
-    }
 }

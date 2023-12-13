@@ -23,9 +23,7 @@ namespace report_customsql;
  * @copyright 2021 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class utils {
-
 
     /**
      * Return the current timestamp, or a fixed timestamp specified by an automated test.
