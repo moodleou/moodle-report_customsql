@@ -78,6 +78,11 @@ class behat_report_customsql extends behat_base {
             throw new Exception('The report SQL must be given as querysql.');
         }
 
+        // Fix test queries containing CHR for MySQL & chums.
+        if ($DB->get_dbfamily() == 'mysql' && stripos($report['querysql'], 'CHR') !== false) {
+            $report['querysql'] = str_ireplace('CHR', 'CHAR', $report['querysql']);
+        }
+
         // Category.
         if (isset($report['category'])) {
             $report['categoryid'] = $this->get_category_id_by_name($report['category']);
