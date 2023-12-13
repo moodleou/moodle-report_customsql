@@ -25,6 +25,7 @@ use core_privacy\local\request;
  * @package    report_customsql
  * @copyright  2021 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers \report_customsql\privacy\provider
  */
 class privacy_test extends \core_privacy\tests\provider_testcase {
 
