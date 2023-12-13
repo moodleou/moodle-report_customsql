@@ -38,6 +38,7 @@ class category_query implements renderable, templatable {
     /** @var query Category object. */
     private $category;
 
+    /** @var context Context to check the capability. */
     private $context;
 
     /** @var moodle_url Return url. */
@@ -45,6 +46,7 @@ class category_query implements renderable, templatable {
 
     /**
      * Create the category renderable object.
+     *
      * @param query $query Query object.
      * @param category $category
      * @param context $context Context to check the capability.

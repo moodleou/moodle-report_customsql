@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This page shows the list of queries in a category, with edit icons, an add new button
- * if you have the report/customsql:definequeries capability
+ * This page shows the list of queries in a category.
+ *
+ * With editing UI, if you have the report/customsql:definequeries capability.
  *
  * @package report_customsql
  * @copyright 2021 The Open University

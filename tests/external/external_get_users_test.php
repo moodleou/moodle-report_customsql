@@ -17,8 +17,6 @@
 
 namespace report_customsql\external;
 
-use core_external\external_api;
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -74,16 +72,16 @@ class external_get_users_test extends \externallib_advanced_testcase {
         $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
 
         $result = get_users::execute('', 'moodle/site:config');
-        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
-                [
-                        'id' => $admin->id,
-                        'fullname' => fullname($admin),
-                        'identity' => 'admin@example.com',
-                        'hasidentity' => true,
-                        'profileimageurlsmall' => $defaultuserimage,
-                ],
+            [
+                'id' => $admin->id,
+                'fullname' => fullname($admin),
+                'identity' => 'admin@example.com',
+                'hasidentity' => true,
+                'profileimageurlsmall' => $defaultuserimage,
+            ],
         ], $result);
     }
 
@@ -92,23 +90,23 @@ class external_get_users_test extends \externallib_advanced_testcase {
         $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
 
         $result = get_users::execute('', 'moodle/site:viewreports');
-        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
-                [
-                        'id' => $manager->id,
-                        'fullname' => fullname($manager),
-                        'identity' => 'manager@example.com',
-                        'hasidentity' => true,
-                        'profileimageurlsmall' => $defaultuserimage,
-                ],
-                [
-                        'id' => $admin->id,
-                        'fullname' => fullname($admin),
-                        'identity' => 'admin@example.com',
-                        'hasidentity' => true,
-                        'profileimageurlsmall' => $defaultuserimage,
-                ],
+            [
+                'id' => $manager->id,
+                'fullname' => fullname($manager),
+                'identity' => 'manager@example.com',
+                'hasidentity' => true,
+                'profileimageurlsmall' => $defaultuserimage,
+            ],
+            [
+                'id' => $admin->id,
+                'fullname' => fullname($admin),
+                'identity' => 'admin@example.com',
+                'hasidentity' => true,
+                'profileimageurlsmall' => $defaultuserimage,
+            ],
         ], $result);
     }
 
@@ -117,7 +115,7 @@ class external_get_users_test extends \externallib_advanced_testcase {
         $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
 
         $result = get_users::execute('', 'report/customsql:view');
-        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
                 [
@@ -145,11 +143,13 @@ class external_get_users_test extends \externallib_advanced_testcase {
     }
 
     public function test_get_users_serch_without_admins() {
+        global $OUTPUT;
+
         [, $manager] = $this->setup_users();
-        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
+        $defaultuserimage = $OUTPUT->image_url('u/f2');
 
         $result = get_users::execute('Man', 'report/customsql:view');
-        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
                 [
@@ -167,16 +167,16 @@ class external_get_users_test extends \externallib_advanced_testcase {
         $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
 
         $result = get_users::execute('n U', 'report/customsql:view');
-        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
-                [
-                        'id' => $admin->id,
-                        'fullname' => fullname($admin),
-                        'identity' => 'admin@example.com',
-                        'hasidentity' => true,
-                        'profileimageurlsmall' => $defaultuserimage,
-                ],
+            [
+                'id' => $admin->id,
+                'fullname' => fullname($admin),
+                'identity' => 'admin@example.com',
+                'hasidentity' => true,
+                'profileimageurlsmall' => $defaultuserimage,
+            ],
         ], $result);
     }
 }

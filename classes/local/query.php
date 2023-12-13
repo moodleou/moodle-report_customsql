@@ -126,6 +126,7 @@ class query {
     /**
      * Check the capability to view the query.
      *
+     * @param \context $context The context to check.
      * @return bool Has capability to view or not?
      */
     public function can_view(\context $context):bool {

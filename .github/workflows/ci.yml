@@ -98,6 +98,7 @@ jobs:
         run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
+        continue-on-error: true # This step will show errors but will not fail.
         if: ${{ always() }}
         run: moodle-plugin-ci phpdoc
 

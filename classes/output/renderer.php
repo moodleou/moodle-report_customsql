@@ -35,8 +35,8 @@ class renderer extends plugin_renderer_base {
      * Output the standard action icons (edit, delete and back to list) for a report.
      *
      * @param stdClass $report the report.
-     * @param context $context context to use for permission checks.
      * @param stdClass $category Category object.
+     * @param context $context context to use for permission checks.
      * @return string HTML for report actions.
      */
     public function render_report_actions(stdClass $report, stdClass $category, context $context):string {

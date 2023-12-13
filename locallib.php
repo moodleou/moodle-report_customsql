@@ -661,7 +661,7 @@ function report_customsql_validate_users($userids, $capability) {
 function report_customsql_get_message_no_data($report) {
     // Construct subject.
     $subject = report_customsql_email_subject(0, $report);
-    $url = new moodle_url('/report/customsql/view.php', params: ['id' => $report->id]);
+    $url = new moodle_url('/report/customsql/view.php', ['id' => $report->id]);
     $link = get_string('emailink', 'report_customsql', html_writer::tag('a', $url, ['href' => $url]));
     $fullmessage = html_writer::tag('p', get_string('nodatareturned', 'report_customsql') . ' ' . $link);
     $fullmessagehtml = $fullmessage;
@@ -801,7 +801,7 @@ function report_customsql_get_ready_to_run_daily_reports($timenow) {
  *
  * @param object $recipient the message recipient.
  * @param object $message the message object.
- * @return mixed result of {@link message_send()}.
+ * @return mixed result of {@see message_send()}.
  */
 function report_customsql_send_email_notification($recipient, $message) {
 
