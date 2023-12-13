@@ -97,7 +97,7 @@ function xmldb_report_customsql_upgrade($oldversion) {
         $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, null);
 
         // Adding key to table report_customsql_categories.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for report_customsql_categories.
         if (!$dbman->table_exists($table)) {
@@ -114,13 +114,13 @@ function xmldb_report_customsql_upgrade($oldversion) {
         }
 
         // Add key (for the new field just added).
-        $key = new xmldb_key('categoryid', XMLDB_KEY_FOREIGN, array('categoryid'), 'report_customsql_categories', array('id'));
+        $key = new xmldb_key('categoryid', XMLDB_KEY_FOREIGN, ['categoryid'], 'report_customsql_categories', ['id']);
         $dbman->add_key($table, $key);
 
         // Create the default 'Miscellaneous' category.
         $category = new stdClass();
         $category->name = get_string('defaultcategory', 'report_customsql');
-        if (!$DB->record_exists('report_customsql_categories', array('name' => $category->name))) {
+        if (!$DB->record_exists('report_customsql_categories', ['name' => $category->name])) {
             $category->id = $DB->insert_record('report_customsql_categories', $category);
         }
         // Update the existing query category ids, to move them into this category.

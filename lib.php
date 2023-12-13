@@ -43,7 +43,7 @@
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - just send the file
  */
-function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
     global $DB;
 
     require_once(dirname(__FILE__) . '/locallib.php');
@@ -59,7 +59,7 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
     $id = (int)array_shift($args);
     $dataformat = required_param('dataformat', PARAM_ALPHA);
 
-    $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+    $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
     if (!$report) {
         throw new moodle_exception('invalidreportid', 'report_customsql',
                 report_customsql_url('index.php'), $id);

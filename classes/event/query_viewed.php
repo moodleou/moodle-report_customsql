@@ -47,6 +47,6 @@ class query_viewed extends \core\event\base {
     }
 
     public function get_url() {
-        return new \moodle_url('/report/customsql/view.php', array('id' => $this->objectid));
+        return new \moodle_url('/report/customsql/view.php', ['id' => $this->objectid]);
     }
 }

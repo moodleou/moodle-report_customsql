@@ -62,7 +62,7 @@ class renderer extends plugin_renderer_base {
         $context = [
                 'editaction' => $editaction,
                 'deleteaction' => $deleteaction,
-                'backtocategoryaction' => $backtocategoryaction
+                'backtocategoryaction' => $backtocategoryaction,
         ];
 
         return $this->render_from_template('report_customsql/query_actions', $context);

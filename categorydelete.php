@@ -36,15 +36,15 @@ admin_externalpage_setup('report_customsql', '', ['id' => $id],
 $context = context_system::instance();
 require_capability('report/customsql:managecategories', $context);
 
-$category = $DB->get_record('report_customsql_categories', array('id' => $id));
+$category = $DB->get_record('report_customsql_categories', ['id' => $id]);
 if (!$category) {
     throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('manage.php'), $id);
 }
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
     require_sesskey();
-    if (!$queries = $DB->get_records('report_customsql_queries', array('categoryid' => $id))) {
-        $ok = $DB->delete_records('report_customsql_categories', array('id' => $id));
+    if (!$queries = $DB->get_records('report_customsql_queries', ['categoryid' => $id])) {
+        $ok = $DB->delete_records('report_customsql_categories', ['id' => $id]);
         if (!$ok) {
             throw new moodle_exception('errordeletingcategory', 'report_customsql', report_customsql_url('index.php'));
         }

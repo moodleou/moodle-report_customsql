@@ -24,32 +24,29 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
 
     // People who can view the reports at all.
-    'report/customsql:view' => array(
+    'report/customsql:view' => [
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
-            )
-        ),
+        'archetypes' => [],
+    ],
 
     // People who can manage the reports categories.
-    'report/customsql:managecategories' => array(
+    'report/customsql:managecategories' => [
         'riskbitmask' => 0,
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
-          )
-        ),
+        'archetypes' => [],
+    ],
 
     // People who can define new queries.
-    'report/customsql:definequeries' => array(
+    'report/customsql:definequeries' => [
         'riskbitmask' => RISK_PERSONAL | RISK_DATALOSS | RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'legacy' => array(
-        )
-    )
-);
+        'archetypes' => [],
+    ],
+];

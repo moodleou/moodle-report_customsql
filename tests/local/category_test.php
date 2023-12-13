@@ -36,7 +36,7 @@ class _category_test extends \advanced_testcase {
         $this->resetAfterTest();
         $fakerecord = (object) [
             'id' => 1,
-            'name' => 'Category 1'
+            'name' => 'Category 1',
         ];
 
         $category = new category($fakerecord);
@@ -53,25 +53,25 @@ class _category_test extends \advanced_testcase {
         $this->resetAfterTest();
         $fakerecord = (object) [
             'id' => 1,
-            'name' => 'Category 1'
+            'name' => 'Category 1',
         ];
 
         $fakequeries = [
             (object) [
                 'id' => 1,
                 'displayname' => 'Q1',
-                'runable' => 'manual'
+                'runable' => 'manual',
             ],
             (object) [
                 'id' => 2,
                 'displayname' => 'Q2',
-                'runable' => 'manual'
+                'runable' => 'manual',
             ],
             (object) [
                 'id' => 3,
                 'displayname' => 'Q3',
-                'runable' => 'daily'
-            ]
+                'runable' => 'daily',
+            ],
         ];
 
         $category = new category($fakerecord);

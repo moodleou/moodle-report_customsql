@@ -73,8 +73,8 @@ class run_reports extends \core\task\scheduled_task {
         $scheduledreportstorun = $DB->get_records_select('report_customsql_queries',
                                             "(runable = 'weekly' AND lastrun < :startofthisweek) OR
                                              (runable = 'monthly' AND lastrun < :startofthismonth)",
-                                            array('startofthisweek' => $startofthisweek,
-                                                  'startofthismonth' => $startofthismonth), 'lastrun');
+                                            ['startofthisweek' => $startofthisweek,
+                                                  'startofthismonth' => $startofthismonth], 'lastrun');
 
         // All reports ready to run.
         $reportstorun = array_merge($dailyreportstorun, $scheduledreportstorun);

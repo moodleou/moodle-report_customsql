@@ -69,13 +69,13 @@ class category_query implements renderable, templatable {
             'timenote' => $this->query->get_time_note(),
             'editbutton' => [
                 'url' => $this->query->get_edit_url($this->returnurl)->out(false),
-                'img' => $imgedit
+                'img' => $imgedit,
             ],
             'deletebutton' => [
                 'url' => $this->query->get_delete_url($this->returnurl)->out(false),
-                'img' => $imgdelete
+                'img' => $imgdelete,
             ],
-            'capability' => $this->query->get_capability_string()
+            'capability' => $this->query->get_capability_string(),
         ];
     }
 }

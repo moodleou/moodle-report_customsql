@@ -41,7 +41,7 @@ class query_test extends \advanced_testcase {
             'displayname' => 'Query 1',
             'runable' => 'daily',
             'capability' => 'moodle/site:config',
-            'lastrun' => 0
+            'lastrun' => 0,
         ];
 
         $query = new query($fakerecord);

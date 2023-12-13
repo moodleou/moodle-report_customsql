@@ -96,16 +96,16 @@ class report_test extends \advanced_testcase {
     }
 
     public function test_get_month_starts_test(): void {
-        $this->assertEquals(array(
-                strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')),
+        $this->assertEquals([
+                strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')],
                 report_customsql_get_month_starts(strtotime('12:36 10 November 2009')));
 
-        $this->assertEquals(array(
-                strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')),
+        $this->assertEquals([
+                strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')],
                 report_customsql_get_month_starts(strtotime('00:00 1 November 2009')));
 
-        $this->assertEquals(array(
-                strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')),
+        $this->assertEquals([
+                strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')],
                 report_customsql_get_month_starts(strtotime('23:59 29 November 2009')));
     }
 
@@ -127,25 +127,28 @@ class report_test extends \advanced_testcase {
     }
 
     public function test_report_customsql_capability_options(): void {
-        $capoptions = array(
-                'report/customsql:view' => get_string('anyonewhocanveiwthisreport', 'report_customsql'),
-                'moodle/site:viewreports' => get_string('userswhocanviewsitereports', 'report_customsql'),
-                'moodle/site:config' => get_string('userswhocanconfig', 'report_customsql'));
+        $capoptions = [
+            'report/customsql:view' => get_string('anyonewhocanveiwthisreport', 'report_customsql'),
+            'moodle/site:viewreports' => get_string('userswhocanviewsitereports', 'report_customsql'),
+            'moodle/site:config' => get_string('userswhocanconfig', 'report_customsql'),
+        ];
         $this->assertEquals($capoptions, report_customsql_capability_options());
 
     }
 
     public function test_report_customsql_runable_options(): void {
-        $options = array('manual'  => get_string('manual', 'report_customsql'),
-                         'daily'   => get_string('automaticallydaily', 'report_customsql'),
-                         'weekly'  => get_string('automaticallyweekly', 'report_customsql'),
-                         'monthly' => get_string('automaticallymonthly', 'report_customsql'));
+        $options = [
+            'manual'  => get_string('manual', 'report_customsql'),
+            'daily'   => get_string('automaticallydaily', 'report_customsql'),
+            'weekly'  => get_string('automaticallyweekly', 'report_customsql'),
+            'monthly' => get_string('automaticallymonthly', 'report_customsql'),
+        ];
 
         $this->assertEquals($options, report_customsql_runable_options());
     }
 
     public function test_report_customsql_daily_at_options(): void {
-        $time = array();
+        $time = [];
         for ($h = 0; $h < 24; $h++) {
             $hour = ($h < 10) ? "0$h" : $h;
             $time[$h] = "$hour:00";
@@ -154,13 +157,15 @@ class report_test extends \advanced_testcase {
     }
 
     public function test_report_customsql_email_options(): void {
-        $options = array('emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
-                'emailresults' => get_string('emailresults', 'report_customsql'));
+        $options = [
+            'emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
+            'emailresults' => get_string('emailresults', 'report_customsql'),
+        ];
         $this->assertEquals($options, report_customsql_email_options());
     }
 
     public function test_report_customsql_bad_words_list(): void {
-        $options = array('ALTER', 'CREATE', 'DELETE', 'DROP', 'GRANT', 'INSERT', 'INTO', 'TRUNCATE', 'UPDATE');
+        $options = ['ALTER', 'CREATE', 'DELETE', 'DROP', 'GRANT', 'INSERT', 'INTO', 'TRUNCATE', 'UPDATE'];
         $this->assertEquals($options, report_customsql_bad_words_list());
     }
 
@@ -186,7 +191,7 @@ class report_test extends \advanced_testcase {
         $lastrun = $today;
         $timestamp = $lastrun - ($today - $yesterday);
         $id = $this->create_a_database_row('daily', $currenthour, $lastrun, null);
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
         $this->assertFalse(report_customsql_is_daily_report_ready($report, $timestamp));
 
         // Test entry 2.
@@ -195,7 +200,7 @@ class report_test extends \advanced_testcase {
         $lastrun = $yesterday;
         $timestamp = $today;
         $id = $this->create_a_database_row('daily', $currenthour - 1, $lastrun, null);
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timestamp));
 
         // Test entry 3.
@@ -204,7 +209,7 @@ class report_test extends \advanced_testcase {
         $lastrun = $yesterday;
         $timestamp = $today;
         $id = $this->create_a_database_row('daily', $currenthour, $lastrun, null);
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timestamp));
 
         // Test entry 4.
@@ -213,7 +218,7 @@ class report_test extends \advanced_testcase {
         $lastrun = $yesterday;
         $timestamp = $today;
         $id = $this->create_a_database_row('daily', $currenthour + 1, $lastrun, null);
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
         $this->assertFalse(report_customsql_is_daily_report_ready($report, $timestamp));
 
         // Verify that two reports are returned - the two assertTrues above.
@@ -227,7 +232,7 @@ class report_test extends \advanced_testcase {
         [$elevenpm] = report_customsql_get_daily_time_starts($timenow, 23);
         $timenow = $elevenpm;
         $id = $this->create_a_database_row('daily', 1, $oneam, null);
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
         $this->assertFalse(report_customsql_is_daily_report_ready($report, $timenow));
 
         // Test entry 6.
@@ -238,7 +243,7 @@ class report_test extends \advanced_testcase {
         [, $fouramyesterday] = report_customsql_get_daily_time_starts($timenow, 4);
         $timenow = $twoam;
         $id = $this->create_a_database_row('daily', 2, $fouramyesterday, null);
-        $report = $DB->get_record('report_customsql_queries', array('id' => $id));
+        $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timenow));
     }
 
@@ -454,7 +459,7 @@ class report_test extends \advanced_testcase {
 
         // Test download url with the required dataformat param.
         $urlparams = [
-            'dataformat' => 'csv'
+            'dataformat' => 'csv',
         ];
         $baseurl = "https://www.example.com/moodle/pluginfile.php";
         $path = "/1/report_customsql/download/";

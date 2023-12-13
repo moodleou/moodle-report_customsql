@@ -96,7 +96,7 @@ class index_page implements renderable, templatable {
             'expandcollapselinkattheend' => (count($this->categories) >= 5),
             'categories' => $categoriesdata,
             'addquerybutton' => $addquerybutton,
-            'managecategorybutton' => $managecategorybutton
+            'managecategorybutton' => $managecategorybutton,
         ];
         return $data;
     }

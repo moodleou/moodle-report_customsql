@@ -68,7 +68,7 @@ class provider implements
                 'customdir' => 'privacy:metadata:reportcustomsqlqueries:customdir',
                 'usermodified' => 'privacy:metadata:reportcustomsqlqueries:usermodified',
                 'timecreated' => 'privacy:metadata:reportcustomsqlqueries:timecreated',
-                'timemodified' => 'privacy:metadata:reportcustomsqlqueries:timemodified'
+                'timemodified' => 'privacy:metadata:reportcustomsqlqueries:timemodified',
             ],
             'privacy:metadata:reportcustomsqlqueries'
         );
@@ -156,7 +156,7 @@ class provider implements
                 }
 
                 $subcontext = [
-                    get_string('privacy:metadata:reportcustomsqlqueries', 'report_customsql')
+                    get_string('privacy:metadata:reportcustomsqlqueries', 'report_customsql'),
                 ];
                 request\writer::with_context($context)->export_data($subcontext, (object)$exportdata);
             }
