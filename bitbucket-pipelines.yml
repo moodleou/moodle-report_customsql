@@ -1,0 +1,99 @@
+---
+image:
+  name: '271411534863.dkr.ecr.us-east-2.amazonaws.com/moodleusdev:latest'
+  aws:
+    access-key: "$AWS_ACCESS_KEY"
+    secret-key: "$AWS_SECRET_KEY"
+definitions:
+  installscript: &baseInst
+    echo "Checking out Moodle\n" ;
+    moodle-plugin-ci install --branch='MOODLE_401_STABLE' ;
+  steps:
+    - step: &base
+        name: 'Moodle 4.1, PHP 7.4 and MariaDB 10.6'
+        caches:
+          - npm
+          - composer
+          - docker
+        services:
+          - mariadb
+          - docker
+  services:
+    mariadb:
+      image: mariadb:10.6
+      variables:
+        MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+  caches:
+    npm: $HOME/.npm
+pipelines:
+  default:
+    - parallel:
+        steps:
+          - step:
+              <<: *base
+              name: PHP Lint
+              script:
+                - *baseInst
+                - moodle-plugin-ci phplint
+          - step:
+              <<: *base
+              name: PHP Copy detector
+              script:
+                - *baseInst
+                - moodle-plugin-ci phpcpd
+          - step:
+              <<: *base
+              name: PHP Mess detector
+              script:
+                - *baseInst
+                - moodle-plugin-ci phpmd
+          - step:
+              <<: *base
+              name: PHP Code checker
+              script:
+                - *baseInst
+                - moodle-plugin-ci codechecker
+          - step:
+              <<: *base
+              name: PHP Validate
+              script:
+                - *baseInst
+                - moodle-plugin-ci validate
+          - step:
+              <<: *base
+              name: PHP Savepoints
+              script:
+                - *baseInst
+                - moodle-plugin-ci savepoints
+          - step:
+              <<: *base
+              name: PHP Mustache
+              script:
+                - *baseInst
+                - moodle-plugin-ci mustache
+          - step:
+              <<: *base
+              name: PHP Grunt
+              script:
+                - *baseInst
+                - moodle-plugin-ci grunt
+          - step:
+              <<: *base
+              name: PHP Doc
+              script:
+                - *baseInst
+                - moodle-plugin-ci phpdoc
+          - step:
+              <<: *base
+              name: PHPUnit
+              script:
+                - *baseInst
+                - moodle-plugin-ci phpunit
+          # Commented out Behat because there are no Behat tests in this project yet.
+          # - step:
+          #     <<: *base
+          #     name: Behat
+          #     script:
+          #       - *baseInst
+          #       - preset-start-behat
+          #       - moodle-plugin-ci behat

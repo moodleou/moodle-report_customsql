@@ -46,6 +46,10 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext_with_maxlength('report_customsql/querylimitmaximum',
             get_string('querylimitmaximum', 'report_customsql'),
             get_string('querylimitmaximum_desc', 'report_customsql'), 5000, PARAM_INT, null, 10));
+
+    $settings->add(new admin_setting_configtext_with_maxlength('report_customsql/limittestrows',
+            get_string('limittestrows', 'report_customsql'),
+            get_string('limittestrows_desc', 'report_customsql'), 0, PARAM_INT, null, 2));
 }
 
 $ADMIN->add('reports', new admin_externalpage('report_customsql',
