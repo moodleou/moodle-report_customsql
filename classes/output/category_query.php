@@ -59,6 +59,12 @@ class category_query implements renderable, templatable {
         $this->returnurl = $returnurl;
     }
 
+    /**
+     * Export data for template.
+     *
+     * @param \renderer_base $output
+     * @return array
+     */
     public function export_for_template(\renderer_base $output) {
         $imgedit = $output->pix_icon('t/edit', get_string('edit'));
         $imgdelete = $output->pix_icon('t/delete', get_string('delete'));

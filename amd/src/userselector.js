@@ -43,13 +43,14 @@ export function transport(selector, query, success, failure) {
 
     .then((results) => {
         // For each user in the result, render the display, and set it on the _label field.
-        return Promise.all(results.map((user) => {
-            return Templates.render('report_customsql/form-user-selector-suggestion', user)
-                .then((html) => {
-                    user._label = html;
-                    return user;
-                });
-        }));
+        return (async() => {
+            const users = await Promise.all(results.map(async(user) => {
+                const html = await Templates.render('report_customsql/form-user-selector-suggestion', user);
+                user._label = html;
+                return user;
+            }));
+            return users;
+        })();
     })
 
     .then(success)

@@ -34,6 +34,10 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_customsql_edit_form extends moodleform {
+
+    /**
+     * Define the form.
+     */
     public function definition() {
         global $CFG;
 
@@ -43,7 +47,7 @@ class report_customsql_edit_form extends moodleform {
         $categoryoptions = report_customsql_category_options();
         $mform->addElement('select', 'categoryid', get_string('category', 'report_customsql'),
                 $categoryoptions);
-        if ($customdata['forcecategoryid'] && array_key_exists($customdata['forcecategoryid'], $categoryoptions)) {
+        if (!empty($customdata['forcecategoryid']) && array_key_exists($customdata['forcecategoryid'], $categoryoptions)) {
             $catdefault = $customdata['forcecategoryid'];
         } else {
             $catdefault = isset($categoryoptions[1]) ? 1 : key($categoryoptions);
@@ -70,7 +74,7 @@ class report_customsql_edit_form extends moodleform {
         $mform->registerNoSubmitButton('verify');
 
         $hasparameters = 0;
-        if ($customdata['queryparams']) {
+        if (!empty($customdata['queryparams'])) {
             $mform->addElement('static', 'params', '', get_string('queryparams', 'report_customsql'));
             foreach ($customdata['queryparams'] as $queryparam => $formparam) {
                 $type = report_customsql_get_element_type($queryparam);
@@ -155,6 +159,11 @@ class report_customsql_edit_form extends moodleform {
         $this->add_action_buttons();
     }
 
+    /**
+     * Set the form data.
+     *
+     * @param stdClass $currentvalues
+     */
     public function set_data($currentvalues) {
         global $DB, $OUTPUT;
 
@@ -181,6 +190,13 @@ class report_customsql_edit_form extends moodleform {
         $mform->addElement('html', $reportinfo);
     }
 
+    /**
+     * Validate the form data.
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
     public function validation($data, $files) {
         global $CFG, $DB, $USER;
 
@@ -262,7 +278,7 @@ class report_customsql_edit_form extends moodleform {
 
         // Check querylimit is in range.
         $maxlimit = get_config('report_customsql', 'querylimitmaximum');
-        if (empty($data['querylimit']) || $data['querylimit'] > $maxlimit) {
+        if ($data['querylimit'] > $maxlimit) {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', $maxlimit);
         }
 
