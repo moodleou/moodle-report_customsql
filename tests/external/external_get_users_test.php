@@ -23,6 +23,7 @@ global $CFG;
 
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
+use core_external\external_api;
 
 /**
  * Tests for the get_users web service.
@@ -31,6 +32,9 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @category  external
  * @copyright 2020 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @runTestsInSeparateProcesses
+ *
  */
 class external_get_users_test extends \externallib_advanced_testcase {
 
@@ -52,7 +56,7 @@ class external_get_users_test extends \externallib_advanced_testcase {
 
         // Create some users.
         $DB->update_record('user', (object)
-                ['id' => $USER->id, 'firstname' => 'Admin', 'lastname' => 'User']);
+                ['id' => (int) $USER->id, 'firstname' => 'Admin', 'lastname' => 'User']);
         $admin = $DB->get_record('user', ['id' => $USER->id]);
         $manager = $generator->create_user(
                 ['firstname' => 'The', 'lastname' => 'Manager', 'email' => 'manager@example.com']);
@@ -68,10 +72,10 @@ class external_get_users_test extends \externallib_advanced_testcase {
 
     public function test_get_users_site_config() {
         [$admin] = $this->setup_users();
-        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
+        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/boost/core/1/u/f2';
 
         $result = get_users::execute('', 'moodle/site:config');
-        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
                 [
@@ -86,10 +90,11 @@ class external_get_users_test extends \externallib_advanced_testcase {
 
     public function test_get_users_site_viewreports() {
         [$admin, $manager] = $this->setup_users();
-        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
+        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/boost/core/1/u/f2';
 
         $result = get_users::execute('', 'moodle/site:viewreports');
-        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
+
 
         $this->assertEquals([
                 [
@@ -111,10 +116,10 @@ class external_get_users_test extends \externallib_advanced_testcase {
 
     public function test_get_users_customsql_view() {
         [$admin, $manager, $coursecreateor] = $this->setup_users();
-        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
+        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/boost/core/1/u/f2';
 
         $result = get_users::execute('', 'report/customsql:view');
-        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
                 [
@@ -143,10 +148,10 @@ class external_get_users_test extends \externallib_advanced_testcase {
 
     public function test_get_users_serch_without_admins() {
         [, $manager] = $this->setup_users();
-        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
+        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/boost/core/1/u/f2';
 
         $result = get_users::execute('Man', 'report/customsql:view');
-        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
                 [
@@ -161,10 +166,10 @@ class external_get_users_test extends \externallib_advanced_testcase {
 
     public function test_get_users_serch_with_admin() {
         [$admin] = $this->setup_users();
-        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/_s/boost/core/1/u/f2';
+        $defaultuserimage = 'https://www.example.com/moodle/theme/image.php/boost/core/1/u/f2';
 
         $result = get_users::execute('n U', 'report/customsql:view');
-        $result = \external_api::clean_returnvalue(get_users::execute_returns(), $result);
+        $result = external_api::clean_returnvalue(get_users::execute_returns(), $result);
 
         $this->assertEquals([
                 [
