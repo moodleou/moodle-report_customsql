@@ -54,7 +54,7 @@ class report_customsql_addcategory_form extends moodleform {
         }
 
         $mform->addElement('text', 'name', get_string('categoryname'), ['size' => '30']);
-        $mform->addRule('name', get_string('required'), 'required', null);
+        $mform->addRule('name', null, 'required', null);
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->setDefault('name', '');
         $mform->setType('name', PARAM_TEXT);
