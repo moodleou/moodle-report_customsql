@@ -145,6 +145,8 @@ $string['querylimitdefault'] = 'Default limit on rows returned';
 $string['querylimitdefault_desc'] = 'To avoid accidents where a query return a huge number of rows which might overload the server, each query has a limit to the number of rows it can return. This is the default value for that limit for new queries.';
 $string['querylimitmaximum'] = 'Maximum allowed limit on rows returned';
 $string['querylimitmaximum_desc'] = 'This is the absolute maximum limit on rows returned which a query author is allowed to set.';
+$string['limittestrows'] = 'Maximum allowed limit on rows on the ws Query validations';
+$string['limittestrows_desc'] = 'This is the limit on the Query validation WS(Up to 99).';
 $string['querylimitrange'] = 'Number must be between 1 and {$a}';
 $string['querynote'] = '<ul>
 <li>The token <code>%%WWWROOT%%</code> in the results will be replaced with <code>{$a}</code>.</li>
@@ -194,3 +196,6 @@ $string['weeklyheader'] = 'Weekly';
 $string['weeklyheader_help'] = 'These queries are automatically run on the first day of each week, to report on the previous week. These links let you view the results that has already been accumulated.';
 $string['whocanaccess'] = 'Who can access this query';
 $string['privacy:metadata'] = 'The Ad-hoc database queries plugin does not store any personal data.';
+$string['error:invalidqueryid'] = 'Invalid query id';
+$string['error:updatefail'] = 'Update failed';
+$string['error:cannotdeletequery'] = 'Error: cannot delete query';

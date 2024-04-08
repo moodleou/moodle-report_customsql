@@ -69,6 +69,12 @@ class index_page implements renderable, templatable {
         $this->hidecat = $hidecat;
     }
 
+    /**
+     * Export data for template.
+     *
+     * @param renderer_base $output
+     * @return array
+     */
     public function export_for_template(renderer_base $output) {
         $categoriesdata = [];
         $grouppedqueries = utils::group_queries_by_category($this->queries);

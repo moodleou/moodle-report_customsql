@@ -44,9 +44,11 @@
  * @return bool false if file not found, does not return if found - just send the file
  */
 function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    global $DB;
+    global $DB, $CFG, $USER;
 
     require_once(dirname(__FILE__) . '/locallib.php');
+    require_once($CFG->libdir . '/filelib.php');
+    require_once($CFG->libdir . '/dataformatlib.php');
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
@@ -113,7 +115,7 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
     // can stop downloads from working in some browsers.
     $filename = str_replace(',', '', $filename);
 
-    \core\dataformat::download_data($filename, $dataformat, $fields, $rows->getIterator(), function(array $row) use ($dataformat) {
+    download_as_dataformat($filename, $dataformat, $fields, $rows->getIterator(), function(array $row) use ($dataformat) {
         // HTML export content will need escaping.
         if (strcasecmp($dataformat, 'html') === 0) {
             $row = array_map(function($cell) {

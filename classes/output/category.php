@@ -79,6 +79,12 @@ class category implements renderable, templatable {
         $this->returnurl = $returnurl ?? $this->category->get_url();
     }
 
+    /**
+     * Export data for template.
+     *
+     * @param renderer_base $output
+     * @return array
+     */
     public function export_for_template(renderer_base $output) {
 
         $queriesdata = $this->category->get_queries_data();
