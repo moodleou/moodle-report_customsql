@@ -384,7 +384,7 @@ function report_customsql_get_reports_for($categoryid, $type) {
  * @param string $type, type of report (manual, daily, weekly or monthly)
  */
 function report_customsql_print_reports_for($reports, $type) {
-    global $OUTPUT;
+    global $OUTPUT, $USER;
 
     if (empty($reports)) {
         return;
@@ -401,6 +401,13 @@ function report_customsql_print_reports_for($reports, $type) {
     foreach ($reports as $report) {
         if (!empty($report->capability) && !has_capability($report->capability, $context)) {
             continue;
+        }
+
+        if (!empty($report->useraccess) && !has_capability('moodle/site:config', $context)) {
+            $userids = explode(',', $report->useraccess);
+            if (!in_array($USER->id, $userids)) {
+                continue;
+            }
         }
 
         echo html_writer::start_tag('p');

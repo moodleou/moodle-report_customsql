@@ -90,6 +90,7 @@ $string['errordeletingcategory'] = '<p>Error deleting a query category.</p><p>It
 $string['errordeletingreport'] = 'Error deleting a query.';
 $string['errorinsertingreport'] = 'Error inserting a query.';
 $string['errorupdatingreport'] = 'Error updating a query.';
+$string['invalidaccess'] = 'Sorry, but you do not currently have access to this report.';
 $string['invalidreportid'] = 'Invalid query id {$a}.';
 $string['lastexecuted'] = 'This query was last run on {$a->lastrun}. It took {$a->lastexecutiontime}s to run.';
 $string['messageprovider:notification'] = 'Ad-hoc database query notifications';
@@ -183,6 +184,8 @@ $string['timecreated'] = '<span class="font-weight-bold">Time created:</span> {$
 $string['timemodified'] = '<span class="font-weight-bold">Last modified:</span> {$a}';
 $string['typeofresult'] = 'Type of result';
 $string['unknowndownloadfile'] = 'Unknown download file.';
+$string['useraccess'] = 'Limit query to';
+$string['useraccess_help'] = 'Limits access to this query to the selected users and administrators (moodle/site:config)';
 $string['usermodified'] = '<span class="font-weight-bold">Modified by:</span> {$a}';
 $string['usernotfound'] = 'User with id \'{$a}\' does not exist';
 $string['userhasnothiscapability'] = 'User \'{$a->name}\' ({$a->userid}) has not got capability \'{$a->capability}\'. Please delete this user from the list or change the choice in \'{$a->whocanaccess}\'.';

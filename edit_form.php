@@ -92,31 +92,7 @@ class report_customsql_edit_form extends moodleform {
         end($capabilityoptions);
         $mform->setDefault('capability', key($capabilityoptions));
 
-        $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
-        $mform->setType('querylimit', PARAM_INT);
-        $mform->setDefault('querylimit', get_config('report_customsql', 'querylimitdefault'));
-        $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
-                        'numeric', null, 'client');
-
-        $runat = [];
-        if ($hasparameters) {
-            $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options('manual'));
-        } else {
-            $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options());
-        }
-        $runat[] = $mform->createElement('select', 'at', null, report_customsql_daily_at_options());
-        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'),
-                get_string('at', 'report_customsql'), false);
-
-        $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
-                           get_string('onerow', 'report_customsql'));
-
-        $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
-        $mform->setType('customdir', PARAM_PATH);
-        $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
-        $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
-
-        $options = [
+        $useroptions = [
             'ajax' => 'report_customsql/userselector', // Bit of a hack, but the service seems to do what we want.
             'multiple' => true,
             'valuehtmlcallback' => function($userid) {
@@ -141,7 +117,36 @@ class report_customsql_edit_form extends moodleform {
                         );
             },
         ];
-        $mform->addElement('autocomplete', 'emailto', get_string('emailto', 'report_customsql'), [], $options);
+        $mform->addElement('autocomplete', 'useraccess', get_string('useraccess', 'report_customsql'), [], $useroptions);
+        $mform->setType('useraccess', PARAM_RAW);
+        $mform->addHelpButton('useraccess', 'useraccess', 'report_customsql');
+        $mform->hideIf('useraccess', 'capability', 'eq', 'moodle/site:config');
+
+        $mform->addElement('text', 'querylimit', get_string('querylimit', 'report_customsql'));
+        $mform->setType('querylimit', PARAM_INT);
+        $mform->setDefault('querylimit', get_config('report_customsql', 'querylimitdefault'));
+        $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
+                        'numeric', null, 'client');
+
+        $runat = [];
+        if ($hasparameters) {
+            $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options('manual'));
+        } else {
+            $runat[] = $mform->createElement('select', 'runable', null,  report_customsql_runable_options());
+        }
+        $runat[] = $mform->createElement('select', 'at', null, report_customsql_daily_at_options());
+        $mform->addGroup($runat, 'runablegroup', get_string('runable', 'report_customsql'),
+                get_string('at', 'report_customsql'), false);
+
+        $mform->addElement('checkbox', 'singlerow', get_string('typeofresult', 'report_customsql'),
+                           get_string('onerow', 'report_customsql'));
+
+        $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
+        $mform->setType('customdir', PARAM_PATH);
+        $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
+        $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
+
+        $mform->addElement('autocomplete', 'emailto', get_string('emailto', 'report_customsql'), [], $useroptions);
         $mform->setType('emailto', PARAM_RAW);
 
         $mform->addElement('select', 'emailwhat', get_string('emailwhat', 'report_customsql'),
@@ -158,6 +163,7 @@ class report_customsql_edit_form extends moodleform {
     public function set_data($currentvalues) {
         global $DB, $OUTPUT;
 
+        $currentvalues->useraccess = explode(',', $currentvalues->useraccess ?? '');
         $currentvalues->emailto = explode(',', $currentvalues->emailto ?? '');
         parent::set_data($currentvalues);
 
@@ -229,6 +235,12 @@ class report_customsql_edit_form extends moodleform {
                 try {
                     $rs = report_customsql_execute_query($sql, $paramvalues, 2);
 
+                    // Check the list of users to limit access.
+                    if ($data['capability'] !== 'moodle/site:config') {
+                        if ($invaliduser = report_customsql_validate_users($data['useraccess'], $data['capability'])) {
+                            $errors['useraccess'] = $invaliduser;
+                        }
+                    }
                     if (!empty($data['singlerow'])) {
                         // Count rows for Moodle 2 as all Moodle 1.9 useful and more performant
                         // recordset methods removed.

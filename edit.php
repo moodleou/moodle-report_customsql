@@ -95,7 +95,13 @@ if ($newreport = $mform->get_data()) {
     $newreport->description = $newreport->description['text'];
 
     // Currently, autocomplete can return an empty value in the array. If we get one, strip it out.
+    $newreport->useraccess = trim(implode(',', $newreport->useraccess), ',');
     $newreport->emailto = trim(implode(',', $newreport->emailto), ',');
+
+    // Set the useraccess field to empty if the report capability is moodle/site:config.
+    if ($newreport->capability === 'moodle/site:config') {
+        $newreport->useraccess = '';
+    }
 
     // Set the following fields to empty strings if the report is running manually.
     if ($newreport->runable === 'manual') {

@@ -88,9 +88,6 @@ class category implements renderable, templatable {
             $queries = [];
             foreach ($querygroup['queries'] as $querydata) {
                 $query = new report_query($querydata);
-                if (!$query->can_view($this->context)) {
-                    continue;
-                }
                 $querywidget = new category_query($query, $this->category, $this->context, $this->returnurl);
                 $queries[] = ['categoryqueryitem' => $output->render($querywidget)];
             }

@@ -44,7 +44,7 @@
  * @return bool false if file not found, does not return if found - just send the file
  */
 function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    global $DB;
+    global $DB, $USER;
 
     require_once(dirname(__FILE__) . '/locallib.php');
 
@@ -69,6 +69,13 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
     $context = context_system::instance();
     if (!empty($report->capability)) {
         require_capability($report->capability, $context);
+    }
+
+    if (!empty($report->useraccess) && !has_capability('moodle/site:config', $context)) {
+        $userids = explode(',', $report->useraccess);
+        if (!in_array($USER->id, $userids)) {
+            throw new moodle_exception('invalidaccess', 'report_customsql');
+        }
     }
 
     $queryparams = report_customsql_get_query_placeholders_and_field_names($report->querysql);

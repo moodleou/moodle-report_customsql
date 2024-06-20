@@ -140,6 +140,7 @@ class provider implements
                     $data['queryparams'] = $record->queryparams;
                     $data['querylimit'] = $record->querylimit;
                     $data['capability'] = $record->capability;
+                    $data['useraccess'] = $record->useraccess;
                     $data['lastrun'] = userdate($record->lastrun);
                     $data['lastexecutiontime'] = $record->lastexecutiontime;
                     $data['runable'] = $record->runable;

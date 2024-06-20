@@ -71,6 +71,7 @@ class index_page implements renderable, templatable {
 
     public function export_for_template(renderer_base $output) {
         $categoriesdata = [];
+        $this->queries = utils::filter_queries_by_visibility($this->queries, $this->context);
         $grouppedqueries = utils::group_queries_by_category($this->queries);
         foreach ($this->categories as $record) {
             $category = new report_category($record);
