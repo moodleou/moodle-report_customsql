@@ -237,7 +237,7 @@ Feature: Ad-hoc database queries report
     And I set the following fields to these values:
       | Query name  | Test query                                                                                   |
       | Description | Query that tries to return 2 rows.                                                           |
-      | Query SQL   | SELECT * FROM {config_plugins} WHERE name = 'version' AND plugin IN ('mod_quiz', 'mod_wiki') |
+      | Query SQL   | SELECT * FROM {config_plugins} WHERE name = 'version' AND plugin IN ('mod_quiz', 'mod_page') |
     And I press "Save changes"
     Then I should see "Test query"
     And I should see "This query reached the limit of 1 rows. Some rows may have been omitted from the end."
