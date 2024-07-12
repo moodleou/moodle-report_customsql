@@ -59,6 +59,13 @@ if (!empty($report->capability)) {
     require_capability($report->capability, $context);
 }
 
+if (!empty($report->useraccess) && !has_capability('moodle/site:config', $context)) {
+    $userids = explode(',', $report->useraccess);
+    if (!in_array($USER->id, $userids)) {
+        throw new moodle_exception('invalidaccess', 'report_customsql');
+    }
+}
+
 report_customsql_log_view($id);
 
 // We don't want slow reports blocking the session in other tabs.

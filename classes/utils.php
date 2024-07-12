@@ -16,6 +16,8 @@
 
 namespace report_customsql;
 
+use report_customsql\local\query as report_query;
+
 /**
  * Static utility methods to support the report_customsql module.
  *
@@ -72,6 +74,20 @@ class utils {
     public static function get_number_of_report_by_type(array $queries, string $type) {
         return array_filter($queries, function($query) use ($type) {
             return $query->runable == $type;
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+
+    /**
+     * Filters out queries that are not visible.
+     *
+     * @param array $queries Array of queries.
+     * @param \context $context The context to check.
+     * @return array All queries the user can view.
+     */
+    public static function filter_queries_by_visibility(array $queries, \context $context) {
+        return array_filter($queries, function($querydata) use ($context) {
+            $query = new report_query($querydata);
+            return $query->can_view($context);
         }, ARRAY_FILTER_USE_BOTH);
     }
 

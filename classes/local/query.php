@@ -128,9 +128,22 @@ class query {
      * Check the capability to view the query.
      *
      * @param \context $context The context to check.
-     * @return bool Has capability to view or not?
+     * @return bool Has capability and access to view or not?
      */
-    public function can_view(\context $context):bool {
-        return empty($report->capability) || has_capability($report->capability, $context);
+    public function can_view(\context $context): bool {
+        global $USER;
+
+        $report = $this->record;
+
+        $hascapability = empty($report->capability) || has_capability($report->capability, $context);
+
+        if (!empty($report->useraccess) && !has_capability('moodle/site:config', $context)) {
+            $userids = explode(',', $report->useraccess);
+            $hasaccess = in_array($USER->id, $userids);
+        } else {
+            $hasaccess = true;
+        }
+
+        return $hascapability && $hasaccess;
     }
 }

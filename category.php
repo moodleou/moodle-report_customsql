@@ -37,6 +37,7 @@ $categoryid = required_param('id', PARAM_INT);
 $record = $DB->get_record('report_customsql_categories', ['id' => $categoryid], '*', MUST_EXIST);
 $queries = $DB->get_records('report_customsql_queries', ['categoryid' => $categoryid], 'displayname, id');
 
+$queries = \report_customsql\utils::filter_queries_by_visibility($queries, $context);
 $category = new \report_customsql\local\category($record);
 $category->load_queries_data($queries);
 $widget = new \report_customsql\output\category($category, $context);

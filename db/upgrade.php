@@ -269,5 +269,19 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021111600, 'report', 'customsql');
     }
 
+    if ($oldversion < 2024061900) {
+        // Define field useraccess to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('useraccess', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'capability');
+
+        // Conditionally launch add field usermodified.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2024061900, 'report', 'customsql');
+    }
+
     return true;
 }
