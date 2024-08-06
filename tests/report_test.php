@@ -336,28 +336,28 @@ class report_test extends \advanced_testcase {
         $row = new \stdClass();
         $row->website = 'B747-19B';
         $row->website_link_url = '%%WWWROOT%%/course/view.php%%Q%%id=123';
-        $row->subpage = 'Self-referential nightmare';
-        $row->subpage_link_url = '%%WWWROOT%%/mod/subpage/view.php%%Q%%id=4567';
+        $row->frog = 'Self-referential nightmare';
+        $row->frog_link_url = '%%WWWROOT%%/mod/frog/view.php%%Q%%id=4567';
 
         $query = "
                 SELECT c.shortname AS Website,
                        '%%WWWROOT%%/course/view.php%%Q%%id=' || c.id AS Website_link_url,
-                       s.name AS Subpage,
-                       '%%WWWROOT%%/mod/subpage/view.php%%Q%%id=' || cm.id AS Subpage_link_url
+                       s.name AS Frog,
+                       '%%WWWROOT%%/mod/frog/view.php%%Q%%id=' || cm.id AS Frog_link_url
 
-                  FROM {subpage_sections} ss
-                  JOIN {subpage} s ON s.id = ss.subpageid
+                  FROM {frog_sections} ss
+                  JOIN {frog} s ON s.id = ss.subpageid
                   JOIN {course_sections} cs ON cs.id = ss.sectionid
                   JOIN {course_modules} cm ON cm.instance = s.id
                   JOIN {modules} mod ON mod.id = cm.module
                   JOIN {course} c ON c.id = cm.course
 
-                 WHERE mod.name = 'subpage'
+                 WHERE mod.name = 'frog'
                    AND ',' || cs.sequence || ',' LIKE '%,' || cm.id || ',%'
 
-              ORDER BY website, subpage";
+              ORDER BY website, frog";
 
-        $this->assertEquals(['Website', 'Website link url', 'Subpage', 'Subpage link url'],
+        $this->assertEquals(['Website', 'Website link url', 'Frog', 'Frog link url'],
                 report_customsql_pretify_column_names($row, $query));
 
     }
