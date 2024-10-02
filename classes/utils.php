@@ -58,14 +58,8 @@ class utils {
         return $grouppedqueries;
     }
 
-    /**
-     * Get queries data.
-     *
-     * @param array $queries Array of queries.
-     * @return bool
-     */
     public function get_queries_data($queries) {
-        return false;
+
     }
 
     /**

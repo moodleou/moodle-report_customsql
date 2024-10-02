@@ -34,10 +34,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_customsql_edit_form extends moodleform {
-
-    /**
-     * Define the form.
-     */
     public function definition() {
         global $CFG;
 
@@ -159,11 +155,6 @@ class report_customsql_edit_form extends moodleform {
         $this->add_action_buttons();
     }
 
-    /**
-     * Set the form data.
-     *
-     * @param stdClass $currentvalues
-     */
     public function set_data($currentvalues) {
         global $DB, $OUTPUT;
 
@@ -190,13 +181,6 @@ class report_customsql_edit_form extends moodleform {
         $mform->addElement('html', $reportinfo);
     }
 
-    /**
-     * Validate the form data.
-     *
-     * @param array $data
-     * @param array $files
-     * @return array
-     */
     public function validation($data, $files) {
         global $CFG, $DB, $USER;
 
