@@ -35,9 +35,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  */
 class report_customsql_edit_form extends moodleform {
 
-    /**
-     * Define the form.
-     */
     public function definition() {
         global $CFG;
 

@@ -33,38 +33,20 @@ namespace report_customsql\event;
  */
 class query_deleted extends \core\event\base {
 
-    /**
-     * Event constructor.
-     */
     protected function init() {
         $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'report_customsql_queries';
     }
 
-    /**
-     * Returns localised general event name.
-     *
-     * @return string
-     */
     public static function get_name() {
         return get_string('query_deleted', 'report_customsql');
     }
 
-    /**
-     * Returns description of the query deleted event.
-     *
-     * @return string
-     */
     public function get_description() {
         return "User {$this->userid} has deleted the SQL query with id {$this->objectid}.";
     }
 
-    /**
-     * Returns relevant URL.
-     *
-     * @return \moodle_url
-     */
     public function get_url() {
         return new \moodle_url('/report/customsql/index.php');
     }
