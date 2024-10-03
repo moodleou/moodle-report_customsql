@@ -27,7 +27,7 @@ use core_privacy\local\request;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers \report_customsql\privacy\provider
  */
-class privacy_test extends \core_privacy\tests\provider_testcase {
+final class privacy_test extends \core_privacy\tests\provider_testcase {
 
     /** @var \stdClass test user. */
     protected $user1;
@@ -37,6 +37,7 @@ class privacy_test extends \core_privacy\tests\provider_testcase {
     protected $user3;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
         $this->setAdminUser();
 

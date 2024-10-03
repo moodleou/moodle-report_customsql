@@ -207,7 +207,7 @@ if (is_null($csvtimestamp)) {
 
         if ($rowlimitexceeded) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
-                    $report->querylimit ?? get_config('report_customsql', 'querylimitdefault')),
+            !empty($report->querylimit) ? $report->querylimit : get_config('report_customsql', 'querylimitdefault')),
                     ['class' => 'admin_note']);
         } else {
             echo html_writer::tag('p', get_string('recordcount', 'report_customsql', $count),

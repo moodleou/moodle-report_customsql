@@ -27,6 +27,7 @@
  * @copyright 2013 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once($CFG->libdir . '/adminlib.php');
