@@ -30,6 +30,8 @@ require_once(dirname(__FILE__) . '/view_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
 $id = required_param('id', PARAM_INT);
+$currentpage = optional_param('page', 0, PARAM_INT);
+
 $urlparams = ['id' => $id];
 $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
 if (!$report) {
@@ -185,13 +187,24 @@ if (is_null($csvtimestamp)) {
         list($table->head, $linkcolumns) = report_customsql_get_table_headers(
                 report_customsql_read_csv_row($handle));
 
+        // Set up pagination.
+        $perpage = (int) $report->perpage;
+        if ($perpage === REPORT_CUSTOMSQL_PER_PAGE_DEFAULT) {
+            $perpage = (int) get_config('report_customsql', 'defaultperpage');
+        }
+        $nopagination = $perpage === REPORT_CUSTOMSQL_PER_PAGE_NONE;
+        $start = $currentpage * $perpage;
+        $stop = $start + $perpage;
+
         $rowlimitexceeded = false;
         while ($row = report_customsql_read_csv_row($handle)) {
             $data = report_customsql_display_row($row, $linkcolumns);
             if (isset($data[0]) && $data[0] === REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER) {
                 $rowlimitexceeded = true;
             } else {
-                $table->data[] = $data;
+                if ($nopagination || ($count >= $start && $count < $stop)) {
+                    $table->data[] = $data;
+                }
                 $count += 1;
             }
         }
@@ -203,7 +216,17 @@ if (is_null($csvtimestamp)) {
         }
 
         fclose($handle);
+        $baseurl = report_customsql_url('view.php', $urlparams);
+
+        $pagebar = new paging_bar($count, $currentpage, $perpage, $baseurl);
+
+        if (!$nopagination) {
+            echo $OUTPUT->render($pagebar);
+        }
         echo html_writer::table($table);
+        if (!$nopagination) {
+            echo $OUTPUT->render($pagebar);
+        }
 
         if ($rowlimitexceeded) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',

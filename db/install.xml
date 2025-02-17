@@ -13,6 +13,7 @@
         <FIELD NAME="querysql" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The SQL to run to generate this report."/>
         <FIELD NAME="queryparams" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The SQL parameters to generate this report."/>
         <FIELD NAME="querylimit" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="5000" SEQUENCE="false" COMMENT="Limit the number of results returned."/>
+        <FIELD NAME="perpage" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="-1" SEQUENCE="false" COMMENT="Number of results displayed per page (0 = no pagination)."/>
         <FIELD NAME="capability" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The capability that a user needs to have to run this report."/>
         <FIELD NAME="lastrun" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when this report was last run."/>
         <FIELD NAME="lastexecutiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this report took to run last time it was executed, in milliseconds."/>

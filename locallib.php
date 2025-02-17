@@ -28,6 +28,16 @@ global $CFG;
 require_once($CFG->libdir . '/validateurlsyntax.php');
 
 define('REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER', '-- ROW LIMIT EXCEEDED --');
+/** Use settings default */
+const REPORT_CUSTOMSQL_PER_PAGE_DEFAULT = -1;
+/** No pagination */
+const REPORT_CUSTOMSQL_PER_PAGE_NONE = 0;
+/** 100 items per page */
+const REPORT_CUSTOMSQL_PER_PAGE_100 = 100;
+/** 500 items per page */
+const REPORT_CUSTOMSQL_PER_PAGE_500 = 500;
+/** 1000 items per page */
+const REPORT_CUSTOMSQL_PER_PAGE_1000 = 1000;
 
 function report_customsql_execute_query($sql, $params = null, $limitnum = null) {
     global $CFG, $DB;
@@ -298,6 +308,24 @@ function report_customsql_downloadurl($reportid, $params = []) {
     $downloadurl->params($params);
 
     return $downloadurl;
+}
+
+/**
+ * Return the options for selecting the umber of rows to display per page.
+ *
+ * @param bool $adddefault Add an option to select the default.
+ * @return array
+ */
+function report_customsql_items_per_page_options(bool $adddefault = false): array {
+    $options = [];
+    if ($adddefault) {
+        $options[REPORT_CUSTOMSQL_PER_PAGE_DEFAULT] = get_string('settingsdefault', 'report_customsql');
+    }
+    $options[REPORT_CUSTOMSQL_PER_PAGE_NONE] = get_string('nopagination', 'report_customsql');
+    $options[REPORT_CUSTOMSQL_PER_PAGE_100] = get_string('itemsperpage', 'report_customsql', 100);
+    $options[REPORT_CUSTOMSQL_PER_PAGE_500] = get_string('itemsperpage', 'report_customsql', 500);
+    $options[REPORT_CUSTOMSQL_PER_PAGE_1000] = get_string('itemsperpage', 'report_customsql', 1000);
+    return $options;
 }
 
 function report_customsql_capability_options() {

@@ -269,5 +269,19 @@ function xmldb_report_customsql_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021111600, 'report', 'customsql');
     }
 
+    if ($oldversion < 2025021400) {
+        // Define field perpage to be added to report_customsql_queries.
+        $table = new xmldb_table('report_customsql_queries');
+        $field = new xmldb_field('perpage', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '-1', 'querylimit');
+
+        // Conditionally launch add field perpage.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Customsql savepoint reached.
+        upgrade_plugin_savepoint(true, 2025021400, 'report', 'customsql');
+    }
+
     return true;
 }

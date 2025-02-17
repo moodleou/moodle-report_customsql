@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once (__DIR__ . '/locallib.php');
+
 if ($ADMIN->fulltree) {
     // Start of week, used for the day to run weekly reports.
     $days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -38,6 +40,15 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect('report_customsql/startwday',
             get_string('startofweek', 'report_customsql'),
             get_string('startofweek_desc', 'report_customsql'), -1, $options));
+
+    // Default items per page.
+    $settings->add(new admin_setting_configselect(
+        'report_customsql/defaultperpage',
+        get_string('defaultperpage', 'report_customsql'),
+        get_string('defaultperpage_desc', 'report_customsql'),
+        REPORT_CUSTOMSQL_PER_PAGE_NONE,
+        report_customsql_items_per_page_options()
+    ));
 
     $settings->add(new admin_setting_configtext_with_maxlength('report_customsql/querylimitdefault',
             get_string('querylimitdefault', 'report_customsql'),
