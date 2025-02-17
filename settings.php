@@ -43,9 +43,9 @@ if ($ADMIN->fulltree) {
 
     // Default items per page.
     $settings->add(new admin_setting_configselect(
-        'report_customsql/defaultperpage',
-        get_string('defaultperpage', 'report_customsql'),
-        get_string('defaultperpage_desc', 'report_customsql'),
+        'report_customsql/perpagedefault',
+        get_string('perpagedefault', 'report_customsql'),
+        get_string('perpagedefault_desc', 'report_customsql'),
         REPORT_CUSTOMSQL_PER_PAGE_NONE,
         report_customsql_items_per_page_options()
     ));

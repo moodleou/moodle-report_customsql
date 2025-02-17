@@ -98,8 +98,7 @@ class report_customsql_edit_form extends moodleform {
         $mform->addRule('querylimit', get_string('requireint', 'report_customsql'),
                         'numeric', null, 'client');
 
-        $mform->addElement('select', 'perpage', get_string('perpage', 'report_customsql'), report_customsql_items_per_page_options(true));
-        $mform->addHelpButton('perpage', 'perpage', 'report_customsql');
+        $mform->addElement('select', 'perpage', get_string('perpage'), report_customsql_items_per_page_options(true));
 
         $runat = [];
         if ($hasparameters) {

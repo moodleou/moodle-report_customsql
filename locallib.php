@@ -322,9 +322,9 @@ function report_customsql_items_per_page_options(bool $adddefault = false): arra
         $options[REPORT_CUSTOMSQL_PER_PAGE_DEFAULT] = get_string('settingsdefault', 'report_customsql');
     }
     $options[REPORT_CUSTOMSQL_PER_PAGE_NONE] = get_string('nopagination', 'report_customsql');
-    $options[REPORT_CUSTOMSQL_PER_PAGE_100] = get_string('itemsperpage', 'report_customsql', 100);
-    $options[REPORT_CUSTOMSQL_PER_PAGE_500] = get_string('itemsperpage', 'report_customsql', 500);
-    $options[REPORT_CUSTOMSQL_PER_PAGE_1000] = get_string('itemsperpage', 'report_customsql', 1000);
+    $options[REPORT_CUSTOMSQL_PER_PAGE_100] = get_string('showperpage', '', 100);
+    $options[REPORT_CUSTOMSQL_PER_PAGE_500] = get_string('showperpage', '', 500);
+    $options[REPORT_CUSTOMSQL_PER_PAGE_1000] = get_string('showperpage', '', 1000);
     return $options;
 }
 

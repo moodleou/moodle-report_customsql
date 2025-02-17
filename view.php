@@ -190,7 +190,7 @@ if (is_null($csvtimestamp)) {
         // Set up pagination.
         $perpage = (int) $report->perpage;
         if ($perpage === REPORT_CUSTOMSQL_PER_PAGE_DEFAULT) {
-            $perpage = (int) get_config('report_customsql', 'defaultperpage');
+            $perpage = (int) get_config('report_customsql', 'perpagedefault');
         }
         $nopagination = $perpage === REPORT_CUSTOMSQL_PER_PAGE_NONE;
         $start = $currentpage * $perpage;
