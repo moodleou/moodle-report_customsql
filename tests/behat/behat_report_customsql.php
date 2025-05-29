@@ -72,7 +72,8 @@ class behat_report_customsql extends behat_base {
      * @param TableNode $data Supplied data
      */
     public function the_following_custom_sql_report_exists(TableNode $data) {
-        global $DB;
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/report/customsql/locallib.php');
 
         $report = $data->getRowsHash();
 
@@ -112,14 +113,17 @@ class behat_report_customsql extends behat_base {
         }
 
         // Capability.
-        if (isset($report['capability']) &&
-                !in_array($report['capability'], report_customsql_capability_options())) {
-            throw new Exception('Capability ' . $report['capability'] . ' is not a valid choice.');
+        if (isset($report['capability'])) {
+            // If a capability was passed in, check it is valid.
+            if (!isset(report_customsql_capability_options()[$report['capability']])) {
+                throw new Exception('Capability ' . $report['capability'] . ' is not a valid choice.');
+            }
         } else {
+            // Otherwise use a default.
             $report['capability'] = 'moodle/site:config';
         }
 
-        // Capability.
+        // Runnable.
         if (isset($report['runable']) &&
                 !in_array($report['runable'], report_customsql_runable_options())) {
             throw new Exception('Invalid runable value ' . $report['capability'] . '.');

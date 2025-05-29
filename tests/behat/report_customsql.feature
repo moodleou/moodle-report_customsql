@@ -139,6 +139,43 @@ Feature: Ad-hoc database queries report
     Then I should not see "Special reports"
     And "Delete category 'Miscellaneous'" "link" should not exist
 
+  Scenario: Non-admins can only see some queries
+    Given the following custom sql report exists:
+      | name        | Report for admin and manager                  |
+      | querysql    | SELECT * FROM {config} WHERE name = 'version' |
+      | capability  | report/customsql:view                         |
+    And the following custom sql report exists:
+      | name        | Report for admin only                         |
+      | querysql    | SELECT * FROM {config} WHERE name = 'version' |
+      | capability  | moodle/site:config                            |
+    And the following "role capability" exists:
+      | role                  | manager |
+      | report/customsql:view | allow   |
+      | moodle/site:config    | inherit |
+    And the following "users" exist:
+      | username |
+      | manager  |
+    And the following "role assigns" exist:
+      | user    | role    | contextlevel | reference |
+      | manager | manager | System       |           |
+
+    # Check manager can only see one of the queries.
+    When I am on the "report_customsql > report index" page logged in as manager
+    Then I should see "Report for admin and manager"
+    And I should not see "Report for admin only"
+    And I follow "Show only Miscellaneous"
+    And I should see "Report for admin and manager"
+    And I should not see "Report for admin only"
+    And I log out
+
+    # Check admin can see both.
+    And I am on the "report_customsql > report index" page logged in as admin
+    And I should see "Report for admin and manager"
+    And I should see "Report for admin only"
+    And I follow "Show only Miscellaneous"
+    And I should see "Report for admin and manager"
+    And I should see "Report for admin only"
+
   Scenario: A query that uses the various auto-formatting options
     Given the custom sql report "Formatting test" exists with SQL:
       """

@@ -52,6 +52,8 @@ class category_test extends \advanced_testcase {
      */
     public function test_load_queries_data(): void {
         $this->resetAfterTest();
+        $this->setAdminUser();
+
         $fakerecord = (object) [
             'id' => 1,
             'name' => 'Category 1',
