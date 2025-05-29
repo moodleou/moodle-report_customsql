@@ -52,9 +52,9 @@ class index_page implements renderable, templatable {
 
     /** Build the index page renderable object.
      *
-     * @param array $categories Categories for renderer.
-     * @param array $queries Queries for renderer.
-     * @param context $context Context to check the capability.
+     * @param \stdClass[] $categories Categories for renderer.
+     * @param \stdClass[] $queries Queries for renderer.
+     * @param context $context Context to check the capability (will be system context).
      * @param moodle_url $returnurl Return url for edit/delete link.
      * @param int $showcat Showing Category Id.
      * @param int $hidecat Hiding Category Id.
