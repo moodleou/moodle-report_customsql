@@ -55,9 +55,7 @@ if ($embed) {
 $output = $PAGE->get_renderer('report_customsql');
 
 $context = context_system::instance();
-if (!empty($report->capability)) {
-    require_capability($report->capability, $context);
-}
+require_capability($report->capability ?? 'moodle/site:config', $context);
 
 report_customsql_log_view($id);
 
