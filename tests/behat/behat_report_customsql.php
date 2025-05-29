@@ -40,6 +40,25 @@ use Behat\Mink\Exception\ExpectationException;
 class behat_report_customsql extends behat_base {
 
     /**
+     * Convert page names to URLs for steps like 'When I am on the "[page name]" page'.
+     *
+     * Recognised page names are:
+     * | report index | the list of all reports. |
+     *
+     * @param string $page name of the page, with the component name removed e.g. 'Admin notification'.
+     * @return moodle_url the corresponding URL.
+     * @throws Exception with a meaningful error message if the specified page cannot be found.
+     */
+    protected function resolve_page_url(string $page): moodle_url {
+        switch (strtolower($page)) {
+            case 'report index':
+                return new moodle_url('/report/customsql/index.php');
+            default:
+                throw new Exception('Unrecognised quiz page type "' . $page . '."');
+        }
+    }
+
+    /**
      * Create a new report in the database.
      *
      * For example

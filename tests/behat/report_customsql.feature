@@ -5,9 +5,8 @@ Feature: Ad-hoc database queries report
   I need to be able to run arbitrary queries against the database
 
   Scenario: Create an Ad-hoc database query
-    When I log in as "admin"
-    And the Ad-hoc database queries thinks the time is "2021-05-10 18:00:00"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    Given the Ad-hoc database queries thinks the time is "2021-05-10 18:00:00"
+    When I am on the "report_customsql > report index" page logged in as admin
     And I press "Add a new query"
     And I set the following fields to these values:
       | Query name  | Test query                                    |
@@ -36,9 +35,8 @@ Feature: Ad-hoc database queries report
       | timecreated  | ## 2021-05-10 18:00:00 ##                     |
       | timemodified | ## 2021-05-10 18:00:00 ##                     |
       | usermodified | mamager1                                      |
-    When I log in as "admin"
     And the Ad-hoc database queries thinks the time is "2021-05-10 19:00:00"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I follow "Edit query 'Test query'"
     And the following fields match these values:
       | Query name  | Test query                                    |
@@ -62,8 +60,7 @@ Feature: Ad-hoc database queries report
       | name        | Test query                                    |
       | description | Display the Moodle internal version number.   |
       | querysql    | SELECT * FROM {config} WHERE name = 'version' |
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I follow "Delete query 'Test query'"
     And I press "Yes"
     Then I should not see "Test query"
@@ -84,8 +81,7 @@ Feature: Ad-hoc database queries report
     Then downloading custom sql report "Test query" returns a file with headers "id,name,value"
 
   Scenario: Create an Ad-hoc database queries category
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I press "Manage report categories"
     And I press "Add a new category"
     And I set the field "Category name" to "Category 1"
@@ -95,8 +91,7 @@ Feature: Ad-hoc database queries report
   @javascript
   Scenario: Create an Ad-hoc database query in a custom category
     Given the custom sql report category "Special reports" exists:
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I follow "Special reports"
     And I should see "No queries available"
     And I press "Add a new query"
@@ -105,7 +100,7 @@ Feature: Ad-hoc database queries report
       | Query name | Test query                                    |
       | Query SQL  | SELECT * FROM {config} WHERE name = 'version' |
     And I press "Save changes"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    And I am on the "report_customsql > report index" page
     And I follow "Special reports"
     # Also test expand/collapse while we are here.
     Then I should see "Test query"
@@ -120,8 +115,7 @@ Feature: Ad-hoc database queries report
   Scenario: View a category and add an ad-hoc database query inside a category
     Given the custom sql report category "Category 1" exists:
     And the custom sql report category "Category 2" exists:
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I follow "Show only Category 2"
     Then I should see "Category 2"
     And I should see "No queries available"
@@ -138,8 +132,7 @@ Feature: Ad-hoc database queries report
 
   Scenario: Delete an empty Ad-hoc database queries category
     Given the custom sql report category "Special reports" exists:
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I press "Manage report categories"
     And I follow "Delete category 'Special reports'"
     And I press "Yes"
@@ -178,8 +171,7 @@ Feature: Ad-hoc database queries report
     And I should see "This report has 1 rows."
 
   Scenario: Create and run an Ad-hoc database query that has parameters
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I press "Add a new query"
     And I set the following fields to these values:
       | Query name | Find user                                       |
@@ -231,8 +223,7 @@ Feature: Ad-hoc database queries report
   Scenario: Test reporting when a query exceeds the limit
     Given the following config values are set as admin:
       | querylimitdefault | 1 | report_customsql |
-    When I log in as "admin"
-    And I navigate to "Reports > Ad-hoc database queries" in site administration
+    When I am on the "report_customsql > report index" page logged in as admin
     And I press "Add a new query"
     And I set the following fields to these values:
       | Query name  | Test query                                                                                   |
