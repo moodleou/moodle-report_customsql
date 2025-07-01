@@ -84,4 +84,5 @@ Optional url parameters:
 timestamp - the timestamp of a previously run scheduled report
 
 any arbitrary number of custom parameter=value pair as defined in the report. E.g.
-http://<domainname>/webservice/pluginfile.php/1/report_customsql/download/<reportid>?token=<wstoken>&dataformat=csv&username=admin&foo=bar
+http://<domainname>/webservice/pluginfile.php/1/report_customsql/download/<reportid>?...
+        ...token=<wstoken>&dataformat=csv&username=admin&foo=bar

@@ -99,7 +99,7 @@ class category implements renderable, templatable {
                 'type' => $querygroup['type'],
                 'title' => get_string($querygroup['type'] . 'header', 'report_customsql'),
                 'helpicon' => $output->help_icon($querygroup['type'] . 'header', 'report_customsql'),
-                'queries' => $queries
+                'queries' => $queries,
             ];
         }
 
@@ -121,7 +121,7 @@ class category implements renderable, templatable {
             'linkref' => $this->get_link_reference(),
             'statistic' => $this->category->get_statistic(),
             'querygroups' => $querygroups,
-            'addquerybutton' => $addquerybutton
+            'addquerybutton' => $addquerybutton,
         ];
     }
 

@@ -38,6 +38,7 @@ class category_query implements renderable, templatable {
     /** @var query Category object. */
     private $category;
 
+    /** @var context Context to check the capability. */
     private $context;
 
     /** @var moodle_url Return url. */
@@ -45,6 +46,7 @@ class category_query implements renderable, templatable {
 
     /**
      * Create the category renderable object.
+     *
      * @param query $query Query object.
      * @param category $category
      * @param context $context Context to check the capability.
@@ -69,13 +71,13 @@ class category_query implements renderable, templatable {
             'timenote' => $this->query->get_time_note(),
             'editbutton' => [
                 'url' => $this->query->get_edit_url($this->returnurl)->out(false),
-                'img' => $imgedit
+                'img' => $imgedit,
             ],
             'deletebutton' => [
                 'url' => $this->query->get_delete_url($this->returnurl)->out(false),
-                'img' => $imgdelete
+                'img' => $imgdelete,
             ],
-            'capability' => $this->query->get_capability_string()
+            'capability' => $this->query->get_capability_string(),
         ];
     }
 }
