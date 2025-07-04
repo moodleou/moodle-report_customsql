@@ -150,6 +150,7 @@ class report_customsql_edit_form extends moodleform {
         $mform->disabledIf('singlerow', 'runable', 'eq', 'manual');
         $mform->disabledIf('at', 'runable', 'ne', 'daily');
         $mform->disabledIf('emailto', 'runable', 'eq', 'manual');
+        $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
         $mform->disabledIf('emailwhat', 'runable', 'eq', 'manual');
 
         $this->add_action_buttons();
@@ -298,6 +299,16 @@ class report_customsql_edit_form extends moodleform {
                         }
                     }
                 }
+            }
+        }
+
+        // Check that the custom directory is writable and a directory, if provided.
+        if (isset($data['customdir']) && !empty($data['customdir'])) {
+            if (!is_dir($data['customdir'])) {
+                $errors['customdir'] = get_string('notadirectory', 'report_customsql');
+            }
+            else if (!is_writable($data['customdir'])) {
+                $errors['customdir'] = get_string('directorynotwritable', 'report_customsql');
             }
         }
 
