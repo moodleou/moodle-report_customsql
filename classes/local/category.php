@@ -62,7 +62,7 @@ class category {
             if ($fitleredqueries) {
                 $queriesdata[] = [
                     'type' => $type,
-                    'queries' => $fitleredqueries
+                    'queries' => $fitleredqueries,
                 ];
             }
         }

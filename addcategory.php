@@ -41,14 +41,14 @@ $relativeurl = 'addcategory.php';
 // Are we editing an existing report, or creating a new one.
 $id = optional_param('id', 0, PARAM_INT);
 
-$queryparams = array();
+$queryparams = [];
 
 if ($id) {
     $queryparams['categoryid'] = $id;
     $isadding = false;
     // Editing an existing category.
     $category = $DB->get_record('report_customsql_categories',
-            array('id' => $id), '*', MUST_EXIST);
+            ['id' => $id], '*', MUST_EXIST);
 } else {
     $queryparams['categoryid'] = null;
     $isadding = true;

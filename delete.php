@@ -34,7 +34,7 @@ admin_externalpage_setup('report_customsql', '', ['id' => $id],
 $context = context_system::instance();
 require_capability('report/customsql:definequeries', $context);
 
-$report = $DB->get_record('report_customsql_queries', array('id' => $id));
+$report = $DB->get_record('report_customsql_queries', ['id' => $id]);
 if (!$report) {
     throw new moodle_exception('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
@@ -46,7 +46,7 @@ if ($returnurl) {
 }
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
-    $ok = $DB->delete_records('report_customsql_queries', array('id' => $id));
+    $ok = $DB->delete_records('report_customsql_queries', ['id' => $id]);
     if (!$ok) {
         throw new moodle_exception('errordeletingreport', 'report_customsql', report_customsql_url('index.php'));
     }
@@ -69,7 +69,7 @@ echo $OUTPUT->header().
      html_writer::tag('p', get_string('displaynamex', 'report_customsql',
                                       html_writer::tag('b', format_string($report->displayname)))).
      html_writer::tag('p', get_string('querysql', 'report_customsql')).
-     html_writer::tag('pre', htmlspecialchars($report->querysql)).
+     html_writer::tag('pre', s($report->querysql)).
      html_writer::tag('p', get_string('runablex', 'report_customsql',
                       $runnableoptions[$report->runable])).
 

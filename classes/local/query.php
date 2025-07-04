@@ -118,6 +118,7 @@ class query {
      *
      * @param \context $context The context to check.
      * @return bool true if the user has this capability. Otherwise false.
+     * @covers \report_customsql\local\query
      */
     public function can_edit(\context $context): bool {
         return has_capability('report/customsql:definequeries', $context);
@@ -126,6 +127,7 @@ class query {
     /**
      * Check the capability to view the query.
      *
+     * @param \context $context The context to check.
      * @return bool Has capability to view or not?
      */
     public function can_view(\context $context):bool {
