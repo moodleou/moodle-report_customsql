@@ -58,6 +58,11 @@ class utils {
         return $grouppedqueries;
     }
 
+    /**
+     * Retrieves and processes data for the given queries.
+     *
+     * @param array $queries An array of query objects.
+     */
     public function get_queries_data($queries) {
 
     }

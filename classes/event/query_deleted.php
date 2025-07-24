@@ -32,20 +32,25 @@ namespace report_customsql\event;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class query_deleted extends \core\event\base {
+
+    #[\Override]
     protected function init() {
         $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'report_customsql_queries';
     }
 
+    #[\Override]
     public static function get_name() {
         return get_string('query_deleted', 'report_customsql');
     }
 
+    #[\Override]
     public function get_description() {
         return "User {$this->userid} has deleted the SQL query with id {$this->objectid}.";
     }
 
+    #[\Override]
     public function get_url() {
         return new \moodle_url('/report/customsql/index.php');
     }

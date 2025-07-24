@@ -39,7 +39,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
  */
 class report_customsql_addcategory_form extends moodleform {
 
-    // Form definition.
+    #[\Override]
     public function definition() {
         global $CFG, $DB;
         $mform = $this->_form;
@@ -65,6 +65,7 @@ class report_customsql_addcategory_form extends moodleform {
         $this->add_action_buttons(true, $strsubmit);
     }
 
+    #[\Override]
     public function validation($data, $files) {
         global $DB;
         $errors = parent::validation($data, $files);

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace report_customsql\external;
 
 defined('MOODLE_INTERNAL') || die();
@@ -34,8 +33,13 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @covers \report_customsql\external\get_users
  * @runTestsInSeparateProcesses
  */
-class external_get_users_test extends \externallib_advanced_testcase {
+final class external_get_users_test extends \externallib_advanced_testcase {
 
+    /**
+     * Sets up test users with specific roles and permissions.
+     *
+     * @return array An array containing the created users: admin, manager, and course creator.
+     */
     protected function setup_users(): array {
         global $DB, $USER;
 
