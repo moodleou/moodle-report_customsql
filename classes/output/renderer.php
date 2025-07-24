@@ -39,7 +39,7 @@ class renderer extends plugin_renderer_base {
      * @param context $context context to use for permission checks.
      * @return string HTML for report actions.
      */
-    public function render_report_actions(stdClass $report, stdClass $category, context $context):string {
+    public function render_report_actions(stdClass $report, stdClass $category, context $context): string {
         $editaction = null;
         $deleteaction = null;
         if (has_capability('report/customsql:definequeries', $context)) {

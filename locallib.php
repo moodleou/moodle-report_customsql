@@ -29,6 +29,15 @@ require_once($CFG->libdir . '/validateurlsyntax.php');
 
 define('REPORT_CUSTOMSQL_LIMIT_EXCEEDED_MARKER', '-- ROW LIMIT EXCEEDED --');
 
+/**
+ * Executes a custom SQL query with optional parameters and row limit.
+ *
+ * @param string $sql The SQL query to execute.
+ * @param array|null $params Optional query parameters.
+ * @param int|null $limitnum Optional row limit. Uses config value if null.
+ * @return moodle_recordset The result set.
+ * @throws Exception If the query fails.
+ */
 function report_customsql_execute_query($sql, $params = null, $limitnum = null) {
     global $CFG, $DB;
 
@@ -48,6 +57,13 @@ function report_customsql_execute_query($sql, $params = null, $limitnum = null) 
     return $DB->get_recordset_sql($sql, $params, 0, $limitnum);
 }
 
+/**
+ * Prepares the customsql for execution.
+ *
+ * @param stdClass $report report record from customsql table.
+ * @param int $timenow unix timestamp - usually "now()"
+ * @return string The SQL string.
+ */
 function report_customsql_prepare_sql($report, $timenow) {
     global $USER;
     $sql = $report->querysql;
@@ -100,7 +116,7 @@ function report_customsql_get_element_type($name) {
  * Generate customsql csv file.
  *
  * @param stdclass $report report record from customsql table.
- * @param int $timetimenow unix timestamp - usually "now()"
+ * @param int $timenow unix timestamp - usually "now()"
  * @param bool $returnheaderwhenempty if true, a CSV file with headers will always be generated, even if there are no results.
  */
 function report_customsql_generate_csv($report, $timenow, $returnheaderwhenempty = false) {
@@ -197,6 +213,8 @@ function report_customsql_generate_csv($report, $timenow, $returnheaderwhenempty
 }
 
 /**
+ * Check if a value is an integer or a string that looks like an integer.
+ *
  * @param mixed $value some value
  * @return bool whether $value is an integer, or a string that looks like an integer.
  */
@@ -204,6 +222,13 @@ function report_customsql_is_integer($value) {
     return (string) (int) $value === (string) $value;
 }
 
+/**
+ * Returns the csv filename for download.
+ *
+ * @param stdClass $report The report record.
+ * @param int $timenow The current time as a timestamp.
+ * @return array [filename, current timestamp].
+ */
 function report_customsql_csv_filename($report, $timenow) {
     if ($report->runable == 'manual') {
         return report_customsql_temp_cvs_name($report->id, $timenow);
@@ -217,6 +242,13 @@ function report_customsql_csv_filename($report, $timenow) {
     }
 }
 
+/**
+ * Returns the temp csv filename.
+ *
+ * @param int $reportid The report id.
+ * @param int $timestamp The current time as a timestamp.
+ * @return array [filename, timestamp].
+ */
 function report_customsql_temp_cvs_name($reportid, $timestamp) {
     global $CFG;
     $path = 'admin_report_customsql/temp/'.$reportid;
@@ -225,6 +257,13 @@ function report_customsql_temp_cvs_name($reportid, $timestamp) {
                  $timestamp];
 }
 
+/**
+ * Returns the csv filename for the scheduled reports.
+ *
+ * @param int $reportid The report id.
+ * @param int $timestart The current time as a timestamp.
+ * @return array [filename, timestamp].
+ */
 function report_customsql_scheduled_cvs_name($reportid, $timestart) {
     global $CFG;
     $path = 'admin_report_customsql/'.$reportid;
@@ -233,6 +272,12 @@ function report_customsql_scheduled_cvs_name($reportid, $timestart) {
                  $timestart];
 }
 
+/**
+ * Returns the csv filename for accumulating reports.
+ *
+ * @param int $reportid The report id.
+ * @return array [filename, 0].
+ */
 function report_customsql_accumulating_cvs_name($reportid) {
     global $CFG;
     $path = 'admin_report_customsql/'.$reportid;
@@ -240,6 +285,12 @@ function report_customsql_accumulating_cvs_name($reportid) {
     return [$CFG->dataroot.'/'.$path.'/accumulate.csv', 0];
 }
 
+/**
+ * Returns the report archive times.
+ *
+ * @param stdClass $report the report record from customsql table.
+ * @return array of archive times as unix timestamps.
+ */
 function report_customsql_get_archive_times($report) {
     global $CFG;
     if ($report->runable == 'manual' || $report->singlerow) {
@@ -257,10 +308,25 @@ function report_customsql_get_archive_times($report) {
     return $archivetimes;
 }
 
+/**
+ * Substitutes the time tokens in the SQL string with the provided start and end times.
+ *
+ * @param string $sql The SQL string containing the `%%STARTTIME%%` and `%%ENDTIME%%` tokens.
+ * @param int $start The start time to substitute into the SQL string.
+ * @param int $end The end time to substitute into the SQL string.
+ * @return string The SQL string.
+ */
 function report_customsql_substitute_time_tokens($sql, $start, $end) {
     return str_replace(['%%STARTTIME%%', '%%ENDTIME%%'], [$start, $end], $sql);
 }
 
+/**
+ * Replaces the `%%USERID%%` token in the given SQL string with the provided user ID.
+ *
+ * @param string $sql The SQL string containing the `%%USERID%%` token.
+ * @param int $userid The user ID to substitute into the SQL string.
+ * @return string The SQL string with the `%%USERID%%` token replaced by the user ID.
+ */
 function report_customsql_substitute_user_token($sql, $userid) {
     return str_replace('%%USERID%%', $userid, $sql);
 }
@@ -300,6 +366,9 @@ function report_customsql_downloadurl($reportid, $params = []) {
     return $downloadurl;
 }
 
+/**
+ * Returns the options for the capability field in the report_customsql_queries table.
+ */
 function report_customsql_capability_options() {
     return [
         'report/customsql:view' => get_string('anyonewhocanveiwthisreport', 'report_customsql'),
@@ -308,6 +377,11 @@ function report_customsql_capability_options() {
     ];
 }
 
+/**
+ * Returns the options for the runable field in the report_customsql_queries table.
+ *
+ * @param string|null $type If set to 'manual', only the manual option is returned.
+ */
 function report_customsql_runable_options($type = null) {
     if ($type === 'manual') {
         return ['manual' => get_string('manual', 'report_customsql')];
@@ -320,6 +394,9 @@ function report_customsql_runable_options($type = null) {
     ];
 }
 
+/**
+ * Returns the options for the daily time field in the report_customsql_queries table.
+ */
 function report_customsql_daily_at_options() {
     $time = [];
     for ($h = 0; $h < 24; $h++) {
@@ -329,33 +406,62 @@ function report_customsql_daily_at_options() {
     return $time;
 }
 
+/**
+ * Returns the options for the email settings in the report_customsql_queries table.
+ */
 function report_customsql_email_options() {
     return ['emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
             'emailresults' => get_string('emailresults', 'report_customsql'),
     ];
 }
 
+/**
+ * Returns a list of SQL keywords that are considered unsafe or undesirable
+ * to allow in custom SQL queries.
+ */
 function report_customsql_bad_words_list() {
     return ['ALTER', 'CREATE', 'DELETE', 'DROP', 'GRANT', 'INSERT', 'INTO',
                  'TRUNCATE', 'UPDATE'];
 }
 
+/**
+ * Returns true if the given string contains any of the bad words.
+ *
+ * @param string $string The string to check.
+ */
 function report_customsql_contains_bad_word($string) {
     return preg_match('/\b('.implode('|', report_customsql_bad_words_list()).')\b/i', $string);
 }
 
+/**
+ * Triggers an event when a custom SQL query is created.
+ *
+ * @param int $id The ID of the query.
+ */
 function report_customsql_log_delete($id) {
     $event = \report_customsql\event\query_deleted::create(
             ['objectid' => $id, 'context' => context_system::instance()]);
     $event->trigger();
 }
 
+/**
+ * Triggers an event when a custom SQL query is edited.
+ *
+ * @param int $id The ID of the query.
+ * @return void
+ */
 function report_customsql_log_edit($id) {
     $event = \report_customsql\event\query_edited::create(
             ['objectid' => $id, 'context' => context_system::instance()]);
     $event->trigger();
 }
 
+/**
+ * Triggers an event when a custom SQL query is viewed.
+ *
+ * @param int $id The ID of the query.
+ * @return void
+ */
 function report_customsql_log_view($id) {
     $event = \report_customsql\event\query_viewed::create(
             ['objectid' => $id, 'context' => context_system::instance()]);
@@ -366,7 +472,7 @@ function report_customsql_log_view($id) {
  * Returns all reports for a given type sorted by report 'displayname'.
  *
  * @param int $categoryid
- * @param string $type, type of report (manual, daily, weekly or monthly)
+ * @param string $type type of report (manual, daily, weekly or monthly)
  * @return stdClass[] relevant rows from report_customsql_queries.
  */
 function report_customsql_get_reports_for($categoryid, $type) {
@@ -380,8 +486,8 @@ function report_customsql_get_reports_for($categoryid, $type) {
 /**
  * Display a list of reports of one type in one category.
  *
- * @param object $reports, the result of DB query
- * @param string $type, type of report (manual, daily, weekly or monthly)
+ * @param object $reports the result of DB query
+ * @param string $type type of report (manual, daily, weekly or monthly)
  */
 function report_customsql_print_reports_for($reports, $type) {
     global $OUTPUT;
@@ -487,6 +593,13 @@ function report_customsql_display_row($row, $linkcolumns) {
     return $rowdata;
 }
 
+/**
+ * Returns a note about the last run time of the report.
+ *
+ * @param stdClass $report the report record from customsql table.
+ * @param string $tag the HTML tag to use for the note.
+ * @return string HTML string with the note.
+ */
 function report_customsql_time_note($report, $tag) {
     if ($report->lastrun) {
         $a = new stdClass;
@@ -502,6 +615,15 @@ function report_customsql_time_note($report, $tag) {
 }
 
 
+/**
+ * Prettify the column names in a row of data.
+ *
+ * This is used to make the column names more readable in the CSV export.
+ *
+ * @param stdClass $row a row of data from the query result.
+ * @param string $querysql the original SQL query.
+ * @return string[] prettified column names.
+ */
 function report_customsql_pretify_column_names($row, $querysql) {
     $colnames = [];
 
@@ -559,6 +681,14 @@ function report_customsql_read_csv_row($handle) {
     return fgetcsv($handle, 0, ',', '"', $disablestupidphpescaping);
 }
 
+/**
+ * Writes the first row of a CSV file, which contains the column names.
+ *
+ * @param resource $handle the file pointer
+ * @param stdClass $firstrow
+ * @param stdClass $report The report record.
+ * @return void
+ */
 function report_customsql_start_csv($handle, $firstrow, $report) {
     $colnames = report_customsql_pretify_column_names($firstrow, $report->querysql);
     if ($report->singlerow) {
@@ -568,6 +698,8 @@ function report_customsql_start_csv($handle, $firstrow, $report) {
 }
 
 /**
+ * Get the timestamps for daily reports.
+ *
  * @param int $timenow a timestamp.
  * @param int $at an hour, 0 to 23.
  * @return array with two elements: the timestamp for hour $at today (where today
@@ -585,6 +717,13 @@ function report_customsql_get_daily_time_starts($timenow, $at) {
     ];
 }
 
+/**
+ * Get the timestamps for weekly reports.
+ *
+ * @param int $timenow a timestamp.
+ * @return array with two elements: the timestamp for the start of this week and
+ *      the timestamp for the start of last week.
+ */
 function report_customsql_get_week_starts($timenow) {
     $dateparts = getdate($timenow);
 
@@ -603,6 +742,13 @@ function report_customsql_get_week_starts($timenow) {
     ];
 }
 
+/**
+ * Get the timestamps for monthly reports.
+ *
+ * @param int $timenow a timestamp.
+ * @return array with two elements: the timestamp for the start of this month and
+ *      the timestamp for the start of last month.
+ */
 function report_customsql_get_month_starts($timenow) {
     $dateparts = getdate($timenow);
 
@@ -612,6 +758,14 @@ function report_customsql_get_month_starts($timenow) {
     ];
 }
 
+/**
+ * Get the start timestamps for the report.
+ *
+ * @param stdClass $report The report record.
+ * @param int $timenow The current time as a timestamp.
+ * @return array with two elements: the start timestamp and the end timestamp.
+ * @throws Exception If the report type is not recognized.
+ */
 function report_customsql_get_starts($report, $timenow) {
     switch ($report->runable) {
         case 'daily':
@@ -625,6 +779,12 @@ function report_customsql_get_starts($report, $timenow) {
     }
 }
 
+/**
+ * Deletes old temporary CSV files.
+ *
+ * @param int $upto timestamp to delete files older than this.
+ * @return int the number of files deleted.
+ */
 function report_customsql_delete_old_temp_files($upto) {
     global $CFG;
 
@@ -678,6 +838,12 @@ function report_customsql_validate_users($userids, $capability) {
     return null;
 }
 
+/**
+ * Get the message to send when there is no data returned from the report.
+ *
+ * @param stdClass $report report settings from the database.
+ * @return stdClass message object.
+ */
 function report_customsql_get_message_no_data($report) {
     // Construct subject.
     $subject = report_customsql_email_subject(0, $report);
@@ -696,6 +862,13 @@ function report_customsql_get_message_no_data($report) {
     return $message;
 }
 
+/**
+ * Get the message to send when there is data returned from the report.
+ *
+ * @param stdClass $report report settings from the database.
+ * @param string $csvfilename the name of the CSV file with the report data.
+ * @return stdClass message object.
+ */
 function report_customsql_get_message($report, $csvfilename) {
     $handle = fopen($csvfilename, 'r');
     $table = new html_table();
@@ -776,6 +949,12 @@ function report_customsql_email_subject(int $countrows, stdClass $report): strin
     }
 }
 
+/**
+ * Send the email report to all recipients.
+ *
+ * @param stdClass $report the report record from customsql table.
+ * @param string|null $csvfilename the name of the CSV file with the report data, or null if no data.
+ */
 function report_customsql_email_report($report, $csvfilename = null) {
     global $DB;
 
@@ -801,6 +980,12 @@ function report_customsql_email_report($report, $csvfilename = null) {
     }
 }
 
+/**
+ * Get the reports that are ready to run daily.
+ *
+ * @param int $timenow the current time as a timestamp.
+ * @return stdClass[] relevant rows from report_customsql_queries.
+ */
 function report_customsql_get_ready_to_run_daily_reports($timenow) {
     global $DB;
     $reports = $DB->get_records_select('report_customsql_queries', "runable = ?", ['daily'], 'id');
@@ -863,6 +1048,11 @@ function report_customsql_is_daily_report_ready($report, $timenow) {
     return false;
 }
 
+/**
+ * Returns the options for the custom SQL categories.
+ *
+ * @return array of category id => name pairs.
+ */
 function report_customsql_category_options() {
     global $DB;
     return $DB->get_records_menu('report_customsql_categories', null, 'name ASC', 'id, name');

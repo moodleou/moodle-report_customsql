@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/report/customsql/locallib.php');
  * @copyright 2009 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_test extends \advanced_testcase {
+final class report_test extends \advanced_testcase {
 
     /**
      * Data provider for test_get_week_starts
@@ -97,7 +97,11 @@ class report_test extends \advanced_testcase {
         $this->assertEquals($expected, report_customsql_get_week_starts(strtotime($datestr)));
     }
 
-    /** @covers ::report_customsql_get_month_starts */
+    /**
+     * Tests plugin report_customsql_get_month_starts method to retrieve the start dates of the current and previous months.
+     *
+     * @covers ::report_customsql_get_month_starts
+     */
     public function test_get_month_starts_test(): void {
         $this->assertEquals([
                 strtotime('00:00 1 November 2009'), strtotime('00:00 1 October 2009')],
@@ -112,7 +116,11 @@ class report_test extends \advanced_testcase {
                 report_customsql_get_month_starts(strtotime('23:59 29 November 2009')));
     }
 
-    /** @covers ::report_customsql_get_element_type */
+    /**
+     * Tests plugin report_customsql_get_element_type method to determine the element type based on field names.
+     *
+     * @covers ::report_customsql_get_element_type
+     */
     public function test_report_customsql_get_element_type(): void {
         $this->assertEquals('date_time_selector', report_customsql_get_element_type('start_date'));
         $this->assertEquals('date_time_selector', report_customsql_get_element_type('startdate'));
@@ -124,14 +132,22 @@ class report_test extends \advanced_testcase {
         $this->assertEquals('text', report_customsql_get_element_type('mandated'));
     }
 
-    /** @covers ::report_customsql_substitute_user_token */
+    /**
+     * Test plugin report_customsql_substitute_user_token method to substitute a user token in the given SQL query.
+     *
+     * @covers ::report_customsql_substitute_user_token
+     */
     public function test_report_customsql_substitute_user_token(): void {
         $this->assertEquals('SELECT COUNT(*) FROM oh_quiz_attempts WHERE user = 123',
                 report_customsql_substitute_user_token('SELECT COUNT(*) FROM oh_quiz_attempts '.
                         'WHERE user = %%USERID%%', 123));
     }
 
-    /** @covers ::report_customsql_capability_options */
+    /**
+     * Tests the report_customsql_capability_options method for retrieving capability options.
+     *
+     * @covers ::report_customsql_capability_options
+     */
     public function test_report_customsql_capability_options(): void {
         $capoptions = [
             'report/customsql:view' => get_string('anyonewhocanveiwthisreport', 'report_customsql'),
@@ -142,7 +158,12 @@ class report_test extends \advanced_testcase {
 
     }
 
-    /** @covers ::report_customsql_runable_options */
+    /**
+     * Test plugin report_customsql_runable_options method to retrieve the options for the runable field
+     * in the custom SQL report.
+     *
+     * @covers ::report_customsql_runable_options
+     */
     public function test_report_customsql_runable_options(): void {
         $options = [
             'manual'  => get_string('manual', 'report_customsql'),
@@ -154,7 +175,11 @@ class report_test extends \advanced_testcase {
         $this->assertEquals($options, report_customsql_runable_options());
     }
 
-    /** @covers ::report_customsql_daily_at_options */
+    /**
+     * Test plugin report_customsql_daily_at_options method.
+     *
+     * @covers ::report_customsql_daily_at_options
+     */
     public function test_report_customsql_daily_at_options(): void {
         $time = [];
         for ($h = 0; $h < 24; $h++) {
@@ -164,7 +189,11 @@ class report_test extends \advanced_testcase {
         $this->assertEquals($time, report_customsql_daily_at_options());
     }
 
-    /** @covers ::report_customsql_email_options */
+    /**
+     * Test plugin report_customsql_email_options method to retrieve the options for email settings.
+     *
+     * @covers ::report_customsql_email_options
+     */
     public function test_report_customsql_email_options(): void {
         $options = [
             'emailnumberofrows' => get_string('emailnumberofrows', 'report_customsql'),
@@ -173,19 +202,31 @@ class report_test extends \advanced_testcase {
         $this->assertEquals($options, report_customsql_email_options());
     }
 
-    /** @covers ::report_customsql_bad_words_list */
+    /**
+     * Test plugin report_customsql_bad_words_list method to retrieve the list of words that should not be used in SQL queries.
+     *
+     * @covers ::report_customsql_bad_words_list
+     */
     public function test_report_customsql_bad_words_list(): void {
         $options = ['ALTER', 'CREATE', 'DELETE', 'DROP', 'GRANT', 'INSERT', 'INTO', 'TRUNCATE', 'UPDATE'];
         $this->assertEquals($options, report_customsql_bad_words_list());
     }
 
-    /** @covers ::report_customsql_bad_words_list */
+    /**
+     * Test plugin report_customsql_contains_bad_word method to check if a string contains any of the bad words.
+     *
+     * @covers ::report_customsql_bad_words_list
+     */
     public function test_report_customsql_contains_bad_word(): void {
         $string = 'DELETE * FROM prefix_user u WHERE u.id  > 0';
         $this->assertEquals(1, report_customsql_contains_bad_word($string));
     }
 
-    /** @covers ::report_customsql_get_daily_time_starts */
+    /**
+     * Test plugin report_customsql_is_daily_report_ready method to check if a daily report is ready to run.
+     *
+     * @covers ::report_customsql_get_daily_time_starts
+     */
     public function test_report_customsql_get_ready_to_run_daily_reports(): void {
         global $DB;
         $this->resetAfterTest(true);
@@ -259,7 +300,11 @@ class report_test extends \advanced_testcase {
         $this->assertTrue(report_customsql_is_daily_report_ready($report, $timenow));
     }
 
-    /** @covers ::report_customsql_is_integer */
+    /**
+     * Test plugin report_customsql_is_integer method to check if a value is an integer.
+     *
+     * @covers ::report_customsql_is_integer
+     */
     public function test_report_customsql_is_integer(): void {
         $this->assertTrue(report_customsql_is_integer(1));
         $this->assertTrue(report_customsql_is_integer('1'));
@@ -267,7 +312,11 @@ class report_test extends \advanced_testcase {
         $this->assertFalse(report_customsql_is_integer('2013-10-07'));
     }
 
-    /** @covers ::report_customsql_get_table_headers */
+    /**
+     * Test plugin report_customsql_get_table_headers method to retrieve the headers for a report.
+     *
+     * @covers ::report_customsql_get_table_headers
+     */
     public function test_report_customsql_get_table_headers(): void {
         $rawheaders = [
                 'String date',
@@ -294,7 +343,11 @@ class report_test extends \advanced_testcase {
         $this->assertEquals([3 => 4, 4 => -1, 5 => 7, 7 => -1], $linkcolumns);
     }
 
-    /** @covers ::report_customsql_pretify_column_names */
+    /**
+     * Test plugin report_customsql_pretify_column_names method to test formatting of column names.
+     *
+     * @covers ::report_customsql_pretify_column_names
+     */
     public function test_report_customsql_pretify_column_names(): void {
         $row = new \stdClass();
         $row->column = 1;
@@ -305,7 +358,11 @@ class report_test extends \advanced_testcase {
                 report_customsql_pretify_column_names($row, $query));
     }
 
-    /** @covers ::report_customsql_pretify_column_names */
+    /**
+     * Test plugin report_customsql_pretify_column_names method to test formatting column names with different cases.
+     *
+     * @covers ::report_customsql_pretify_column_names
+     */
     public function test_report_customsql_pretify_column_names_multi_line(): void {
         $row = new \stdClass();
         $row->column = 1;
@@ -320,7 +377,11 @@ class report_test extends \advanced_testcase {
                 report_customsql_pretify_column_names($row, $query));
     }
 
-    /** @covers ::report_customsql_pretify_column_names */
+    /**
+     * Test plugin report_customsql_pretify_column_names method to handle same name with different capitalisation.
+     *
+     * @covers ::report_customsql_pretify_column_names
+     */
     public function test_report_customsql_pretify_column_names_same_name_diff_capitialisation(): void {
         $row = new \stdClass();
         $row->course = 'B747-19B';
@@ -331,7 +392,11 @@ class report_test extends \advanced_testcase {
 
     }
 
-    /** @covers ::report_customsql_pretify_column_names */
+    /**
+     * Test plugin report_customsql_pretify_column_names method to handle complex SQL queries with links.
+     *
+     * @covers ::report_customsql_pretify_column_names
+     */
     public function test_report_customsql_pretify_column_names_issue(): void {
         $row = new \stdClass();
         $row->website = 'B747-19B';
@@ -362,7 +427,11 @@ class report_test extends \advanced_testcase {
 
     }
 
-    /** @covers ::report_customsql_display_row */
+    /**
+     * Test plugin report_customsql_display_row method to format a row of data for display.
+     *
+     * @covers ::report_customsql_display_row
+     */
     public function test_report_customsql_display_row(): void {
         $rawdata = [
                 'Not a date',
@@ -495,7 +564,11 @@ class report_test extends \advanced_testcase {
         $this->assertEquals($expected, $url->out(false));
     }
 
-    /** @covers ::report_customsql_write_csv_row */
+    /**
+     * Test plugin report_customsql_write_csv_row method to write a row to a CSV file.
+     *
+     * @covers ::report_customsql_write_csv_row
+     */
     public function test_report_customsql_write_csv_row(): void {
         global $CFG;
         $this->resetAfterTest();
