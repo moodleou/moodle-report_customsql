@@ -1,5 +1,32 @@
 # Change log for the Ad-hoc database queries report
 
+## Changes in 4.4
+
+* This version is compatible with Moodle 5.0.
+* External APIs: Updated to use new base classes, as the minimum supported version is now Moodle 4.4.
+* Fixed a bug so that users only see queries they have permission to view.
+* Tidied up various parts of the codebase.
+* Improved Behat tests and navigation URLs.
+* PHPUnit: Removed unnecessary references to deprecated or removed plugins.
+* Accessibility: Required form fields now use the default required field message.
+* Fixed #114 — when downloading, return an empty CSV file (with headers) when there are no results.
+* Fixed test queries for MySQL containing CHR characters.
+
+
+## Changes in 4.3
+
+* The report now shows results for the most recent time the query should have run,
+  making it clearer when there are no results.
+* Improved the heading for the list of past results.
+* Log events: Removed legacy logging methods for compatibility with Moodle 4.2.
+* Added [wwwroot] to the email subject line to identify which environment sent the email.
+* When emailing single-row queries, the number of rows sent is now limited to 5 to avoid building
+  an overly large list over time.
+* Fixed a bug to clean the file report name before generating downloads.
+* The session is now unlocked, allowing the users to run more than one report at a time (#113).
+* Removed underline on mouse hover
+
+
 ## Changes in 4.2
 
 * This version works with Moodle 4.0.
