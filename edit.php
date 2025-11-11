@@ -151,7 +151,6 @@ if ($newreport = $mform->get_data()) {
     }
 }
 
-admin_externalpage_setup('report_customsql');
 echo $OUTPUT->header();
 
 if ($id) {
