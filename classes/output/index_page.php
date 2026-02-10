@@ -59,8 +59,14 @@ class index_page implements renderable, templatable {
      * @param int $showcat Showing Category Id.
      * @param int $hidecat Hiding Category Id.
      */
-    public function __construct(array $categories, array $queries, context $context, moodle_url $returnurl,
-            int $showcat = 0, int $hidecat = 0) {
+    public function __construct(
+        array $categories,
+        array $queries,
+        context $context,
+        moodle_url $returnurl,
+        int $showcat = 0,
+        int $hidecat = 0
+    ) {
         $this->categories = $categories;
         $this->queries = $queries;
         $this->context = $context;
@@ -77,19 +83,33 @@ class index_page implements renderable, templatable {
             $category = new report_category($record);
             $queries = $grouppedqueries[$record->id] ?? [];
             $category->load_queries_data($queries);
-            $categorywidget = new category($category, $this->context, true, $this->showcat, $this->hidecat, true,
-                false, $this->returnurl);
+            $categorywidget = new category(
+                $category,
+                $this->context,
+                true,
+                $this->showcat,
+                $this->hidecat,
+                true,
+                false,
+                $this->returnurl
+            );
             $categoriesdata[] = ['category' => $output->render($categorywidget)];
         }
 
         $addquerybutton = $managecategorybutton = '';
         if (has_capability('report/customsql:definequeries', $this->context)) {
-            $addquerybutton = $output->single_button(report_customsql_url('edit.php', ['returnurl' => $this->returnurl]),
-                get_string('addreport', 'report_customsql'), 'post', ['class' => 'mb-1']);
+            $addquerybutton = $output->single_button(
+                report_customsql_url('edit.php', ['returnurl' => $this->returnurl]),
+                get_string('addreport', 'report_customsql'),
+                'post',
+                ['class' => 'mb-1']
+            );
         }
         if (has_capability('report/customsql:managecategories', $this->context)) {
-            $managecategorybutton = $output->single_button(report_customsql_url('manage.php'),
-                get_string('managecategories', 'report_customsql'));
+            $managecategorybutton = $output->single_button(
+                report_customsql_url('manage.php'),
+                get_string('managecategories', 'report_customsql')
+            );
         }
 
         $data = [

@@ -1,0 +1,94 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_customsql/executions_filters
+
+    Template for execution filters form.
+
+    Context variables required for this template:
+    * title - string, filter section title
+    * formaction - string, form action URL
+    * querylabel - string, label for query filter
+    * queryoptions - array of query options
+    * statuslabel - string, label for status filter
+    * statusoptions - array of status options
+    * showonlymine - boolean, whether to show "only mine" checkbox
+    * onlyminelabel - string, label for "only mine" checkbox
+    * onlyminechecked - boolean, whether "only mine" is checked
+    * submitlabel - string, label for submit button
+
+    Example context (json):
+    {
+        "title": "Filter Executions",
+        "formaction": "/report/customsql/executions.php",
+        "querylabel": "Query",
+        "queryoptions": [
+            {"value": 0, "label": "All queries", "selected": true}
+        ],
+        "statuslabel": "Status",
+        "statusoptions": [
+            {"value": "all", "label": "All executions", "selected": true}
+        ],
+        "showonlymine": true,
+        "onlyminelabel": "Only my executions",
+        "onlyminechecked": false,
+        "submitlabel": "Filter"
+    }
+}}
+
+<div class="executions-filters card mb-3">
+    <div class="card-body">
+        <h4>{{filters.title}}</h4>
+
+        <form method="get" action="{{filters.formaction}}" class="form-inline">
+            {{! Query filter }}
+            <div class="form-group mr-2">
+                <label for="id_queryid" class="mr-2">{{filters.querylabel}}</label>
+                <select name="queryid" id="id_queryid" class="custom-select">
+                    {{#filters.queryoptions}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                    {{/filters.queryoptions}}
+                </select>
+            </div>
+
+            {{! Status filter }}
+            <div class="form-group mr-2">
+                <label for="id_status" class="mr-2">{{filters.statuslabel}}</label>
+                <select name="status" id="id_status" class="custom-select">
+                    {{#filters.statusoptions}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                    {{/filters.statusoptions}}
+                </select>
+            </div>
+
+            {{! Only mine filter }}
+            {{#filters.showonlymine}}
+            <div class="form-group mr-2">
+                <div class="form-check">
+                    <input type="checkbox" name="onlymine" value="1" id="id_onlymine" class="form-check-input" {{#filters.onlyminechecked}}checked{{/filters.onlyminechecked}}>
+                    <label for="id_onlymine" class="form-check-label">{{filters.onlyminelabel}}</label>
+                </div>
+            </div>
+            {{/filters.showonlymine}}
+
+            {{! Submit button }}
+            <div class="form-group">
+                <input type="submit" value="{{filters.submitlabel}}" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
+</div>

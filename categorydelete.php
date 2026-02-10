@@ -31,8 +31,12 @@ require_once($CFG->libdir . '/adminlib.php');
 $id = required_param('id', PARAM_INT);
 
 // Start the page.
-admin_externalpage_setup('report_customsql', '', ['id' => $id],
-        '/report/customsql/categorydelete.php');
+admin_externalpage_setup(
+    'report_customsql',
+    '',
+    ['id' => $id],
+    '/report/customsql/categorydelete.php'
+);
 $context = context_system::instance();
 require_capability('report/customsql:managecategories', $context);
 
@@ -57,9 +61,13 @@ if (optional_param('confirm', false, PARAM_BOOL)) {
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('deletecategoryareyousure', 'report_customsql'));
-echo html_writer::tag('p', get_string('categorynamex', 'report_customsql', $category->name ));
-echo $OUTPUT->confirm(get_string('deletecategoryyesno', 'report_customsql'),
-             new single_button(report_customsql_url('categorydelete.php',
-                     ['id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]), get_string('yes')),
-                     new single_button(report_customsql_url('index.php'), get_string('no')));
+echo html_writer::tag('p', get_string('categorynamex', 'report_customsql', $category->name));
+echo $OUTPUT->confirm(
+    get_string('deletecategoryyesno', 'report_customsql'),
+    new single_button(report_customsql_url(
+        'categorydelete.php',
+        ['id' => $id, 'confirm' => 1, 'sesskey' => sesskey()]
+    ), get_string('yes')),
+    new single_button(report_customsql_url('index.php'), get_string('no'))
+);
 echo $OUTPUT->footer();

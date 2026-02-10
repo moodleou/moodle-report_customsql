@@ -29,9 +29,14 @@
     {
       "editaction": "<a href='http://example.com/report/customsql/edit.php?id=6'>Edit query 'Test'</a>",
       "deleteaction": "<a href='http://example.com/report/customsql/delete.php?id=6'>Delete query 'Test'</a>",
+      "viewexecutionsaction": "<a href='http://example.com/report/customsql/executions.php?queryid=6'>View executions</a>",
       "backtocategoryaction": "<a href='http://example.com/report/customsql/category.php?id=1'>Back to category 'Miscellaneous'</a>"
     }
 }}
+{{#viewexecutionsaction}}
+    <p>{{{viewexecutionsaction}}}</p>
+{{/viewexecutionsaction}}
+
 {{#editaction}}
     <p>{{{editaction}}}</p>
 {{/editaction}}

@@ -34,7 +34,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_customsql_view_form extends moodleform {
-
     #[\Override]
     public function definition() {
         $mform = $this->_form;

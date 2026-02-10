@@ -38,7 +38,6 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class report_customsql_addcategory_form extends moodleform {
-
     #[\Override]
     public function definition() {
         global $CFG, $DB;
@@ -74,8 +73,13 @@ class report_customsql_addcategory_form extends moodleform {
             if (!isset($data['id'])) {
                 $data['id'] = 0;// Ensure id to check against.
             }
-            if ($DB->get_record_select('report_customsql_categories',
-                    'name = ? AND id != ?', [$data['name'], $data['id']])) {
+            if (
+                $DB->get_record_select(
+                    'report_customsql_categories',
+                    'name = ? AND id != ?',
+                    [$data['name'], $data['id']]
+                )
+            ) {
                 $errors['name'] = get_string('categoryexists', 'report_customsql');
             }
         }

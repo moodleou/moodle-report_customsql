@@ -35,12 +35,9 @@ use core_privacy\local\request;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    // This plugin has data.
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\metadata\provider,
-    // This plugin currently implements the original plugin\provider interface.
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\request\plugin\provider {
     /**
      * Returns meta data about this system.
      *
@@ -74,6 +71,27 @@ class provider implements
             'privacy:metadata:reportcustomsqlqueries'
         );
 
+        $items->add_database_table(
+            'report_customsql_executions',
+            [
+                'queryid' => 'privacy:metadata:reportcustomsqlexecutions:queryid',
+                'userid' => 'privacy:metadata:reportcustomsqlexecutions:userid',
+                'executionmode' => 'privacy:metadata:reportcustomsqlexecutions:executionmode',
+                'status' => 'privacy:metadata:reportcustomsqlexecutions:status',
+                'filename' => 'privacy:metadata:reportcustomsqlexecutions:filename',
+                'filesize' => 'privacy:metadata:reportcustomsqlexecutions:filesize',
+                'rows' => 'privacy:metadata:reportcustomsqlexecutions:rows',
+                'cancelled' => 'privacy:metadata:reportcustomsqlexecutions:cancelled',
+                'executiontime' => 'privacy:metadata:reportcustomsqlexecutions:executiontime',
+                'errormessage' => 'privacy:metadata:reportcustomsqlexecutions:errormessage',
+                'queryparams' => 'privacy:metadata:reportcustomsqlexecutions:queryparams',
+                'timecreated' => 'privacy:metadata:reportcustomsqlexecutions:timecreated',
+                'timestarted' => 'privacy:metadata:reportcustomsqlexecutions:timestarted',
+                'timecompleted' => 'privacy:metadata:reportcustomsqlexecutions:timecompleted',
+            ],
+            'privacy:metadata:reportcustomsqlexecutions'
+        );
+
         return $items;
     }
 
@@ -102,11 +120,15 @@ class provider implements
         $context = $userlist->get_context();
 
         if ($context->contextlevel === CONTEXT_SYSTEM) {
-            // If we are checking system context, we need to get all distinct usermodified from the table.
+            // Get all distinct usermodified from queries table.
             $sql = 'SELECT DISTINCT usermodified
                       FROM {report_customsql_queries}';
-
             $userlist->add_from_sql('usermodified', $sql, []);
+
+            // Get all distinct users from executions table.
+            $sql = 'SELECT DISTINCT userid
+                      FROM {report_customsql_executions}';
+            $userlist->add_from_sql('userid', $sql, []);
         }
     }
 
@@ -160,6 +182,57 @@ class provider implements
                     get_string('privacy:metadata:reportcustomsqlqueries', 'report_customsql'),
                 ];
                 request\writer::with_context($context)->export_data($subcontext, (object)$exportdata);
+
+                // Export background execution data.
+                $executions = $DB->get_records(
+                    'report_customsql_executions',
+                    ['userid' => $user->id],
+                    'timecreated DESC'
+                );
+
+                $executiondata = [];
+                foreach ($executions as $execution) {
+                    $query = $DB->get_record('report_customsql_queries', ['id' => $execution->queryid]);
+                    $data = [];
+                    $data['queryname'] = $query ? $query->displayname : 'N/A';
+                    $data['executionmode'] = $execution->executionmode;
+                    $data['status'] = $execution->status;
+                    $data['rows'] = $execution->rowsreturned;
+                    $data['executiontime'] = $execution->executiontime;
+                    $data['filesize'] = $execution->filesize;
+                    $data['errormessage'] = $execution->errormessage;
+                    $data['timecreated'] = userdate($execution->timecreated);
+                    $data['timestarted'] = $execution->timestarted ? userdate($execution->timestarted) : '';
+                    $data['timecompleted'] = $execution->timecompleted ? userdate($execution->timecompleted) : '';
+                    $executiondata[] = $data;
+
+                    // Export the result file if it exists.
+                    if ($execution->filename) {
+                        $fs = get_file_storage();
+                        $file = $fs->get_file(
+                            $context->id,
+                            'report_customsql',
+                            'execution',
+                            $execution->id,
+                            '/',
+                            $execution->filename
+                        );
+                        if ($file) {
+                            $subcontext = [
+                                get_string('privacy:metadata:reportcustomsqlexecutions', 'report_customsql'),
+                                $execution->id,
+                            ];
+                            request\writer::with_context($context)->export_file($subcontext, $file);
+                        }
+                    }
+                }
+
+                if (!empty($executiondata)) {
+                    $subcontext = [
+                        get_string('privacy:metadata:reportcustomsqlexecutions', 'report_customsql'),
+                    ];
+                    request\writer::with_context($context)->export_data($subcontext, (object)$executiondata);
+                }
             }
         }
     }
@@ -176,6 +249,12 @@ class provider implements
         if ($context->contextlevel === CONTEXT_SYSTEM) {
             $adminuserid = get_admin()->id;
             $DB->set_field('report_customsql_queries', 'usermodified', $adminuserid);
+
+            // Delete all execution records and files.
+            $executions = $DB->get_records('report_customsql_executions');
+            foreach ($executions as $execution) {
+                self::delete_execution_data($execution);
+            }
         }
     }
 
@@ -194,8 +273,18 @@ class provider implements
                 $userid = $contextlist->get_user()->id;
                 $adminuserid = get_admin()->id;
 
-                $DB->set_field('report_customsql_queries', 'usermodified',
-                    $adminuserid, ['usermodified' => $userid]);
+                $DB->set_field(
+                    'report_customsql_queries',
+                    'usermodified',
+                    $adminuserid,
+                    ['usermodified' => $userid]
+                );
+
+                // Delete user's execution records and files.
+                $executions = $DB->get_records('report_customsql_executions', ['userid' => $userid]);
+                foreach ($executions as $execution) {
+                    self::delete_execution_data($execution);
+                }
             }
         }
     }
@@ -213,10 +302,25 @@ class provider implements
         $context = $userlist->get_context();
         if ($context->contextlevel === CONTEXT_SYSTEM) {
             $userids = $userlist->get_userids();
-            list($sqlcondition, $params) = $DB->get_in_or_equal($userids);
+            [$sqlcondition, $params] = $DB->get_in_or_equal($userids);
             $adminuserid = get_admin()->id;
-            $DB->set_field_select('report_customsql_queries', 'usermodified', $adminuserid,
-                 'usermodified ' . $sqlcondition, $params);
+            $DB->set_field_select(
+                'report_customsql_queries',
+                'usermodified',
+                $adminuserid,
+                'usermodified ' . $sqlcondition,
+                $params
+            );
+
+            // Delete executions for these users.
+            $executions = $DB->get_records_select(
+                'report_customsql_executions',
+                'userid ' . $sqlcondition,
+                $params
+            );
+            foreach ($executions as $execution) {
+                self::delete_execution_data($execution);
+            }
         }
     }
 
@@ -234,5 +338,37 @@ class provider implements
         } else {
             return get_string('privacy_somebodyelse', 'report_customsql');
         }
+    }
+
+    /**
+     * Delete execution data including files.
+     *
+     * @param \stdClass $execution Execution record
+     * @throws \dml_exception
+     */
+    protected static function delete_execution_data($execution) {
+        global $DB;
+
+        // Delete the stored file if exists.
+        if ($execution->filename) {
+            $fs = get_file_storage();
+            $context = \context_system::instance();
+
+            $file = $fs->get_file(
+                $context->id,
+                'report_customsql',
+                'execution',
+                $execution->id,
+                '/',
+                $execution->filename
+            );
+
+            if ($file) {
+                $file->delete();
+            }
+        }
+
+        // Delete the database record.
+        $DB->delete_records('report_customsql_executions', ['id' => $execution->id]);
     }
 }

@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_customsql/executions_page
+
+    Template for the background query executions page.
+
+    Context variables required for this template:
+    * hasstats - boolean, whether statistics are available
+    * stats - object with statistics data
+    * filters - object with filter form data
+    * hastable - boolean, whether table has results
+    * tablehtml - string, rendered table HTML
+    * backurl - string, URL to go back
+    * backlinktext - string, text for back link
+
+    Example context (json):
+    {
+        "hasstats": true,
+        "stats": {
+            "title": "Queue Statistics",
+            "items": [
+                {"label": "Total Executions", "value": "42"}
+            ]
+        },
+        "filters": {
+            "title": "Filter Executions",
+            "formaction": "/report/customsql/executions.php",
+            "queryoptions": [],
+            "statusoptions": []
+        },
+        "hastable": true,
+        "tablehtml": "<table>...</table>",
+        "backurl": "/report/customsql/index.php",
+        "backlinktext": "Back to report list"
+    }
+}}
+
+{{#hasstats}}
+    {{>report_customsql/executions_stats}}
+{{/hasstats}}
+
+{{>report_customsql/executions_filters}}
+
+{{#hastable}}
+    <div class="executions-table">
+        {{{tablehtml}}}
+    </div>
+{{/hastable}}
+
+{{^hastable}}
+    <div class="alert alert-info">
+        {{#str}}noexecutions, report_customsql{{/str}}
+    </div>
+{{/hastable}}
+
+<p class="mt-3">
+    <a href="{{{backurl}}}">{{backlinktext}}</a>
+</p>

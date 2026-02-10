@@ -28,7 +28,6 @@ use core_privacy\local\request;
  * @covers \report_customsql\privacy\provider
  */
 final class privacy_test extends \core_privacy\tests\provider_testcase {
-
     /** @var \stdClass test user. */
     protected $user1;
     /** @var \stdClass test user. */

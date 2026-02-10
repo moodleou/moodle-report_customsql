@@ -31,7 +31,9 @@ $capabilities = [
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [],
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
     ],
 
     // People who can manage the reports categories.
@@ -48,5 +50,25 @@ $capabilities = [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [],
+    ],
+
+    // People who can execute queries in background.
+    'report/customsql:executebackground' => [
+        'riskbitmask' => RISK_PERSONAL | RISK_CONFIG,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
+    // People who can view all query executions (not just their own).
+    'report/customsql:viewallexecutions' => [
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
     ],
 ];

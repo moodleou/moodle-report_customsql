@@ -44,12 +44,49 @@
  * @return bool false if file not found, does not return if found - just send the file
  */
 function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    global $DB;
+    global $DB, $USER;
 
     require_once(dirname(__FILE__) . '/locallib.php');
 
     if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
+    }
+
+    // Handle background execution result downloads.
+    if ($filearea === 'execution') {
+        $executionid = (int)array_shift($args);
+        $filename = array_shift($args);
+
+        $execution = $DB->get_record('report_customsql_executions', ['id' => $executionid], '*', MUST_EXIST);
+        $report = $DB->get_record('report_customsql_queries', ['id' => $execution->queryid], '*', MUST_EXIST);
+
+        require_login();
+        $systemcontext = context_system::instance();
+
+        // Check capability: either user owns the execution or has viewallexecutions.
+        $canviewall = has_capability('report/customsql:viewallexecutions', $systemcontext);
+        $isowner = $execution->userid == $USER->id;
+
+        if (!$canviewall && !$isowner) {
+            throw new moodle_exception('nopermissiontodownload', 'report_customsql');
+        }
+
+        // Check report capability if set.
+        if (!empty($report->capability)) {
+            require_capability($report->capability, $systemcontext);
+        }
+
+        // Get the stored file.
+        $fs = get_file_storage();
+        $file = $fs->get_file($systemcontext->id, 'report_customsql', 'execution', $executionid, '/', $filename);
+
+        if (!$file) {
+            return false;
+        }
+
+        // Send the file.
+        send_stored_file($file, 0, 0, $forcedownload, $options);
+        return true;
     }
 
     if ($filearea != 'download') {
@@ -61,8 +98,12 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
 
     $report = $DB->get_record('report_customsql_queries', ['id' => $id]);
     if (!$report) {
-        throw new moodle_exception('invalidreportid', 'report_customsql',
-                report_customsql_url('index.php'), $id);
+        throw new moodle_exception(
+            'invalidreportid',
+            'report_customsql',
+            report_customsql_url('index.php'),
+            $id
+        );
     }
 
     require_login();
@@ -91,12 +132,15 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
         }
         $csvtimestamp = report_customsql_generate_csv($report, $runtime, true);
     }
-    list($csvfilename) = report_customsql_csv_filename($report, $csvtimestamp);
+    [$csvfilename] = report_customsql_csv_filename($report, $csvtimestamp);
 
     $handle = fopen($csvfilename, 'r');
     if ($handle === false) {
-        throw new moodle_exception('unknowndownloadfile', 'report_customsql',
-                report_customsql_url('view.php?id=' . $id));
+        throw new moodle_exception(
+            'unknowndownloadfile',
+            'report_customsql',
+            report_customsql_url('view.php?id=' . $id)
+        );
     }
 
     $fields = report_customsql_read_csv_row($handle);
@@ -113,10 +157,10 @@ function report_customsql_pluginfile($course, $cm, $context, $filearea, $args, $
     // can stop downloads from working in some browsers.
     $filename = str_replace(',', '', $filename);
 
-    \core\dataformat::download_data($filename, $dataformat, $fields, $rows->getIterator(), function(array $row) use ($dataformat) {
+    \core\dataformat::download_data($filename, $dataformat, $fields, $rows->getIterator(), function (array $row) use ($dataformat) {
         // HTML export content will need escaping.
         if (strcasecmp($dataformat, 'html') === 0) {
-            $row = array_map(function($cell) {
+            $row = array_map(function ($cell) {
                 return s($cell);
             }, $row);
         }

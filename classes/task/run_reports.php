@@ -31,7 +31,6 @@ namespace report_customsql\task;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class run_reports extends \core\task\scheduled_task {
-
     /**
      * Get a descriptive name for this task (shown to admins).
      *
@@ -57,8 +56,8 @@ class run_reports extends \core\task\scheduled_task {
 
         $timenow = time();
 
-        list($startofthisweek, $startoflastweek) = report_customsql_get_week_starts($timenow);
-        list($startofthismonth) = report_customsql_get_month_starts($timenow);
+        [$startofthisweek, $startoflastweek] = report_customsql_get_week_starts($timenow);
+        [$startofthismonth] = report_customsql_get_month_starts($timenow);
 
         mtrace("... Looking for old temp CSV files to delete.");
         $numdeleted = report_customsql_delete_old_temp_files($startoflastweek);
@@ -70,22 +69,25 @@ class run_reports extends \core\task\scheduled_task {
         $dailyreportstorun = report_customsql_get_ready_to_run_daily_reports($timenow);
 
         // Get weekly and monthly scheduled reports.
-        $scheduledreportstorun = $DB->get_records_select('report_customsql_queries',
-                                            "(runable = 'weekly' AND lastrun < :startofthisweek) OR
+        $scheduledreportstorun = $DB->get_records_select(
+            'report_customsql_queries',
+            "(runable = 'weekly' AND lastrun < :startofthisweek) OR
                                              (runable = 'monthly' AND lastrun < :startofthismonth)",
-                                            ['startofthisweek' => $startofthisweek,
-                                                  'startofthismonth' => $startofthismonth], 'lastrun');
+            ['startofthisweek' => $startofthisweek,
+            'startofthismonth' => $startofthismonth],
+            'lastrun'
+        );
 
         // All reports ready to run.
         $reportstorun = array_merge($dailyreportstorun, $scheduledreportstorun);
 
         foreach ($reportstorun as $report) {
-            mtrace("... Running report " . report_customsql_plain_text_report_name($report));
+            mtrace("... Queuing scheduled report: " . report_customsql_plain_text_report_name($report));
             try {
-                report_customsql_generate_csv($report, $timenow);
+                $this->queue_scheduled_report_execution($report, $timenow);
             } catch (\Exception $e) {
                 $info = get_exception_info($e);
-                mtrace("... REPORT FAILED " . $info->message);
+                mtrace("... FAILED to queue report: " . $info->message);
                 if (!empty($info->debuginfo)) {
                     mtrace("\nDebug info: $info->debuginfo");
                 }
@@ -94,5 +96,45 @@ class run_reports extends \core\task\scheduled_task {
                 }
             }
         }
+    }
+
+    /**
+     * Queue a scheduled report for execution via adhoc task.
+     *
+     * @param stdClass $report The report record
+     * @param int $timenow Current timestamp
+     * @return void
+     * @throws dml_exception
+     */
+    private function queue_scheduled_report_execution(\stdClass $report, int $timenow): void {
+        global $DB;
+
+        // Get admin user for scheduled executions.
+        $adminuser = get_admin();
+        if (!$adminuser) {
+            throw new \moodle_exception('noadminuser', 'error');
+        }
+
+        // Create execution record.
+        $execution = new \stdClass();
+        $execution->queryid = $report->id;
+        $execution->userid = $adminuser->id;
+        $execution->executionmode = 'background';
+        $execution->status = 'pending';
+        $execution->timecreated = $timenow;
+        $execution->queryparams = !empty($report->queryparams) ? $report->queryparams : json_encode([]);
+        $execution->cancelled = 0;
+
+        $executionid = $DB->insert_record('report_customsql_executions', $execution);
+
+        // Queue Adhoc Task.
+        $task = new \report_customsql\task\execute_query_adhoc();
+        $task->set_custom_data((object)[
+            'executionid' => $executionid,
+        ]);
+
+        \core\task\manager::queue_adhoc_task($task);
+
+        mtrace("    → Execution ID: $executionid queued as adhoc task");
     }
 }

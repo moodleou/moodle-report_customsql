@@ -15,18 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines message providers (types of message sent) for the customsql report.
+ * Message providers for report_customsql.
  *
- * @package report_customsql
- * @copyright 2012 The Open University
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    report_customsql
+ * @category   message
+ * @copyright  2025 ISB Bayern
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $messageproviders = [
-    // Messages informing users that a certain report has run, for reports set to do that.
+    // Legacy notification messages.
     'notification' => [
         'capability' => 'report/customsql:view',
+    ],
+    // Successful background execution.
+    'executioncompleted' => [
+        'capability' => 'report/customsql:executebackground',
+    ],
+    // Failed background execution.
+    'executionfailed' => [
+        'capability' => 'report/customsql:executebackground',
     ],
 ];

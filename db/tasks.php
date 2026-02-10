@@ -35,4 +35,13 @@ $tasks = [
         'month' => '*',
         'dayofweek' => '*',
     ],
+    [
+        'classname' => 'report_customsql\task\cleanup_old_executions',
+        'blocking' => 0,
+        'minute' => '30',
+        'hour' => '2',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
 ];

@@ -79,7 +79,7 @@ class category {
      * @return \stdClass[] All queries of type.
      */
     public static function get_reports_of_a_particular_runtype(array $queries, string $type) {
-        return array_filter($queries, function($query) use ($type) {
+        return array_filter($queries, function ($query) use ($type) {
             return $query->runable == $type;
         }, ARRAY_FILTER_USE_BOTH);
     }
@@ -91,7 +91,7 @@ class category {
      * @return \stdClass[] queries the current user is allowed to see.
      */
     public static function filter_reports_by_capability(array $queries) {
-        return array_filter($queries, function($query) {
+        return array_filter($queries, function ($query) {
             return has_capability($query->capability ?? 'moodle/site:config', \context_system::instance());
         }, ARRAY_FILTER_USE_BOTH);
     }

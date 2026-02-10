@@ -29,8 +29,12 @@ require_once($CFG->libdir . '/adminlib.php');
 $id = required_param('id', PARAM_INT);
 $returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
-admin_externalpage_setup('report_customsql', '', ['id' => $id],
-        '/report/customsql/delete.php');
+admin_externalpage_setup(
+    'report_customsql',
+    '',
+    ['id' => $id],
+    '/report/customsql/delete.php'
+);
 $context = context_system::instance();
 require_capability('report/customsql:definequeries', $context);
 
@@ -46,6 +50,32 @@ if ($returnurl) {
 }
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
+    require_sesskey();
+
+    // Delete associated executions and their files first.
+    $executions = $DB->get_records('report_customsql_executions', ['queryid' => $id]);
+    if ($executions) {
+        $fs = get_file_storage();
+        $systemcontext = context_system::instance();
+        foreach ($executions as $execution) {
+            // Delete stored file if present.
+            if (!empty($execution->filename)) {
+                $file = $fs->get_file(
+                    $systemcontext->id,
+                    'report_customsql',
+                    'execution',
+                    $execution->id,
+                    '/',
+                    $execution->filename
+                );
+                if ($file) {
+                    $file->delete();
+                }
+            }
+        }
+        $DB->delete_records('report_customsql_executions', ['queryid' => $id]);
+    }
+
     $ok = $DB->delete_records('report_customsql_queries', ['id' => $id]);
     if (!$ok) {
         throw new moodle_exception('errordeletingreport', 'report_customsql', report_customsql_url('index.php'));
@@ -63,20 +93,32 @@ if (optional_param('confirm', false, PARAM_BOOL)) {
 $runnableoptions = report_customsql_runable_options();
 
 // Start the page.
-echo $OUTPUT->header().
-     $OUTPUT->heading(get_string('deleteareyousure', 'report_customsql')).
+echo $OUTPUT->header() .
+     $OUTPUT->heading(get_string('deleteareyousure', 'report_customsql')) .
 
-     html_writer::tag('p', get_string('displaynamex', 'report_customsql',
-                                      html_writer::tag('b', format_string($report->displayname)))).
-     html_writer::tag('p', get_string('querysql', 'report_customsql')).
-     html_writer::tag('pre', s($report->querysql)).
-     html_writer::tag('p', get_string('runablex', 'report_customsql',
-                      $runnableoptions[$report->runable])).
+     html_writer::tag('p', get_string(
+         'displaynamex',
+         'report_customsql',
+         html_writer::tag('b', format_string($report->displayname))
+     )) .
+     html_writer::tag('p', get_string('querysql', 'report_customsql')) .
+     html_writer::tag('pre', s($report->querysql)) .
+     html_writer::tag('p', get_string(
+         'runablex',
+         'report_customsql',
+         $runnableoptions[$report->runable]
+     )) .
 
-     $OUTPUT->confirm(get_string('deleteareyousure', 'report_customsql'),
-                      new single_button(report_customsql_url('delete.php',
-                                        ['id' => $id, 'confirm' => 1, 'returnurl' => $returnurl->out_as_local_url(false)]),
-                                        get_string('yes')),
-                      new single_button($returnurl, get_string('no'))).
+     $OUTPUT->confirm(
+         get_string('deleteareyousure', 'report_customsql'),
+         new single_button(
+             report_customsql_url(
+                 'delete.php',
+                 ['id' => $id, 'confirm' => 1, 'returnurl' => $returnurl->out_as_local_url(false)]
+             ),
+             get_string('yes')
+         ),
+         new single_button($returnurl, get_string('no'))
+     ) .
 
      $OUTPUT->footer();

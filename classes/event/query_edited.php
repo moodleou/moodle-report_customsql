@@ -32,7 +32,6 @@ namespace report_customsql\event;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class query_edited extends \core\event\base {
-
     #[\Override]
     protected function init() {
         $this->data['crud'] = 'u';

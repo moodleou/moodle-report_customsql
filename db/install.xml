@@ -16,7 +16,7 @@
         <FIELD NAME="capability" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The capability that a user needs to have to run this report."/>
         <FIELD NAME="lastrun" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when this report was last run."/>
         <FIELD NAME="lastexecutiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time this report took to run last time it was executed, in milliseconds."/>
-        <FIELD NAME="runable" TYPE="char" LENGTH="32" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" COMMENT="'manual', 'weekly' or 'monthly'"/>
+        <FIELD NAME="runable" TYPE="char" LENGTH="32" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" COMMENT="'manual', 'manual_async', 'daily', 'weekly' or 'monthly'"/>
         <FIELD NAME="singlerow" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Only meaningful to set this scheduled reports. Means the report can only return one row of data, and the report builds up a row at a time."/>
         <FIELD NAME="at" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false" COMMENT="The time for the daily report"/>
         <FIELD NAME="emailto" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="A comma-separated list of user ids"/>
@@ -41,6 +41,36 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+    </TABLE>
+    <TABLE NAME="report_customsql_executions" COMMENT="Stores execution history and results for custom SQL queries">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="queryid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Reference to query"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User who executed the query"/>
+        <FIELD NAME="executionmode" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="live" SEQUENCE="false" COMMENT="live or background"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="pending, running, completed, failed"/>
+        <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Result or error CSV filename"/>
+        <FIELD NAME="filesize" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="File size in bytes"/>
+        <FIELD NAME="rowsreturned" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Number of result rows"/>
+        <FIELD NAME="executiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Execution time in seconds"/>
+        <FIELD NAME="errormessage" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Sanitized error message"/>
+        <FIELD NAME="queryparams" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON of validated params"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="cancelled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cancelled flag"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="queryid" UNIQUE="false" FIELDS="queryid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="status" UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="status_timecreated" UNIQUE="false" FIELDS="status, timecreated"/>
+        <INDEX NAME="query_user_time" UNIQUE="false" FIELDS="queryid, userid, timecreated"/>
+        <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated" COMMENT="For cleanup task"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

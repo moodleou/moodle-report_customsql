@@ -54,8 +54,10 @@ class get_users extends external_api {
     public static function execute(string $query, string $capability): array {
         global $CFG, $DB;
 
-        [$query, $capability] = array_values(self::validate_parameters(self::execute_parameters(),
-                ['query' => $query, 'capability' => $capability]));
+        [$query, $capability] = array_values(self::validate_parameters(
+            self::execute_parameters(),
+            ['query' => $query, 'capability' => $capability]
+        ));
 
         $context = \context_system::instance();
         self::validate_context($context);
@@ -63,8 +65,10 @@ class get_users extends external_api {
 
         if (class_exists('\core_user\fields')) {
             $extrafields = \core_user\fields::for_identity($context, false)->get_required_fields();
-            $fields = \core_user\fields::for_identity($context,
-                    false)->with_userpic()->get_sql('u', false, '', '', false)->selects;
+            $fields = \core_user\fields::for_identity(
+                $context,
+                false
+            )->with_userpic()->get_sql('u', false, '', '', false)->selects;
         } else {
             $extrafields = get_extra_user_fields($context);
             $fields = \user_picture::fields('u', $extrafields);
@@ -148,6 +152,7 @@ class get_users extends external_api {
                 'identity' => new external_value(PARAM_RAW, 'Additional user identifying info.'),
                 'hasidentity' => new external_value(PARAM_BOOL, 'Whether identity is non-blank.'),
                 'profileimageurlsmall' => new external_value(PARAM_RAW, 'URL of the user profile image.'),
-            ]));
+            ])
+        );
     }
 }

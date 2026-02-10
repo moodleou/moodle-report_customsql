@@ -28,7 +28,7 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
-use Behat\Gherkin\Node\PyStringNode as PyStringNode;
+use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ExpectationException;
 
@@ -38,12 +38,12 @@ use Behat\Mink\Exception\ExpectationException;
  * All these steps include the phrase 'custom SQL report'.
  */
 class behat_report_customsql extends behat_base {
-
     /**
      * Convert page names to URLs for steps like 'When I am on the "[page name]" page'.
      *
      * Recognised page names are:
      * | report index | the list of all reports. |
+     * | executions | the list of all background executions. |
      *
      * @param string $page name of the page, with the component name removed e.g. 'Admin notification'.
      * @return moodle_url the corresponding URL.
@@ -53,6 +53,8 @@ class behat_report_customsql extends behat_base {
         switch (strtolower($page)) {
             case 'report index':
                 return new moodle_url('/report/customsql/index.php');
+            case 'executions':
+                return new moodle_url('/report/customsql/executions.php');
             default:
                 throw new Exception('Unrecognised quiz page type "' . $page . '."');
         }
@@ -109,7 +111,8 @@ class behat_report_customsql extends behat_base {
             unset($report['category']);
         } else {
             $report['categoryid'] = $this->get_category_id_by_name(
-                    get_string('defaultcategory', 'report_customsql'));
+                get_string('defaultcategory', 'report_customsql')
+            );
         }
 
         // Capability.
@@ -119,15 +122,17 @@ class behat_report_customsql extends behat_base {
                 throw new Exception('Capability ' . $report['capability'] . ' is not a valid choice.');
             }
         } else {
-            // Otherwise use a default.
+                        // Otherwise use a default.
             $report['capability'] = 'moodle/site:config';
         }
 
         // Runnable.
-        if (isset($report['runable']) &&
-                !in_array($report['runable'], report_customsql_runable_options())) {
-            throw new Exception('Invalid runable value ' . $report['capability'] . '.');
-        } else {
+        if (
+            isset($report['runable']) &&
+                !in_array($report['runable'], report_customsql_runable_options())
+        ) {
+            throw new Exception('Invalid runable value ' . $report['runable'] . '.');
+        } else if (!isset($report['runable'])) {
             $report['runable'] = 'manual';
         }
 
@@ -153,6 +158,7 @@ class behat_report_customsql extends behat_base {
 
     /**
      * Create a new report in the database.
+```
      *
      * For example
      * Given the custom sql report "Test report" exists with SQL:
@@ -174,7 +180,8 @@ class behat_report_customsql extends behat_base {
             'descriptionformat' => FORMAT_HTML,
             'querysql' => (string)$querysql,
             'categoryid' => $this->get_category_id_by_name(
-                    get_string('defaultcategory', 'report_customsql')),
+                get_string('defaultcategory', 'report_customsql')
+            ),
             'capability' => 'moodle/site:config',
             'runable' => 'manual',
         ];
@@ -290,7 +297,9 @@ class behat_report_customsql extends behat_base {
         $filecontent = core_text::trim_utf8_bom($filecontent);
         if ($filecontent != $headers) {
             throw new ExpectationException(
-                    "File headers: $filecontent did not match expected: $headers", $this->getSession());
+                "File headers: $filecontent did not match expected: $headers",
+                $this->getSession()
+            );
         }
     }
 
@@ -314,5 +323,119 @@ class behat_report_customsql extends behat_base {
     protected function get_category_id_by_name(string $name): int {
         global $DB;
         return $DB->get_field('report_customsql_categories', 'id', ['name' => $name], MUST_EXIST);
+    }
+
+    /**
+     * Create a background execution for a report.
+     *
+     * For example:
+     * Given the following custom sql execution exists:
+     *   | query  | Test query |
+     *   | status | completed  |
+     *
+     * @Given /^the following custom sql execution exists:$/
+     * @param TableNode $data Supplied data
+     */
+    public function the_following_custom_sql_execution_exists(TableNode $data) {
+        global $DB, $USER;
+
+        $execution = $data->getRowsHash();
+
+        // Find query by name.
+        if (!isset($execution['query'])) {
+            throw new Exception('Query name must be provided.');
+        }
+        $report = $this->get_report_by_name($execution['query']);
+
+        // Default values.
+        $executiondata = [
+            'queryid' => $report->id,
+            'userid' => $USER->id,
+            'status' => $execution['status'] ?? 'pending',
+            'timecreated' => time(),
+            'timemodified' => time(),
+        ];
+
+        // Optional fields.
+        if (isset($execution['rowsreturned'])) {
+            $executiondata['rowsreturned'] = (int)$execution['rowsreturned'];
+        }
+        if (isset($execution['executiontime'])) {
+            $executiondata['executiontime'] = (int)$execution['executiontime'];
+        }
+        if (isset($execution['filename'])) {
+            $executiondata['filename'] = $execution['filename'];
+        }
+        if (isset($execution['timecompleted'])) {
+            $executiondata['timecompleted'] = strtotime($execution['timecompleted']);
+        }
+
+        $DB->insert_record('report_customsql_executions', (object)$executiondata);
+    }
+
+    /**
+     * Trigger the adhoc task to process background executions.
+     *
+     * @Given /^I run the custom sql background execution task$/
+     */
+    public function i_run_the_custom_sql_background_execution_task() {
+        global $DB;
+
+        // Get all pending adhoc tasks for execute_query_adhoc.
+        $tasks = $DB->get_records('task_adhoc', [
+            'classname' => '\report_customsql\task\execute_query_adhoc',
+        ]);
+
+        foreach ($tasks as $taskrecord) {
+            $task = \core\task\manager::adhoc_task_from_record($taskrecord);
+            $task->execute();
+            \core\task\manager::adhoc_task_complete($task);
+        }
+    }
+
+    /**
+     * Start a query execution in background.
+     *
+     * @When /^I start the "(?P<REPORT_NAME>[^"]*)" custom sql report in background$/
+     * @param string $reportname the name of the report to execute.
+     */
+    public function i_start_the_x_custom_sql_report_in_background(string $reportname) {
+        $report = $this->get_report_by_name($reportname);
+        $this->getSession()->visit($this->locate_path(
+            '/report/customsql/execution_action.php?action=run&queryid=' . $report->id . '&sesskey=' . sesskey()
+        ));
+    }
+
+    /**
+     * Cancel a specific execution.
+     *
+     * @When /^I cancel the execution for "(?P<REPORT_NAME>[^"]*)" custom sql report$/
+     * @param string $reportname the name of the report.
+     */
+    public function i_cancel_the_execution_for_x_custom_sql_report(string $reportname) {
+        global $DB;
+        $report = $this->get_report_by_name($reportname);
+        $execution = $DB->get_record('report_customsql_executions', ['queryid' => $report->id], '*', MUST_EXIST);
+
+        $this->getSession()->visit($this->locate_path(
+            '/report/customsql/execution_action.php?action=cancel&id=' . $execution->id . '&sesskey=' . sesskey()
+        ));
+    }
+
+    /**
+     * Delete a specific execution.
+     *
+     * @When /^I delete the execution for "(?P<REPORT_NAME>[^"]*)" custom sql report$/
+     * @param string $reportname the name of the report.
+     */
+    public function i_delete_the_execution_for_x_custom_sql_report(string $reportname) {
+        global $DB;
+        $report = $this->get_report_by_name($reportname);
+        $execution = $DB->get_record('report_customsql_executions', ['queryid' => $report->id], '*', MUST_EXIST);
+
+        $this->getSession()->visit($this->locate_path(
+            '/report/customsql/execution_action.php?action=delete&id=' . $execution->id .
+            '&confirm=1&sesskey=' . sesskey()
+        ));
     }
 }

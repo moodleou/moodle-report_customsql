@@ -52,8 +52,10 @@ final class query_test extends \advanced_testcase {
         $this->assertStringContainsString('view.php?id=1', $query->get_url());
         $this->assertStringContainsString('edit.php?id=1', $query->get_edit_url());
         $this->assertStringContainsString('delete.php?id=1', $query->get_delete_url());
-        $this->assertEquals('<span class="admin_note">This query has not yet been run.</span>',
-              $query->get_time_note());
+        $this->assertEquals(
+            '<span class="admin_note">This query has not yet been run.</span>',
+            $query->get_time_note()
+        );
         $this->assertEquals('Only administrators (moodle/site:config)', $query->get_capability_string());
         // Admin user should have capability to edit and view queries.
         $this->assertEquals(true, $query->can_edit(\context_system::instance()));

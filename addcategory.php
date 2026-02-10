@@ -47,8 +47,12 @@ if ($id) {
     $queryparams['categoryid'] = $id;
     $isadding = false;
     // Editing an existing category.
-    $category = $DB->get_record('report_customsql_categories',
-            ['id' => $id], '*', MUST_EXIST);
+    $category = $DB->get_record(
+        'report_customsql_categories',
+        ['id' => $id],
+        '*',
+        MUST_EXIST
+    );
 } else {
     $queryparams['categoryid'] = null;
     $isadding = true;

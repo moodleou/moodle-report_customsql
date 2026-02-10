@@ -277,3 +277,155 @@ Feature: Ad-hoc database queries report
     When I log in as "admin"
     And I view the "Test query" custom sql report
     Then "\" row "Comma" column of "report_customsql_results" table should contain ","
+
+  @javascript
+  Scenario: View async query info page without automatic execution
+    Given the following custom sql report exists:
+      | name        | Background query                           |
+      | description | Test query for background execution        |
+      | querysql    | SELECT * FROM {user} WHERE id = 2 LIMIT 5  |
+      | runable     | manual_async                               |
+    When I am on the "report_customsql > report index" page logged in as admin
+    And I view the "Background query" custom sql report
+    Then I should see "Background query"
+    And I should see "This is an on-demand (async) query"
+    And I should see "Run in background"
+    And I should see "View executions"
+
+  @javascript
+  Scenario: Start a query execution in background via button
+    Given the following custom sql report exists:
+      | name        | Background query                           |
+      | description | Test query for background execution        |
+      | querysql    | SELECT * FROM {user} WHERE id = 2 LIMIT 5  |
+      | runable     | manual_async                               |
+    When I am on the "report_customsql > report index" page logged in as admin
+    And I view the "Background query" custom sql report
+    And I follow "Run in background"
+    Then I should see "Query execution queued successfully"
+    And I should see "Background query"
+
+  @javascript
+  Scenario: Navigate to async query view without auto-executing
+    Given the following custom sql report exists:
+      | name        | No auto execute                            |
+      | querysql    | SELECT * FROM {user} WHERE id = 2 LIMIT 5  |
+      | runable     | manual_async                               |
+    When I log in as "admin"
+    And I am on "/report/customsql/view.php?id=1"
+    Then I should see "No auto execute"
+    And I should see "This is an on-demand (async) query"
+    And I should not see "Query execution queued successfully"
+
+  @javascript
+  Scenario: Async query with parameters shows form instead of auto-executing
+    Given the following custom sql report exists:
+      | name     | Param async query                             |
+      | querysql | SELECT * FROM {user} WHERE username = :uname  |
+      | runable  | manual_async                                  |
+    When I am on the "report_customsql > report index" page logged in as admin
+    And I view the "Param async query" custom sql report
+    Then I should see "Param async query"
+    And I should see "Enter the query parameters below"
+    And I should see "uname"
+    And I should not see "Query execution queued successfully"
+
+  @javascript
+  Scenario: View executions overview page
+    Given the following custom sql report exists:
+      | name        | Test query                      |
+      | querysql    | SELECT * FROM {user} LIMIT 5    |
+      | runable     | manual_async                    |
+    And the following custom sql execution exists:
+      | query         | Test query |
+      | status        | completed  |
+      | rowsreturned  | 5          |
+      | executiontime | 120        |
+    When I am on the "report_customsql > executions" page logged in as admin
+    Then I should see "Background executions"
+    And I should see "Test query"
+    And I should see "Completed"
+    And I should see "5"
+
+  @javascript
+  Scenario: Filter executions by status
+    Given the following custom sql report exists:
+      | name     | Test query                   |
+      | querysql | SELECT * FROM {user} LIMIT 5 |
+    And the following custom sql execution exists:
+      | query  | Test query |
+      | status | pending    |
+    And the following custom sql execution exists:
+      | query  | Test query |
+      | status | completed  |
+    When I am on the "report_customsql > executions" page logged in as admin
+    And I set the field "Status" to "Pending"
+    And I press "Apply filters"
+    Then I should see "Pending" in the ".executions-table tbody" "css_element"
+    And "Completed" "text" should not exist in the ".executions-table tbody" "css_element"
+
+  @javascript
+  Scenario: Cancel a running execution
+    Given the following custom sql report exists:
+      | name     | Long query                   |
+      | querysql | SELECT * FROM {user} LIMIT 5 |
+    And the following custom sql execution exists:
+      | query  | Long query |
+      | status | running    |
+    When I am on the "report_customsql > executions" page logged in as admin
+    And I follow "Cancel"
+    And I press "Yes"
+    Then I should see "Execution has been cancelled"
+
+  @javascript
+  Scenario: Delete a completed execution
+    Given the following custom sql report exists:
+      | name     | Old query                    |
+      | querysql | SELECT * FROM {user} LIMIT 5 |
+    And the following custom sql execution exists:
+      | query    | Old query |
+      | status   | completed |
+      | filename | test.csv  |
+    When I am on the "report_customsql > executions" page logged in as admin
+    And I follow "Delete"
+    And I press "Yes"
+    Then I should see "Execution has been deleted"
+
+  @javascript @_file_download
+  Scenario: Download CSV from completed execution
+    Given the following custom sql report exists:
+      | name     | Download test                |
+      | querysql | SELECT * FROM {user} LIMIT 2 |
+      | runable  | manual_async                 |
+    And the following custom sql execution exists:
+      | query         | Download test |
+      | status        | completed     |
+      | filename      | query_1.csv   |
+      | rowsreturned  | 2             |
+    When I am on the "report_customsql > executions" page logged in as admin
+    And I click on "Download" "link" in the "Download test" "table_row"
+    Then following "Download" should download between "1" and "500000" bytes
+
+  @javascript
+  Scenario: User can only see own executions without viewallexecutions capability
+    Given the following "users" exist:
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | One      | teacher1@example.com |
+      | teacher2 | Teacher   | Two      | teacher2@example.com |
+    And the following "role assigns" exist:
+      | user     | role    | contextlevel | reference |
+      | teacher1 | manager | System       |           |
+      | teacher2 | manager | System       |           |
+    And the following custom sql report exists:
+      | name     | Shared query                 |
+      | querysql | SELECT * FROM {user} LIMIT 5 |
+      | runable  | manual_async                 |
+    And the following custom sql execution exists:
+      | query  | Shared query |
+      | status | completed    |
+    When I log in as "teacher1"
+    And I am on the "report_customsql > executions" page
+    Then I should see "Shared query"
+    When I log in as "teacher2"
+    And I am on the "report_customsql > executions" page
+    Then "executions-table" "css_element" should not exist

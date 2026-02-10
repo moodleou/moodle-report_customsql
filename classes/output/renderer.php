@@ -30,7 +30,6 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Output the standard action icons (edit, delete and back to list) for a report.
      *
@@ -42,29 +41,55 @@ class renderer extends plugin_renderer_base {
     public function render_report_actions(stdClass $report, stdClass $category, context $context): string {
         $editaction = null;
         $deleteaction = null;
+        $runbackgroundaction = null;
+        $viewexecutionsaction = null;
+
         if (has_capability('report/customsql:definequeries', $context)) {
             $reporturl = report_customsql_url('view.php', ['id' => $report->id]);
             $editaction = $this->action_link(
-                    report_customsql_url('edit.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
-                    $this->pix_icon('t/edit', '') . ' ' .
-                    get_string('editreportx', 'report_customsql', format_string($report->displayname)));
+                report_customsql_url('edit.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
+                $this->pix_icon('t/edit', '') . ' ' .
+                get_string('editreportx', 'report_customsql', format_string($report->displayname))
+            );
             $deleteaction = $this->action_link(
-                    report_customsql_url('delete.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
-                    $this->pix_icon('t/delete', '') . ' ' .
-                    get_string('deletereportx', 'report_customsql', format_string($report->displayname)));
+                report_customsql_url('delete.php', ['id' => $report->id, 'returnurl' => $reporturl->out_as_local_url(false)]),
+                $this->pix_icon('t/delete', '') . ' ' .
+                get_string('deletereportx', 'report_customsql', format_string($report->displayname))
+            );
+        }
+
+        // Add "View executions" link for manual_async reports.
+        if ($report->runable === 'manual_async' && has_capability('report/customsql:view', $context)) {
+            $viewexecutionsaction = $this->action_link(
+                new moodle_url('/report/customsql/executions.php', ['queryid' => $report->id]),
+                $this->pix_icon('i/report', '') . ' ' . get_string('viewexecutions', 'report_customsql')
+            );
         }
 
         $backtocategoryaction = $this->action_link(
-                report_customsql_url('category.php', ['id' => $category->id]),
-                $this->pix_icon('t/left', '') .
-                get_string('backtocategory', 'report_customsql', $category->name));
+            report_customsql_url('category.php', ['id' => $category->id]),
+            $this->pix_icon('t/left', '') .
+            get_string('backtocategory', 'report_customsql', $category->name)
+        );
 
         $context = [
                 'editaction' => $editaction,
                 'deleteaction' => $deleteaction,
+                'viewexecutionsaction' => $viewexecutionsaction,
                 'backtocategoryaction' => $backtocategoryaction,
         ];
 
         return $this->render_from_template('report_customsql/query_actions', $context);
+    }
+
+    /**
+     * Render the executions page.
+     *
+     * @param executions_page $page The executions page renderable
+     * @return string HTML output
+     */
+    protected function render_executions_page(executions_page $page): string {
+        $data = $page->export_for_template($this);
+        return $this->render_from_template('report_customsql/executions_page', $data);
     }
 }

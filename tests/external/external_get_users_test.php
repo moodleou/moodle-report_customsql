@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @runTestsInSeparateProcesses
  */
 final class external_get_users_test extends \externallib_advanced_testcase {
-
     /**
      * Sets up test users with specific roles and permissions.
      *
@@ -63,9 +62,10 @@ final class external_get_users_test extends \externallib_advanced_testcase {
                 ['id' => $USER->id, 'firstname' => 'Admin', 'lastname' => 'User']);
         $admin = $DB->get_record('user', ['id' => $USER->id]);
         $manager = $generator->create_user(
-                ['firstname' => 'The', 'lastname' => 'Manager', 'email' => 'manager@example.com']);
+            ['firstname' => 'The', 'lastname' => 'Manager', 'email' => 'manager@example.com']
+        );
         $coursecreateor = $generator->create_user(
-                ['firstname' => 'Coarse', 'lastname' => 'Creator', 'email' => 'cc@example.com']
+            ['firstname' => 'Coarse', 'lastname' => 'Creator', 'email' => 'cc@example.com']
         );
 
         $generator->role_assign($managerroleid, $manager->id);

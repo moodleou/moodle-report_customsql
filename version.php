@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2025072400;
+$plugin->version   = 2025102101;
 $plugin->requires  = 2024042200;
 $plugin->component = 'report_customsql';
 $plugin->maturity  = MATURITY_STABLE;

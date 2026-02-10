@@ -24,15 +24,16 @@ namespace report_customsql;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class utils {
-
     /**
      * Return the current timestamp, or a fixed timestamp specified by an automated test.
      *
      * @return int The timestamp
      */
     public static function time(): int {
-        if ((defined('BEHAT_SITE_RUNNING') || PHPUNIT_TEST) &&
-                $time = get_config('report_customsql', 'behat_fixed_time')) {
+        if (
+            (defined('BEHAT_SITE_RUNNING') || PHPUNIT_TEST) &&
+                $time = get_config('report_customsql', 'behat_fixed_time')
+        ) {
             return $time;
         } else {
             return time();
@@ -64,6 +65,5 @@ class utils {
      * @param array $queries An array of query objects.
      */
     public function get_queries_data($queries) {
-
     }
 }

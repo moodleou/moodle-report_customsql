@@ -61,7 +61,7 @@ if ($id) {
     $reportquerysql = $report->querysql;
     $queryparams = !empty($report->queryparams) ? unserialize($report->queryparams) : [];
     foreach ($queryparams as $param => $value) {
-        $report->{'queryparam'.$param} = $value;
+        $report->{'queryparam' . $param} = $value;
     }
     $params['id'] = $id;
     $category = $DB->get_record('report_customsql_categories', ['id' => $report->categoryid], '*', MUST_EXIST);
@@ -128,21 +128,27 @@ if ($newreport = $mform->get_data()) {
         }
         $ok = $DB->update_record('report_customsql_queries', $newreport);
         if (!$ok) {
-            throw new moodle_exception('errorupdatingreport', 'report_customsql',
-                        report_customsql_url('edit.php?id=' . $id));
+            throw new moodle_exception(
+                'errorupdatingreport',
+                'report_customsql',
+                report_customsql_url('edit.php?id=' . $id)
+            );
         }
-
     } else {
         $newreport->timecreated = $newreport->timemodified;
         $id = $DB->insert_record('report_customsql_queries', $newreport);
         if (!$id) {
-            throw new moodle_exception('errorinsertingreport', 'report_customsql',
-                        report_customsql_url('edit.php'));
+            throw new moodle_exception(
+                'errorinsertingreport',
+                'report_customsql',
+                report_customsql_url('edit.php')
+            );
         }
     }
 
     report_customsql_log_edit($id);
-    if ($newreport->runable == 'manual') {
+    // Redirect manual and manual_async reports to view.php so user can run/queue them.
+    if (in_array($newreport->runable, ['manual', 'manual_async'])) {
         redirect(report_customsql_url('view.php?id=' . $id));
     } else if ($returnurl) {
         redirect($returnurl);
