@@ -176,6 +176,7 @@ $string['runablex'] = 'Run: {$a}';
 $string['runquery'] = 'Run query';
 $string['schedulednote'] = 'These queries are automatically run on the first day of each week or month, to report on the previous week or month. These links let you view the results that has already been accumulated.';
 $string['scheduledqueries'] = 'Scheduled queries';
+$string['searchqueries'] = 'Search queries...';
 $string['showonlythiscategory'] = 'Show only {$a}';
 $string['startofweek'] = 'Day to run weekly reports';
 $string['startofweek_default'] = 'Use site calendar start of week ({$a})';
