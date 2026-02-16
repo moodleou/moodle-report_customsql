@@ -47,8 +47,10 @@
     {{>report_customsql/expand_collapse_link}}
 {{/expandcollapselinkattheend}}
 
-{{{addquerybutton}}}
-{{{managecategorybutton}}}
+<div class="csql_category__button-container mt-3 d-flex flex-row justify-content-start">
+    {{{addquerybutton}}}
+    {{{managecategorybutton}}}
+</div>
 
 {{#js}}
     require(['report_customsql/reportcategories'], function(reportcategories) {

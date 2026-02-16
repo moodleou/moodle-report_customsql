@@ -10,21 +10,19 @@ body.path-admin-report-customsql a.view-category {
 .region-content .csql_category h3 {
     font-weight: bold;
 }
-.csql_category .categoryname {
-    padding-left: 18px;
+.csql_category__button-container > div:first-child {
+    margin-right: 10px;
 }
-.csql_category.csql_categoryhidden .categoryname {
-    background-image: url([[pix:moodle|t/collapsed]]);
-    background-repeat: no-repeat;
-    background-position: center left;
+.csql_category.csql_categoryshown a.categoryname > i.fa-angle-right {
+    transform: rotate(90deg);
 }
-.csql_category.csql_categoryshown .categoryname {
-    background-image: url([[pix:moodle|t/expanded]]);
-    background-repeat: no-repeat;
-    background-position: center left;
+
+.csql_category a.categoryname > i.fa-angle-right {
+    font-size: 28px;
 }
+
 .csql_category .csql_category_reports {
-    margin-left: 18px;
+    margin-left: 30px;
 }
 .csql_category.csql_categoryshown .csql_category_reports {
     display: block;
