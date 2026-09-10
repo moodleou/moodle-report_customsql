@@ -889,7 +889,7 @@ function report_customsql_delete_old_temp_files($upto) {
  */
 function report_customsql_validate_users($userids, $capability) {
     global $DB;
-    if (empty($userstring)) {
+    if (empty($userids)) {
         return null;
     }
 
