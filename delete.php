@@ -50,6 +50,7 @@ if ($returnurl) {
 }
 
 if (optional_param('confirm', false, PARAM_BOOL)) {
+    require_sesskey();
     $ok = $DB->delete_records('report_customsql_queries', ['id' => $id]);
     if (!$ok) {
         throw new moodle_exception('errordeletingreport', 'report_customsql', report_customsql_url('index.php'));
