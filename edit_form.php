@@ -159,10 +159,12 @@ class report_customsql_edit_form extends moodleform {
             get_string('onerow', 'report_customsql')
         );
 
-        $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
-        $mform->setType('customdir', PARAM_PATH);
-        $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
-        $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
+        if (!empty(get_config('report_customsql', 'exportroot'))) {
+            $mform->addElement('text', 'customdir', get_string('customdir', 'report_customsql'), 'size = 70');
+            $mform->setType('customdir', PARAM_PATH);
+            $mform->disabledIf('customdir', 'runable', 'eq', 'manual');
+            $mform->addHelpButton('customdir', 'customdir', 'report_customsql');
+        }
 
         $options = [
             'ajax' => 'report_customsql/userselector', // Bit of a hack, but the service seems to do what we want.
@@ -338,30 +340,35 @@ class report_customsql_edit_form extends moodleform {
         }
 
         if (!empty($data['customdir'])) {
-            $path = $data['customdir'];
+            $path = report_customsql_get_allowed_customdir_path($data['customdir']);
+            if ($path === null) {
+                $errors['customdir'] = get_string('customdirnotallowed', 'report_customsql', s($data['customdir']));
+            }
 
-            // The path either needs to be a writable directory ...
-            if (is_dir($path)) {
-                if (!is_writable($path)) {
-                    $errors['customdir'] = get_string('customdirnotwritable', 'report_customsql', s($path));
-                }
-            } else if (substr($path, -1) == DIRECTORY_SEPARATOR) {
-                // ... and it must exist...
-                $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($path));
-            } else {
-                // ... or be a path to a writable file, or a new file in a writable directory.
-                $dir = dirname($path);
-
-                if (!is_dir($dir)) {
-                    $errors['customdir'] = get_string('customdirnotadirectory', 'report_customsql', s($dir));
+            if (empty($errors['customdir'])) {
+                // The path either needs to be a writable directory ...
+                if (is_dir($path)) {
+                    if (!is_writable($path)) {
+                        $errors['customdir'] = get_string('customdirnotwritable', 'report_customsql', s($path));
+                    }
+                } else if (substr($path, -1) == DIRECTORY_SEPARATOR) {
+                    // ... and it must exist...
+                    $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($path));
                 } else {
-                    if (file_exists($path)) {
-                        if (!is_writable($path)) {
-                            $errors['customdir'] = get_string('filenotwritable', 'report_customsql', s($path));
-                        }
+                    // ... or be a path to a writable file, or a new file in a writable directory.
+                    $dir = dirname($path);
+
+                    if (!is_dir($dir)) {
+                        $errors['customdir'] = get_string('customdirnotadirectory', 'report_customsql', s($dir));
                     } else {
-                        if (!is_writable($dir)) {
-                            $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($dir));
+                        if (file_exists($path)) {
+                            if (!is_writable($path)) {
+                                $errors['customdir'] = get_string('filenotwritable', 'report_customsql', s($path));
+                            }
+                        } else {
+                            if (!is_writable($dir)) {
+                                $errors['customdir'] = get_string('customdirmustexist', 'report_customsql', s($dir));
+                            }
                         }
                     }
                 }

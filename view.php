@@ -67,9 +67,11 @@ report_customsql_log_view($id);
 // Handle background execution mode for manual_async reports.
 // Default mode is 'info' - only show query information, no automatic execution.
 // User must explicitly click a button to execute.
-if ($report->runable === 'manual_async'
+if (
+    $report->runable === 'manual_async'
     && get_config('report_customsql', 'enablebackgroundexecution')
-    && has_capability('report/customsql:executebackground', $context)) {
+    && has_capability('report/customsql:executebackground', $context)
+) {
     $executionmode = optional_param('mode', 'info', PARAM_ALPHA);
 
     // Only execute when user explicitly requests it with mode=execute.

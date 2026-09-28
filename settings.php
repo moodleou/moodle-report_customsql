@@ -100,6 +100,14 @@ if ($ADMIN->fulltree) {
         get_string('enablebackgroundexecution_desc', 'report_customsql'),
         1
     ));
+
+    $settings->add(new admin_setting_configtext(
+        'report_customsql/exportroot',
+        get_string('exportroot', 'report_customsql'),
+        get_string('exportroot_help', 'report_customsql'),
+        '', // Exports stay disabled until an admin sets a root.
+        PARAM_PATH
+    ));
 }
 
 $ADMIN->add('reports', new admin_externalpage(
